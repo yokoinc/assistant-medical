@@ -1,0 +1,104 @@
+# ===== ASSISTANT MÉDICAL DR CUFFEL - .gitignore =====
+
+# IA json
+.claude
+
+# Variables d'environnement sensibles
+app/.env
+.env
+*.env
+
+# Base de données PostgreSQL
+postgres_data/
+*.sql.backup
+*.dump
+
+# Base de donnée initiale
+init.sql
+
+# Fichiers uploadés par les patients
+uploads/
+*.pdf
+*.jpg
+*.jpeg
+*.png
+*.heic
+*.zip
+
+# Logs et fichiers temporaires
+*.log
+*.tmp
+*.temp
+app/logs/
+logs/
+
+# Node.js
+app/node_modules/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+
+# Docker et conteneurs
+.docker/
+docker-compose.override.yml
+
+# IDE et éditeurs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Système
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Certificats et clés
+*.pem
+*.key
+*.crt
+*.csr
+*.p12
+*.pfx
+
+# Sauvegardes
+*.backup
+*.bak
+backup/
+backups/
+
+# Scripts de développement (à conserver uniquement en local)
+debug*.sh
+test*.sh
+dev*.sh
+
+# Cache
+.cache/
+*.cache
+
+# Runtime
+*.pid
+*.seed
+*.pid.lock
+
+# Dossiers temporaires
+tmp/
+temp/
+.tmp/
+
+# Fichiers de configuration spécifiques à l'environnement
+config/local.json
+config/production.json
+config/development.json
+
+# Secrets et tokens
+secrets/
+tokens/
+*.secret
+
+# Documentation générée automatiquement
+docs/api/

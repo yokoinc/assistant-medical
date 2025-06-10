@@ -1,0 +1,1834 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Espace Patient - Dr Grégory Cuffel</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Styles spécifiques à l'espace patient */
+        .patient-page {
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .patient-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+            padding: var(--spacing-lg) 0;
+            box-shadow: var(--shadow);
+        }
+
+        .patient-header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .patient-info h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .patient-info p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .patient-nav {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+
+        .logout-btn {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        .logout-btn:hover {
+            background: var(--accent-light);
+        }
+
+        .patient-content {
+            padding: var(--spacing-xl) 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .dashboard-card {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .dashboard-card.message-card {
+            border-top-color: var(--secondary-color);
+        }
+
+        .dashboard-card.assistant-card {
+            border-top-color: var(--primary-light);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .upload-card .card-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+        }
+
+        .message-card .card-icon {
+            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+        }
+
+        .assistant-card .card-icon {
+            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .card-description {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-md);
+            line-height: 1.6;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        /* Section Nouveau Message */
+        .message-form {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            box-shadow: var(--shadow);
+            margin-bottom: var(--spacing-lg);
+            display: none;
+        }
+
+        .message-form.active {
+            display: block;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            padding: var(--spacing-md);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .urgence-select {
+            background: var(--bg-primary);
+        }
+
+        .urgence-select option[value="faible"] {
+            color: var(--secondary-color);
+        }
+
+        .urgence-select option[value="normale"] {
+            color: var(--primary-color);
+        }
+
+        .urgence-select option[value="elevee"] {
+            color: var(--accent-color);
+        }
+
+        .file-upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin: var(--spacing-md) 0;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .file-upload-zone:hover,
+        .file-upload-zone.dragover {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .file-upload-zone i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .file-list {
+            margin-top: var(--spacing-md);
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: var(--spacing-sm);
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .file-remove {
+            color: var(--accent-color);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .file-remove:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* Section Historique Messages */
+        .messages-history {
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            display: none;
+        }
+
+        .messages-history.active {
+            display: block;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        .messages-header {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .messages-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .message-item {
+            padding: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .message-item:hover {
+            background: var(--bg-secondary);
+        }
+
+        .message-item:last-child {
+            border-bottom: none;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .message-sujet {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .message-date {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .message-urgence {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .urgence-faible {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--secondary-color);
+        }
+
+        .urgence-normale {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary-color);
+        }
+
+        .urgence-elevee {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--accent-color);
+        }
+
+        .message-content {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
+            line-height: 1.6;
+        }
+
+        .message-status {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+            font-size: 0.85rem;
+        }
+
+        .status-repondu {
+            color: var(--secondary-color);
+        }
+
+        .status-attente {
+            color: var(--text-secondary);
+        }
+
+        .message-reponse {
+            background: var(--bg-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-sm);
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .reponse-header {
+            font-weight: 600;
+            color: var(--secondary-color);
+            margin-bottom: var(--spacing-xs);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        /* Debug Console Styles */
+        .debug-console {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            color: #00ff00;
+            border-top: 2px solid rgba(51, 51, 51, 0.8);
+            max-height: 300px;
+            overflow-y: auto;
+            z-index: 9999;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            transform: translateY(100%);
+            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .debug-console.active {
+            transform: translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .debug-header {
+            background: rgba(51, 51, 51, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(85, 85, 85, 0.6);
+            cursor: move;
+        }
+
+        .debug-header h4 {
+            margin: 0;
+            font-size: 14px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .debug-header .debug-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .debug-header button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: all 0.2s ease;
+        }
+
+        .debug-header button:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .debug-content {
+            padding: 10px 15px;
+            white-space: pre-wrap;
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(5px);
+        }
+
+        .debug-line {
+            margin-bottom: 3px;
+            padding: 2px 0;
+            border-left: 3px solid transparent;
+            padding-left: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .debug-line:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-left-color: #00ff00;
+        }
+
+        .debug-timestamp {
+            color: #888;
+            margin-right: 12px;
+            font-weight: bold;
+            font-size: 10px;
+        }
+
+        .debug-level-info {
+            color: #00ff00;
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+        }
+
+        .debug-level-warn {
+            color: #ffaa00;
+            text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
+        }
+
+        .debug-level-error {
+            color: #ff4444;
+            text-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+            font-weight: bold;
+        }
+
+        .debug-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #333, #555);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 10001;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .debug-toggle:hover {
+            transform: translateY(-2px) scale(1.1);
+            background: linear-gradient(135deg, #555, #777);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .debug-toggle.active {
+            background: linear-gradient(135deg, #00ff00, #00cc00);
+            color: #000;
+            animation: pulse-debug 2s infinite;
+        }
+
+        @keyframes pulse-debug {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 255, 0, 0.4);
+            }
+            50% { 
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 10px rgba(0, 255, 0, 0);
+            }
+        }
+
+        .debug-minimize {
+            position: fixed;
+            bottom: 310px;
+            right: 20px;
+            background: rgba(51, 51, 51, 0.9);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            z-index: 10000;
+            font-size: 12px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .debug-minimize.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .patient-header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .patient-nav {
+                justify-content: center;
+            }
+
+            .card-actions {
+                justify-content: center;
+            }
+
+            .debug-console {
+                max-height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .patient-header {
+                padding: var(--spacing-md) 0;
+            }
+
+            .patient-content {
+                padding: var(--spacing-md) 0;
+            }
+
+            .dashboard-card {
+                padding: var(--spacing-md);
+            }
+
+            .message-form {
+                padding: var(--spacing-md);
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="patient-page">
+        <!-- Header Patient -->
+        <header class="patient-header">
+            <div class="container">
+                <div class="patient-header-content">
+                    <div class="patient-info">
+                        <h1 id="patientWelcome">Espace Patient</h1>
+                        <p>Dr Grégory Cuffel - Médecin Généraliste</p>
+                    </div>
+                    <nav class="patient-nav">
+                        <button class="nav-btn active" data-section="dashboard">
+                            <i class="fas fa-home"></i>
+                            Accueil
+                        </button>
+                        <button class="nav-btn" data-section="nouveau-message">
+                            <i class="fas fa-plus"></i>
+                            Nouveau Message
+                        </button>
+                        <button class="nav-btn" data-section="historique">
+                            <i class="fas fa-history"></i>
+                            Mes Messages
+                        </button>
+                        <a href="/chat-assistant" class="nav-btn">
+                            <i class="fas fa-robot"></i>
+                            Assistant
+                        </a>
+                        <button class="nav-btn logout-btn" id="logoutBtn">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Déconnexion
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </header>
+
+        <main class="patient-content">
+            <div class="container">
+                <!-- Dashboard -->
+                <section id="dashboard" class="content-section active">
+                    <div class="dashboard-grid">
+                        <!-- Carte Upload -->
+                        <div class="dashboard-card upload-card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-upload"></i>
+                                </div>
+                                <h3 class="card-title">Envoyer des Documents</h3>
+                            </div>
+                            <p class="card-description">
+                                Envoyez vos documents médicaux (analyses, ordonnances, images) 
+                                de manière sécurisée au Dr Cuffel.
+                            </p>
+                            <div class="card-actions">
+                                <button class="btn btn-primary" data-section="nouveau-message">
+                                    <i class="fas fa-paperclip"></i>
+                                    Envoyer un document
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Carte Messages -->
+                        <div class="dashboard-card message-card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <h3 class="card-title">Messages Privés</h3>
+                            </div>
+                            <p class="card-description">
+                                Posez vos questions médicales ou informez le Dr Cuffel 
+                                de votre état de santé en toute confidentialité.
+                            </p>
+                            <div class="card-actions">
+                                <button class="btn btn-secondary" data-section="nouveau-message">
+                                    <i class="fas fa-edit"></i>
+                                    Écrire un message
+                                </button>
+                                <button class="btn btn-secondary" data-section="historique">
+                                    <i class="fas fa-history"></i>
+                                    Voir l'historique
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Carte Assistant -->
+                        <div class="dashboard-card assistant-card">
+                            <div class="card-header">
+                                <div class="card-icon">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <h3 class="card-title">Assistant Médical</h3>
+                            </div>
+                            <p class="card-description">
+                                Obtenez des informations générales de santé et les numéros 
+                                d'urgence grâce à l'assistant intelligent.
+                            </p>
+                            <div class="card-actions">
+                                <a href="/chat-assistant" class="btn btn-primary">
+                                    <i class="fas fa-comments"></i>
+                                    Ouvrir l'assistant
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Informations importantes -->
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <div>
+                            <p><strong>Important :</strong> En cas d'urgence médicale, contactez le 15 (SAMU) ou rendez-vous aux urgences.</p>
+                            <p>Les messages envoyés ici ne constituent pas une consultation d'urgence.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Nouveau Message -->
+                <section id="nouveau-message" class="content-section">
+                    <div class="message-form" id="messageForm">
+                        <h2 style="margin-bottom: var(--spacing-lg); color: var(--text-primary);">
+                            <i class="fas fa-edit"></i>
+                            Nouveau Message au Dr Cuffel
+                        </h2>
+
+                        <form id="newMessageForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="sujet" class="form-label">Sujet du message</label>
+                                    <input 
+                                        type="text" 
+                                        id="sujet" 
+                                        name="sujet" 
+                                        class="form-input" 
+                                        placeholder="Ex: Question sur mon traitement"
+                                        required
+                                        maxlength="200"
+                                    >
+                                </div>
+                                <div class="form-group">
+                                    <label for="urgence" class="form-label">Niveau d'urgence</label>
+                                    <select id="urgence" name="urgence" class="form-select urgence-select" required>
+                                        <option value="faible">📗 Faible - Question générale</option>
+                                        <option value="normale" selected>📘 Normale - Suivi médical</option>
+                                        <option value="elevee">📕 Élevée - Besoin rapide</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message" class="form-label">Votre message</label>
+                                <textarea 
+                                    id="message" 
+                                    name="message" 
+                                    class="form-textarea" 
+                                    placeholder="Décrivez votre question ou votre situation médicale..."
+                                    required
+                                    maxlength="2000"
+                                ></textarea>
+                                <small style="color: var(--text-secondary); font-size: 0.85rem;">
+                                    Caractères restants: <span id="charCount">2000</span>
+                                </small>
+                            </div>
+
+                            <!-- Zone Upload -->
+                            <div class="form-group">
+                                <label class="form-label">Documents joints (optionnel)</label>
+                                <div class="file-upload-zone" id="fileUploadZone">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p><strong>Cliquez ici</strong> ou glissez vos fichiers</p>
+                                    <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: var(--spacing-xs);">
+                                        PDF, Images (JPG, PNG, HEIC), ZIP - Max 50MB par fichier
+                                    </p>
+                                </div>
+                                <input 
+                                    type="file" 
+                                    id="fileInput" 
+                                    multiple 
+                                    accept=".pdf,.jpg,.jpeg,.png,.heic,.zip"
+                                    style="display: none;"
+                                >
+                                <div id="fileList" class="file-list"></div>
+                            </div>
+
+                            <div style="display: flex; gap: var(--spacing-md); margin-top: var(--spacing-lg);">
+                                <button type="submit" class="btn btn-primary" id="submitMessageBtn">
+                                    <i class="fas fa-paper-plane"></i>
+                                    <span>Envoyer le message</span>
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-section="dashboard">
+                                    <i class="fas fa-times"></i>
+                                    Annuler
+                                </button>
+                            </div>
+                        </form>
+
+                        <!-- Messages de statut -->
+                        <div id="messageStatus" style="margin-top: var(--spacing-md); display: none;"></div>
+                    </div>
+                </section>
+
+                <!-- Historique Messages -->
+                <section id="historique" class="content-section">
+                    <div class="messages-history" id="messagesHistory">
+                        <div class="messages-header">
+                            <h2 style="margin: 0; color: var(--text-primary);">
+                                <i class="fas fa-history"></i>
+                                Mes Messages
+                            </h2>
+                            <button class="btn btn-secondary" id="refreshMessages">
+                                <i class="fas fa-sync-alt"></i>
+                                Actualiser
+                            </button>
+                        </div>
+                        
+                        <div class="messages-list" id="messagesList">
+                            <!-- Chargé dynamiquement -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Debug Console -->
+        <div class="debug-console" id="debugConsole">
+            <div class="debug-header">
+                <h4>
+                    <i class="fas fa-bug"></i>
+                    Console de Debug
+                </h4>
+                <div class="debug-controls">
+                    <button onclick="debugLogger.clear()" title="Effacer les logs">
+                        <i class="fas fa-trash"></i> Clear
+                    </button>
+                    <button onclick="debugLogger.toggle()" title="Fermer la console">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="debug-content" id="debugContent"></div>
+        </div>
+
+        <button class="debug-toggle" id="debugToggleBtn" title="Ouvrir/Fermer la console de debug">
+            <i class="fas fa-bug"></i>
+        </button>
+
+        <button class="debug-minimize" id="debugMinimizeBtn" title="Minimiser la console">
+            <i class="fas fa-window-minimize"></i>
+        </button>
+    </div>
+
+    <script>
+        // ===== SYSTÈME DE DEBUG COMPLET =====
+        
+        class DebugLogger {
+            constructor() {
+                this.logs = [];
+                this.maxLogs = 100;
+                this.isVisible = false;
+                this.setupToggleButton();
+            }
+            
+            setupToggleButton() {
+                // S'assurer que le DOM est chargé
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => this.attachToggleEvent());
+                } else {
+                    this.attachToggleEvent();
+                }
+            }
+            
+            attachToggleEvent() {
+                const toggleBtn = document.getElementById('debugToggleBtn');
+                const minimizeBtn = document.getElementById('debugMinimizeBtn');
+                
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.toggle();
+                    });
+                    console.log('✅ Event listener attaché au bouton debug');
+                } else {
+                    console.error('❌ Bouton debug toggle non trouvé');
+                }
+                
+                if (minimizeBtn) {
+                    minimizeBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        this.toggle();
+                    });
+                }
+            }
+            
+            log(level, message, data = null) {
+                const timestamp = new Date().toLocaleTimeString('fr-FR', { 
+                    hour12: false, 
+                    hour: '2-digit', 
+                    minute: '2-digit', 
+                    second: '2-digit',
+                    fractionalSecondDigits: 3
+                });
+                
+                const logEntry = {
+                    timestamp,
+                    level,
+                    message,
+                    data: data ? (typeof data === 'object' ? JSON.stringify(data, null, 2) : data) : null
+                };
+                
+                this.logs.push(logEntry);
+                if (this.logs.length > this.maxLogs) {
+                    this.logs.shift();
+                }
+                
+                // Afficher dans la console du navigateur
+                console[level](message, data || '');
+                
+                // Afficher dans le debug console
+                this.updateDebugConsole();
+            }
+            
+            info(message, data) { this.log('info', message, data); }
+            warn(message, data) { this.log('warn', message, data); }
+            error(message, data) { this.log('error', message, data); }
+            
+            updateDebugConsole() {
+                if (!this.isVisible) return;
+                
+                const debugContent = document.getElementById('debugContent');
+                if (!debugContent) return;
+                
+                debugContent.innerHTML = this.logs.map((log, index) => `
+                    <div class="debug-line debug-level-${log.level}" data-index="${index}">
+                        <span class="debug-timestamp">${log.timestamp}</span>
+                        <strong>[${log.level.toUpperCase()}]</strong> ${this.escapeHtml(log.message)}
+                        ${log.data ? `\n<span style="color: #666; margin-left: 20px;">${this.escapeHtml(log.data)}</span>` : ''}
+                    </div>
+                `).join('');
+                
+                debugContent.scrollTop = debugContent.scrollHeight;
+            }
+            
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+            
+            toggle() {
+                this.isVisible = !this.isVisible;
+                const debugConsole = document.getElementById('debugConsole');
+                const toggleBtn = document.getElementById('debugToggleBtn');
+                const minimizeBtn = document.getElementById('debugMinimizeBtn');
+                
+                if (debugConsole) {
+                    debugConsole.classList.toggle('active', this.isVisible);
+                    
+                    if (this.isVisible) {
+                        this.updateDebugConsole();
+                        this.info('🔍 Console de debug ouverte');
+                    } else {
+                        this.info('👁️ Console de debug fermée');
+                    }
+                }
+                
+                if (toggleBtn) {
+                    toggleBtn.classList.toggle('active', this.isVisible);
+                }
+                
+                if (minimizeBtn) {
+                    minimizeBtn.classList.toggle('visible', this.isVisible);
+                }
+            }
+            
+            clear() {
+                this.logs = [];
+                this.updateDebugConsole();
+                this.info('🧹 Logs effacés');
+            }
+        }
+        
+        // Instance globale du logger
+        const debugLogger = new DebugLogger();
+        
+        // Fonctions globales pour l'interface debug
+        function toggleDebugConsole() {
+            debugLogger.toggle();
+        }
+        
+        function clearDebugConsole() {
+            debugLogger.clear();
+        }
+        
+        // Intercepter les erreurs JavaScript
+        window.addEventListener('error', function(e) {
+            debugLogger.error('Erreur JavaScript:', {
+                message: e.message,
+                filename: e.filename,
+                lineno: e.lineno,
+                colno: e.colno,
+                stack: e.error ? e.error.stack : null
+            });
+        });
+        
+        // Intercepter les promesses rejetées
+        window.addEventListener('unhandledrejection', function(e) {
+            debugLogger.error('Promise rejetée:', {
+                reason: e.reason,
+                stack: e.reason ? e.reason.stack : null
+            });
+        });
+
+        // ===== VARIABLES GLOBALES =====
+        let selectedFiles = [];
+        let currentSection = 'dashboard';
+
+        // ===== INITIALISATION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLogger.info('🚀 Initialisation de l\'espace patient');
+            
+            try {
+                initializePatientSpace();
+                setupEventListeners();
+                loadMessages();
+                debugLogger.info('✅ Initialisation réussie');
+            } catch (error) {
+                debugLogger.error('❌ Erreur lors de l\'initialisation:', error);
+            }
+        });
+
+        function initializePatientSpace() {
+            debugLogger.info('🔧 Configuration de l\'espace patient');
+            
+            // Vérifier l'authentification (côté client basique)
+            const currentPatient = sessionStorage.getItem('currentPatient');
+            if (currentPatient) {
+                try {
+                    const patient = JSON.parse(currentPatient);
+                    document.getElementById('patientWelcome').textContent = 
+                        `Bienvenue ${patient.prenom} ${patient.nom}`;
+                    debugLogger.info('👤 Patient identifié:', patient);
+                } catch (e) {
+                    debugLogger.warn('⚠️ Erreur parsing patient:', e);
+                }
+            }
+            
+            // Afficher les sections
+            showSection('dashboard');
+            debugLogger.info('📱 Interface utilisateur initialisée');
+        }
+
+        function setupEventListeners() {
+            debugLogger.info('🎛️ Configuration des event listeners');
+            
+            try {
+                // Navigation
+                document.querySelectorAll('[data-section]').forEach((btn, index) => {
+                    btn.addEventListener('click', (e) => {
+                        const section = e.currentTarget.getAttribute('data-section');
+                        debugLogger.info(`🔄 Navigation vers section: ${section}`);
+                        showSection(section);
+                    });
+                    debugLogger.info(`➕ Event listener ajouté pour bouton ${index}: ${btn.textContent.trim()}`);
+                });
+
+                // Déconnexion
+                document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+                debugLogger.info('🚪 Event listener déconnexion configuré');
+
+                // Formulaire message
+                const messageForm = document.getElementById('newMessageForm');
+                if (messageForm) {
+                    messageForm.addEventListener('submit', handleMessageSubmit);
+                    debugLogger.info('📝 Event listener formulaire message configuré');
+                } else {
+                    debugLogger.error('❌ Formulaire message non trouvé');
+                }
+                
+                // Upload de fichiers
+                setupFileUpload();
+                debugLogger.info('📎 Upload de fichiers configuré');
+
+                // Compteur de caractères
+                const messageTextarea = document.getElementById('message');
+                if (messageTextarea) {
+                    messageTextarea.addEventListener('input', updateCharCount);
+                    debugLogger.info('🔢 Compteur de caractères configuré');
+                }
+
+                // Actualiser messages
+                const refreshBtn = document.getElementById('refreshMessages');
+                if (refreshBtn) {
+                    refreshBtn.addEventListener('click', loadMessages);
+                    debugLogger.info('🔄 Bouton actualiser configuré');
+                }
+                
+                debugLogger.info('✅ Tous les event listeners configurés');
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur configuration event listeners:', error);
+            }
+        }
+
+        function showSection(sectionName) {
+            debugLogger.info(`📱 Affichage de la section: ${sectionName}`);
+            
+            try {
+                // Masquer toutes les sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Masquer formulaires
+                document.querySelectorAll('.message-form, .messages-history').forEach(form => {
+                    form.classList.remove('active');
+                });
+
+                // Désactiver tous les boutons nav
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Activer la section demandée
+                const targetSection = document.getElementById(sectionName);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                    debugLogger.info(`✅ Section ${sectionName} activée`);
+                    
+                    if (sectionName === 'nouveau-message') {
+                        const messageForm = document.getElementById('messageForm');
+                        if (messageForm) {
+                            messageForm.classList.add('active');
+                            debugLogger.info('📝 Formulaire message affiché');
+                        } else {
+                            debugLogger.error('❌ Formulaire message non trouvé');
+                        }
+                    } else if (sectionName === 'historique') {
+                        const messagesHistory = document.getElementById('messagesHistory');
+                        if (messagesHistory) {
+                            messagesHistory.classList.add('active');
+                            debugLogger.info('📜 Historique messages affiché');
+                        } else {
+                            debugLogger.error('❌ Historique messages non trouvé');
+                        }
+                    }
+                } else {
+                    debugLogger.error(`❌ Section ${sectionName} non trouvée`);
+                }
+
+                // Activer le bouton nav correspondant
+                const navBtn = document.querySelector(`[data-section="${sectionName}"]`);
+                if (navBtn) {
+                    navBtn.classList.add('active');
+                    debugLogger.info(`🎯 Bouton navigation ${sectionName} activé`);
+                } else {
+                    debugLogger.warn(`⚠️ Bouton navigation ${sectionName} non trouvé`);
+                }
+
+                currentSection = sectionName;
+                debugLogger.info(`📍 Section courante mise à jour: ${currentSection}`);
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur lors de l\'affichage de section:', error);
+            }
+        }
+
+        function setupFileUpload() {
+            debugLogger.info('📎 Configuration de l\'upload de fichiers');
+            
+            try {
+                const uploadZone = document.getElementById('fileUploadZone');
+                const fileInput = document.getElementById('fileInput');
+
+                if (!uploadZone || !fileInput) {
+                    debugLogger.error('❌ Éléments upload non trouvés');
+                    return;
+                }
+
+                // Click pour sélectionner
+                uploadZone.addEventListener('click', () => {
+                    debugLogger.info('👆 Clic sur zone upload');
+                    fileInput.click();
+                });
+
+                // Drag & drop
+                uploadZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.add('dragover');
+                    debugLogger.info('🖱️ Drag over zone upload');
+                });
+
+                uploadZone.addEventListener('dragleave', () => {
+                    uploadZone.classList.remove('dragover');
+                    debugLogger.info('🖱️ Drag leave zone upload');
+                });
+
+                uploadZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadZone.classList.remove('dragover');
+                    debugLogger.info('📂 Drop de fichiers détecté', { fileCount: e.dataTransfer.files.length });
+                    handleFiles(e.dataTransfer.files);
+                });
+
+                // Sélection de fichiers
+                fileInput.addEventListener('change', (e) => {
+                    debugLogger.info('📁 Sélection de fichiers via input', { fileCount: e.target.files.length });
+                    handleFiles(e.target.files);
+                });
+                
+                debugLogger.info('✅ Upload de fichiers configuré');
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur configuration upload:', error);
+            }
+        }
+
+        function handleFiles(files) {
+            debugLogger.info(`📂 Traitement de ${files.length} fichier(s)`);
+            
+            Array.from(files).forEach((file, index) => {
+                debugLogger.info(`📄 Fichier ${index + 1}:`, {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type
+                });
+                
+                if (validateFile(file)) {
+                    selectedFiles.push(file);
+                    addFileToList(file);
+                    debugLogger.info(`✅ Fichier ${file.name} ajouté`);
+                } else {
+                    debugLogger.warn(`⚠️ Fichier ${file.name} rejeté`);
+                }
+            });
+            
+            debugLogger.info(`📊 Total fichiers sélectionnés: ${selectedFiles.length}`);
+        }
+
+        function validateFile(file) {
+            const allowedTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png', 'image/heic', 'application/zip'];
+            const maxSize = 50 * 1024 * 1024; // 50MB
+
+            debugLogger.info(`🔍 Validation fichier: ${file.name}`, {
+                type: file.type,
+                size: file.size,
+                maxSize: maxSize
+            });
+
+            if (!allowedTypes.includes(file.type)) {
+                const errorMsg = `Type de fichier non autorisé: ${file.name}`;
+                alert(errorMsg);
+                debugLogger.error('❌ Type non autorisé:', { file: file.name, type: file.type, allowedTypes });
+                return false;
+            }
+
+            if (file.size > maxSize) {
+                const errorMsg = `Fichier trop volumineux: ${file.name} (max 50MB)`;
+                alert(errorMsg);
+                debugLogger.error('❌ Fichier trop volumineux:', { file: file.name, size: file.size, maxSize });
+                return false;
+            }
+
+            debugLogger.info(`✅ Fichier ${file.name} validé`);
+            return true;
+        }
+
+        function addFileToList(file) {
+            try {
+                const fileList = document.getElementById('fileList');
+                if (!fileList) {
+                    debugLogger.error('❌ Liste de fichiers non trouvée');
+                    return;
+                }
+                
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <i class="fas fa-file"></i>
+                        <span>${file.name}</span>
+                        <small>(${formatFileSize(file.size)})</small>
+                    </div>
+                    <i class="fas fa-times file-remove" onclick="removeFile('${file.name}')"></i>
+                `;
+                fileList.appendChild(fileItem);
+                debugLogger.info(`➕ Fichier ${file.name} ajouté à la liste`);
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur ajout fichier à la liste:', error);
+            }
+        }
+
+        function removeFile(fileName) {
+            debugLogger.info(`🗑️ Suppression fichier: ${fileName}`);
+            
+            const initialCount = selectedFiles.length;
+            selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+            const newCount = selectedFiles.length;
+            
+            debugLogger.info(`📊 Fichiers: ${initialCount} → ${newCount}`);
+            updateFileList();
+        }
+
+        function updateFileList() {
+            try {
+                const fileList = document.getElementById('fileList');
+                if (!fileList) {
+                    debugLogger.error('❌ Liste de fichiers non trouvée');
+                    return;
+                }
+                
+                fileList.innerHTML = '';
+                selectedFiles.forEach(file => addFileToList(file));
+                debugLogger.info(`🔄 Liste de fichiers mise à jour: ${selectedFiles.length} fichier(s)`);
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur mise à jour liste fichiers:', error);
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        function updateCharCount() {
+            try {
+                const textarea = document.getElementById('message');
+                const charCount = document.getElementById('charCount');
+                
+                if (!textarea || !charCount) {
+                    debugLogger.error('❌ Éléments compteur non trouvés');
+                    return;
+                }
+                
+                const remaining = 2000 - textarea.value.length;
+                charCount.textContent = remaining;
+                charCount.style.color = remaining < 100 ? 'var(--accent-color)' : 'var(--text-secondary)';
+                
+                debugLogger.info(`🔢 Caractères restants: ${remaining}`);
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur mise à jour compteur:', error);
+            }
+        }
+
+        async function handleMessageSubmit(e) {
+            e.preventDefault();
+            debugLogger.info('📤 Début envoi message');
+            
+            const submitBtn = document.getElementById('submitMessageBtn');
+            const originalContent = submitBtn.innerHTML;
+            
+            try {
+                // Désactiver le bouton
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="loading-spinner"></span> Envoi en cours...';
+                debugLogger.info('🔒 Bouton envoi désactivé');
+
+                // Préparer les données
+                const formData = new FormData();
+                const sujet = document.getElementById('sujet').value;
+                const message = document.getElementById('message').value;
+                const urgence = document.getElementById('urgence').value;
+                
+                formData.append('sujet', sujet);
+                formData.append('message', message);
+                formData.append('urgence', urgence);
+
+                debugLogger.info('📋 Données du message:', { sujet, urgence, messageLength: message.length });
+
+                // Ajouter les fichiers
+                selectedFiles.forEach((file, index) => {
+                    formData.append('files', file);
+                    debugLogger.info(`📎 Fichier ${index + 1} ajouté: ${file.name}`);
+                });
+
+                debugLogger.info(`📡 Envoi requête API avec ${selectedFiles.length} fichier(s)`);
+
+                // Envoyer le message
+                const response = await fetch('/api/message-prive', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                debugLogger.info(`📨 Réponse serveur:`, { status: response.status, ok: response.ok });
+
+                const result = await response.json();
+                debugLogger.info('📦 Données reçues:', result);
+
+                if (response.ok && result.success) {
+                    debugLogger.info('✅ Message envoyé avec succès');
+                    showStatusMessage('success', result.message);
+                    
+                    // Reset du formulaire
+                    document.getElementById('newMessageForm').reset();
+                    selectedFiles = [];
+                    updateFileList();
+                    updateCharCount();
+                    debugLogger.info('🧹 Formulaire nettoyé');
+                    
+                    // Redirection vers historique
+                    setTimeout(() => {
+                        debugLogger.info('🔄 Redirection vers historique');
+                        showSection('historique');
+                        loadMessages();
+                    }, 2000);
+                    
+                } else {
+                    debugLogger.error('❌ Erreur serveur:', result);
+                    showStatusMessage('error', result.error || 'Erreur lors de l\'envoi du message');
+                }
+
+            } catch (error) {
+                debugLogger.error('❌ Erreur envoi message:', error);
+                showStatusMessage('error', 'Erreur de connexion. Veuillez réessayer.');
+            } finally {
+                // Réactiver le bouton
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalContent;
+                debugLogger.info('🔓 Bouton envoi réactivé');
+            }
+        }
+
+        function showStatusMessage(type, message) {
+            debugLogger.info(`💬 Affichage message statut: ${type} - ${message}`);
+            
+            try {
+                const statusDiv = document.getElementById('messageStatus');
+                if (!statusDiv) {
+                    debugLogger.error('❌ Div status non trouvée');
+                    return;
+                }
+                
+                statusDiv.className = type === 'success' ? 'success-message' : 'error-message';
+                statusDiv.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                    <span>${message}</span>
+                `;
+                statusDiv.style.display = 'flex';
+
+                // Masquer après quelques secondes
+                setTimeout(() => {
+                    statusDiv.style.display = 'none';
+                    debugLogger.info('👻 Message statut masqué');
+                }, 5000);
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur affichage message statut:', error);
+            }
+        }
+
+        async function loadMessages() {
+            debugLogger.info('📨 Début chargement messages');
+            
+            const messagesList = document.getElementById('messagesList');
+            const refreshBtn = document.getElementById('refreshMessages');
+            
+            if (!messagesList || !refreshBtn) {
+                debugLogger.error('❌ Éléments messages non trouvés');
+                return;
+            }
+            
+            try {
+                // Indicateur de chargement
+                refreshBtn.innerHTML = '<span class="loading-spinner"></span> Chargement...';
+                refreshBtn.disabled = true;
+                debugLogger.info('⏳ Interface de chargement activée');
+
+                const response = await fetch('/api/mes-messages');
+                debugLogger.info(`📡 Réponse API messages:`, { status: response.status, ok: response.ok });
+
+                const data = await response.json();
+                debugLogger.info('📦 Données messages reçues:', data);
+
+                if (response.ok && data.messages) {
+                    debugLogger.info(`📊 ${data.messages.length} message(s) reçu(s)`);
+                    displayMessages(data.messages);
+                } else {
+                    debugLogger.error('❌ Erreur chargement messages:', data);
+                    messagesList.innerHTML = `
+                        <div style="padding: var(--spacing-lg); text-align: center; color: var(--text-secondary);">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: var(--spacing-md);"></i>
+                            <p>Erreur lors du chargement des messages</p>
+                        </div>
+                    `;
+                }
+
+            } catch (error) {
+                debugLogger.error('❌ Erreur connexion messages:', error);
+                messagesList.innerHTML = `
+                    <div style="padding: var(--spacing-lg); text-align: center; color: var(--text-secondary);">
+                        <i class="fas fa-wifi" style="font-size: 2rem; margin-bottom: var(--spacing-md);"></i>
+                        <p>Erreur de connexion</p>
+                    </div>
+                `;
+            } finally {
+                refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> Actualiser';
+                refreshBtn.disabled = false;
+                debugLogger.info('🔄 Interface de chargement désactivée');
+            }
+        }
+
+        function displayMessages(messages) {
+            debugLogger.info(`🖼️ Affichage de ${messages.length} message(s)`);
+            
+            try {
+                const messagesList = document.getElementById('messagesList');
+                if (!messagesList) {
+                    debugLogger.error('❌ Liste messages non trouvée');
+                    return;
+                }
+
+                if (messages.length === 0) {
+                    debugLogger.info('📭 Aucun message à afficher');
+                    messagesList.innerHTML = `
+                        <div style="padding: var(--spacing-xl); text-align: center; color: var(--text-secondary);">
+                            <i class="fas fa-envelope-open" style="font-size: 3rem; margin-bottom: var(--spacing-md); opacity: 0.5;"></i>
+                            <h3 style="margin-bottom: var(--spacing-sm);">Aucun message pour le moment</h3>
+                            <p>Envoyez votre premier message au Dr Cuffel</p>
+                            <button class="btn btn-primary" data-section="nouveau-message" style="margin-top: var(--spacing-md);">
+                                <i class="fas fa-edit"></i>
+                                Écrire un message
+                            </button>
+                        </div>
+                    `;
+
+                    // Réattacher l'événement au nouveau bouton
+                    const newBtn = messagesList.querySelector('[data-section="nouveau-message"]');
+                    if (newBtn) {
+                        newBtn.addEventListener('click', (e) => {
+                            debugLogger.info('🔄 Clic bouton nouveau message');
+                            showSection('nouveau-message');
+                        });
+                    }
+
+                    return;
+                }
+
+                messagesList.innerHTML = messages.map((message, index) => {
+                    debugLogger.info(`📝 Rendu message ${index + 1}:`, {
+                        sujet: message.sujet,
+                        urgence: message.urgence,
+                        repondu: message.repondu
+                    });
+                    
+                    return `
+                        <div class="message-item">
+                            <div class="message-header">
+                                <div style="display: flex; align-items: center; gap: var(--spacing-sm);">
+                                    <span class="message-sujet">${escapeHtml(message.sujet)}</span>
+                                    <span class="message-urgence urgence-${message.urgence}">
+                                        ${getUrgenceLabel(message.urgence)}
+                                    </span>
+                                </div>
+                                <span class="message-date">${message.date}</span>
+                            </div>
+                            
+                            <div class="message-content">
+                                ${escapeHtml(message.message).replace(/\n/g, '<br>')}
+                            </div>
+                            
+                            <div class="message-status ${message.repondu ? 'status-repondu' : 'status-attente'}">
+                                <i class="fas fa-${message.repondu ? 'check-circle' : 'clock'}"></i>
+                                ${message.repondu ? 'Réponse reçue' : 'En attente de réponse'}
+                            </div>
+                            
+                            ${message.reponse ? `
+                                <div class="message-reponse">
+                                    <div class="reponse-header">
+                                        <i class="fas fa-user-md"></i>
+                                        Réponse du Dr Cuffel - ${message.dateReponse}
+                                    </div>
+                                    <div>${escapeHtml(message.reponse).replace(/\n/g, '<br>')}</div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+                
+                debugLogger.info('✅ Messages affichés avec succès');
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur affichage messages:', error);
+            }
+        }
+
+        function getUrgenceLabel(urgence) {
+            const labels = {
+                'faible': 'Faible',
+                'normale': 'Normale', 
+                'elevee': 'Élevée'
+            };
+            return labels[urgence] || 'Normale';
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function handleLogout() {
+            debugLogger.info('🚪 Tentative de déconnexion');
+            
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                try {
+                    debugLogger.info('📡 Envoi requête déconnexion');
+                    
+                    const response = await fetch('/api/logout', {
+                        method: 'POST'
+                    });
+
+                    const result = await response.json();
+                    debugLogger.info('📦 Réponse déconnexion:', result);
+
+                    if (result.success) {
+                        debugLogger.info('✅ Déconnexion réussie');
+                        sessionStorage.removeItem('currentPatient');
+                        window.location.href = result.redirect || '/';
+                    } else {
+                        debugLogger.error('❌ Erreur déconnexion serveur:', result);
+                        alert('Erreur lors de la déconnexion');
+                    }
+
+                } catch (error) {
+                    debugLogger.error('❌ Erreur déconnexion:', error);
+                    // Redirection forcée en cas d'erreur
+                    window.location.href = '/';
+                }
+            } else {
+                debugLogger.info('❌ Déconnexion annulée par l\'utilisateur');
+            }
+        }
+
+        // ===== FONCTIONS UTILITAIRES =====
+
+        // Vérification périodique de nouveaux messages
+        let messageCheckInterval;
+
+        function startMessageCheck() {
+            debugLogger.info('⏰ Démarrage vérification périodique messages');
+            
+            messageCheckInterval = setInterval(() => {
+                if (currentSection === 'historique') {
+                    debugLogger.info('🔄 Vérification automatique messages');
+                    loadMessages();
+                }
+            }, 30000); // 30 secondes
+        }
+
+        function stopMessageCheck() {
+            if (messageCheckInterval) {
+                clearInterval(messageCheckInterval);
+                debugLogger.info('⏹️ Arrêt vérification périodique messages');
+            }
+        }
+
+        // Gestion de la visibilité de la page
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                debugLogger.info('👁️ Page cachée - arrêt vérifications');
+                stopMessageCheck();
+            } else {
+                debugLogger.info('👁️ Page visible - reprise vérifications');
+                startMessageCheck();
+            }
+        });
+
+        // Auto-save brouillon
+        let draftSaveTimeout;
+
+        function saveDraft() {
+            clearTimeout(draftSaveTimeout);
+            draftSaveTimeout = setTimeout(() => {
+                try {
+                    const sujet = document.getElementById('sujet').value;
+                    const message = document.getElementById('message').value;
+                    
+                    if (sujet || message) {
+                        const draft = {
+                            sujet,
+                            message,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem('messageDraft', JSON.stringify(draft));
+                        debugLogger.info('💾 Brouillon sauvegardé');
+                    }
+                } catch (error) {
+                    debugLogger.error('❌ Erreur sauvegarde brouillon:', error);
+                }
+            }, 1000);
+        }
+
+        function loadDraft() {
+            try {
+                const draft = localStorage.getItem('messageDraft');
+                if (draft) {
+                    const draftData = JSON.parse(draft);
+                    
+                    // Vérifier que le brouillon n'est pas trop ancien (24h)
+                    if (Date.now() - draftData.timestamp < 24 * 60 * 60 * 1000) {
+                        if (confirm('Un brouillon de message a été trouvé. Voulez-vous le restaurer ?')) {
+                            document.getElementById('sujet').value = draftData.sujet;
+                            document.getElementById('message').value = draftData.message;
+                            updateCharCount();
+                            debugLogger.info('📄 Brouillon restauré');
+                        }
+                    }
+                    
+                    // Nettoyer le brouillon après restauration ou refus
+                    localStorage.removeItem('messageDraft');
+                }
+            } catch (error) {
+                debugLogger.error('❌ Erreur chargement brouillon:', error);
+            }
+        }
+
+        // Attacher les événements de sauvegarde de brouillon
+        document.addEventListener('DOMContentLoaded', function() {
+            const sujetInput = document.getElementById('sujet');
+            const messageInput = document.getElementById('message');
+            
+            if (sujetInput) sujetInput.addEventListener('input', saveDraft);
+            if (messageInput) messageInput.addEventListener('input', saveDraft);
+            
+            debugLogger.info('💾 Auto-save brouillon configuré');
+        });
+
+        // Charger le brouillon au chargement de la page
+        window.addEventListener('load', loadDraft);
+
+        // Initialiser la vérification des messages
+        startMessageCheck();
+
+        // Nettoyage final
+        window.addEventListener('beforeunload', function() {
+            debugLogger.info('👋 Nettoyage avant fermeture page');
+            stopMessageCheck();
+        });
+
+        // ===== RACCOURCIS CLAVIER =====
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + D pour toggle debug console
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                debugLogger.toggle();
+                debugLogger.info('⌨️ Debug console togglé via raccourci Ctrl+D');
+            }
+            
+            // Ctrl + Shift + C pour clear debug console
+            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                debugLogger.clear();
+                debugLogger.info('⌨️ Debug console nettoyé via raccourci Ctrl+Shift+C');
+            }
+            
+            // Escape pour fermer la console si ouverte
+            if (e.key === 'Escape' && debugLogger.isVisible) {
+                e.preventDefault();
+                debugLogger.toggle();
+                debugLogger.info('⌨️ Debug console fermée via Escape');
+            }
+        });
+
+        debugLogger.info('🎹 Raccourcis clavier configurés:');
+        debugLogger.info('   • Ctrl+D: toggle debug console');
+        debugLogger.info('   • Ctrl+Shift+C: clear debug console');
+        debugLogger.info('   • Escape: fermer debug console');
+        
+        // Message de bienvenue dans la console
+        setTimeout(() => {
+            debugLogger.info('🎉 Console de debug initialisée avec succès !');
+            debugLogger.info('💡 Cliquez sur l\'icône bug en bas à droite ou utilisez Ctrl+D');
+        }, 100);
+    </script>
+</body>
+</html>

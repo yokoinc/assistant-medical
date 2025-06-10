@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Dr Grégory Cuffel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #059669;
+            --accent: #dc2626;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --white: #ffffff;
+            
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+            
+            --radius: 0.5rem;
+            --radius-lg: 0.75rem;
+            --transition: all 0.2s ease-in-out;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .admin-container {
+            background: var(--white);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-xl);
+            overflow: hidden;
+            width: 100%;
+            max-width: 800px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.6s ease-out forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .admin-info {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: var(--white);
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: float 15s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(0.5deg); }
+        }
+
+        .brand-section {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .brand-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .brand-section h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .brand-section p {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+
+        .features-list {
+            position: relative;
+            z-index: 2;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.95;
+        }
+
+        .feature-item i {
+            color: var(--secondary);
+            font-size: 1rem;
+            min-width: 18px;
+        }
+
+        .login-section {
+            padding: 3rem 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .login-header h2 {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-header p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .security-badge {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: var(--radius);
+            padding: 0.75rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-label i {
+            color: var(--primary);
+            font-size: 0.875rem;
+        }
+
+        .form-input {
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            transition: var(--transition);
+            background: var(--gray-50);
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--white);
+            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+        }
+
+        .form-input.error {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.8rem;
+            display: none;
+            align-items: center;
+            gap: 0.375rem;
+            margin-top: 0.25rem;
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .success-message {
+            color: var(--success);
+            font-size: 0.8rem;
+            display: none;
+            align-items: center;
+            gap: 0.375rem;
+            margin-top: 0.25rem;
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: var(--white);
+            border: none;
+            padding: 0.875rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            font-family: inherit;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer-links {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            text-align: center;
+        }
+
+        .footer-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.375rem;
+            transition: var(--transition);
+        }
+
+        .footer-link:hover {
+            color: var(--primary);
+            transform: translateX(-2px);
+        }
+
+        .info-box {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-box h4 {
+            color: var(--gray-800);
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.375rem;
+        }
+
+        .info-box h4 i {
+            color: var(--warning);
+        }
+
+        .info-box p {
+            color: var(--gray-600);
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin: 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-container {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+            }
+
+            .admin-info {
+                padding: 2rem 1.5rem;
+                text-align: center;
+            }
+
+            .login-section {
+                padding: 2rem 1.5rem;
+            }
+
+            .brand-section h1 {
+                font-size: 1.5rem;
+            }
+
+            .login-header h2 {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .admin-info,
+            .login-section {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateX(400px);
+            transition: transform 0.3s ease-out;
+            z-index: 1000;
+            border-left: 4px solid var(--success);
+            max-width: 350px;
+        }
+
+        .toast.error {
+            border-left-color: var(--danger);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            font-size: 1.125rem;
+        }
+
+        .toast.success i {
+            color: var(--success);
+        }
+
+        .toast.error i {
+            color: var(--danger);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .toast-message {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Section Info -->
+        <div class="admin-info">
+            <div class="brand-section">
+                <div class="brand-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <h1>Administration Médicale</h1>
+                <p>Dr Grégory Cuffel</p>
+                <p>Le Havre, Seine-Maritime</p>
+            </div>
+
+            <div class="features-list">
+                <div class="feature-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>Gestion des messages patients</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Statistiques en temps réel</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-users"></i>
+                    <span>Suivi de la patientèle</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Sécurité renforcée</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <span>Interface responsive</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Login -->
+        <div class="login-section">
+            <div class="login-header">
+                <h2>Connexion Sécurisée</h2>
+                <p>Accès réservé au personnel médical autorisé</p>
+            </div>
+
+            <div class="security-badge">
+                <i class="fas fa-lock"></i>
+                <span>Connexion SSL - Données cryptées</span>
+            </div>
+
+            <form class="login-form" id="adminLoginForm">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user"></i>
+                        Nom d'utilisateur
+                    </label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-input" 
+                        placeholder="Identifiant médical"
+                        required
+                        autocomplete="username"
+                        value="dr.cuffel"
+                    >
+                    <div class="error-message" id="usernameError">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span></span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i>
+                        Mot de passe
+                    </label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        class="form-input" 
+                        placeholder="Mot de passe sécurisé"
+                        required
+                        autocomplete="current-password"
+                        value="cuffel2024"
+                    >
+                    <div class="error-message" id="passwordError">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Accéder au Dashboard</span>
+                </button>
+
+                <div class="error-message" id="globalError">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span></span>
+                </div>
+
+                <div class="success-message" id="globalSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    <span></span>
+                </div>
+            </form>
+
+            <div class="info-box">
+                <h4>
+                    <i class="fas fa-info-circle"></i>
+                    Sécurité des Données
+                </h4>
+                <p>
+                    Toutes les connexions sont enregistrées et surveillées. 
+                    Accès strictement réservé au personnel médical autorisé pour 
+                    garantir la confidentialité des données patients.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <a href="/" class="footer-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour au site public
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class AdminAuth {
+            constructor() {
+                this.form = document.getElementById('adminLoginForm');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.setupEventListeners();
+                this.showWelcomeMessage();
+            }
+
+            setupEventListeners() {
+                this.form.addEventListener('submit', this.handleSubmit.bind(this));
+                
+                // Validation en temps réel
+                const inputs = this.form.querySelectorAll('.form-input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => this.clearFieldError(input));
+                    input.addEventListener('blur', () => this.validateField(input));
+                });
+            }
+
+            showWelcomeMessage() {
+                setTimeout(() => {
+                    this.showToast('info', 'Interface Admin', 'Connectez-vous pour accéder au dashboard');
+                }, 500);
+            }
+
+            validateField(field) {
+                const value = field.value.trim();
+                let isValid = true;
+                let message = '';
+
+                switch(field.name) {
+                    case 'username':
+                        if (value.length < 3) {
+                            message = 'Nom d\'utilisateur trop court';
+                            isValid = false;
+                        }
+                        break;
+                    case 'password':
+                        if (value.length < 6) {
+                            message = 'Mot de passe trop court';
+                            isValid = false;
+                        }
+                        break;
+                }
+
+                if (!isValid) {
+                    this.showFieldError(field, message);
+                } else {
+                    this.clearFieldError(field);
+                }
+
+                return isValid;
+            }
+
+            showFieldError(field, message) {
+                field.classList.add('error');
+                const errorDiv = document.getElementById(field.name + 'Error');
+                if (errorDiv) {
+                    errorDiv.querySelector('span').textContent = message;
+                    errorDiv.classList.add('show');
+                }
+            }
+
+            clearFieldError(field) {
+                field.classList.remove('error');
+                const errorDiv = document.getElementById(field.name + 'Error');
+                if (errorDiv) {
+                    errorDiv.classList.remove('show');
+                }
+            }
+
+            showGlobalError(message) {
+                const errorDiv = document.getElementById('globalError');
+                errorDiv.querySelector('span').textContent = message;
+                errorDiv.classList.add('show');
+                this.hideGlobalSuccess();
+            }
+
+            hideGlobalError() {
+                document.getElementById('globalError').classList.remove('show');
+            }
+
+            showGlobalSuccess(message) {
+                const successDiv = document.getElementById('globalSuccess');
+                successDiv.querySelector('span').textContent = message;
+                successDiv.classList.add('show');
+                this.hideGlobalError();
+            }
+
+            hideGlobalSuccess() {
+                document.getElementById('globalSuccess').classList.remove('show');
+            }
+
+            setLoading(loading) {
+                this.submitBtn.disabled = loading;
+                const icon = this.submitBtn.querySelector('i');
+                const text = this.submitBtn.querySelector('span');
+                
+                if (loading) {
+                    icon.className = 'loading';
+                    text.textContent = 'Connexion en cours...';
+                } else {
+                    icon.className = 'fas fa-sign-in-alt';
+                    text.textContent = 'Accéder au Dashboard';
+                }
+            }
+
+            async handleSubmit(e) {
+                e.preventDefault();
+                
+                console.log('🔐 Tentative de connexion admin');
+                
+                // Reset des erreurs
+                this.hideGlobalError();
+                this.hideGlobalSuccess();
+
+                // Validation
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+
+                if (!this.validateField(document.getElementById('username')) || 
+                    !this.validateField(document.getElementById('password'))) {
+                    this.showGlobalError('Veuillez corriger les erreurs ci-dessus');
+                    return;
+                }
+
+                this.setLoading(true);
+
+                try {
+                    console.log('📡 Envoi requête authentification');
+                    
+                    const response = await fetch('/api/admin/auth', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ username, password })
+                    });
+
+                    console.log('📨 Réponse reçue:', response.status, response.ok);
+
+                    const result = await response.json();
+                    console.log('📦 Données:', result);
+
+                    if (response.ok && result.success) {
+                        console.log('✅ Connexion réussie');
+                        this.showGlobalSuccess('Connexion réussie ! Redirection...');
+                        this.showToast('success', 'Connexion Réussie', `Bienvenue Dr ${result.admin.prenom} ${result.admin.nom}`);
+                        
+                        setTimeout(() => {
+                            window.location.href = result.redirect || '/admin/dashboard';
+                        }, 1500);
+                        
+                    } else {
+                        console.error('❌ Erreur:', result);
+                        this.showGlobalError(result.error || 'Identifiants incorrects');
+                        this.showToast('error', 'Erreur de Connexion', result.error || 'Identifiants incorrects');
+                    }
+
+                } catch (error) {
+                    console.error('❌ Erreur réseau:', error);
+                    this.showGlobalError('Erreur de connexion au serveur');
+                    this.showToast('error', 'Erreur Réseau', 'Impossible de contacter le serveur');
+                } finally {
+                    this.setLoading(false);
+                }
+            }
+
+            showToast(type, title, message) {
+                // Supprimer les anciens toasts
+                document.querySelectorAll('.toast').forEach(toast => toast.remove());
+
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const iconClass = type === 'success' ? 'fas fa-check-circle' : 
+                                type === 'error' ? 'fas fa-exclamation-circle' : 
+                                'fas fa-info-circle';
+
+                toast.innerHTML = `
+                    <i class="${iconClass}"></i>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                // Animation d'entrée
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Auto-suppression
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            new AdminAuth();
+            
+            // Auto-focus avec délai pour l'animation
+            setTimeout(() => {
+                document.getElementById('username').focus();
+            }, 800);
+        });
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            // Escape pour effacer les champs
+            if (e.key === 'Escape') {
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('username').focus();
+            }
+        });
+    </script>
+</body>
+</html>
