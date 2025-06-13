@@ -3,296 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration - Dr Grégory Cuffel</title>
+    <title id="pageTitle">Administration - Cabinet Médical</title>
+    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: #059669;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
-        }
-
-        /* Main Layout */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Stats Cards */
+        /* Styles spécifiques au dashboard admin - utilise les classes du CSS global */
+        
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: var(--spacing-6);
+            margin-bottom: var(--spacing-8);
         }
 
         .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-left: 4px solid #2563eb;
+            background: var(--bg-card);
+            padding: var(--spacing-6);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary-color);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
         .stat-card.urgent {
-            border-left-color: #dc2626;
+            border-left-color: var(--accent-color);
         }
 
         .stat-card.success {
-            border-left-color: #059669;
+            border-left-color: var(--secondary-color);
         }
 
         .stat-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1rem;
+            margin-bottom: var(--spacing-4);
         }
 
         .stat-title {
-            font-size: 0.875rem;
-            color: #64748b;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
             font-weight: 500;
         }
 
         .stat-icon {
             width: 2.5rem;
             height: 2.5rem;
-            border-radius: 0.5rem;
+            border-radius: var(--border-radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #eff6ff;
-            color: #2563eb;
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--primary-color);
         }
 
         .stat-value {
-            font-size: 2rem;
+            font-size: var(--font-size-4xl);
             font-weight: 700;
-            color: #1e293b;
+            color: var(--text-primary);
         }
 
-        /* Messages Section */
+        /* Messages Section utilise les classes globales card */
         .messages-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
             overflow: hidden;
+            box-shadow: var(--shadow);
         }
 
         .section-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: var(--spacing-6);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: var(--bg-tertiary);
         }
 
         .section-title {
-            font-size: 1.25rem;
+            font-size: var(--font-size-xl);
             font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--spacing-2);
+            color: var(--text-primary);
         }
 
-        /* Filter Buttons */
+        /* Filtres */
         .filters {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: var(--spacing-4) var(--spacing-6);
+            border-bottom: 1px solid var(--border-color);
             display: flex;
-            gap: 0.5rem;
+            gap: var(--spacing-2);
             flex-wrap: wrap;
+            background: var(--bg-tertiary);
         }
 
         .filter-btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db;
-            background: white;
-            border-radius: 999px;
-            font-size: 0.875rem;
+            padding: var(--spacing-2) var(--spacing-4);
+            border: 1px solid var(--border-color);
+            background: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            font-size: var(--font-size-sm);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: var(--transition);
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         .filter-btn.active {
-            background: #2563eb;
+            background: var(--primary-color);
             color: white;
-            border-color: #2563eb;
+            border-color: var(--primary-color);
         }
 
         .filter-btn:hover:not(.active) {
-            background: #f8fafc;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
         }
 
-        /* Messages List */
+        /* Messages */
         .messages-list {
             max-height: 600px;
             overflow-y: auto;
         }
 
         .message-item {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+            padding: var(--spacing-6);
+            border-bottom: 1px solid var(--border-color);
             cursor: pointer;
-            transition: background 0.2s;
+            transition: var(--transition);
         }
 
         .message-item:hover {
-            background: #f8fafc;
+            background: var(--bg-tertiary);
         }
 
         .message-item.unread {
-            background: #fef3c7;
-            border-left: 4px solid #f59e0b;
+            background: rgba(255, 149, 0, 0.05);
+            border-left: 4px solid var(--accent-warning);
         }
 
         .message-item.urgent {
-            background: #fef2f2;
-            border-left: 4px solid #dc2626;
+            background: rgba(255, 59, 48, 0.05);
+            border-left: 4px solid var(--accent-color);
         }
 
         .message-header {
             display: flex;
             justify-content: space-between;
             align-items: start;
-            margin-bottom: 0.75rem;
-            gap: 1rem;
+            margin-bottom: var(--spacing-3);
+            gap: var(--spacing-4);
         }
 
         .patient-info {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: var(--spacing-3);
         }
 
         .patient-avatar {
             width: 2.5rem;
             height: 2.5rem;
-            background: linear-gradient(135deg, #2563eb, #059669);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: var(--font-size-sm);
         }
 
         .patient-details h4 {
             font-weight: 600;
-            color: #1e293b;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
         }
 
         .patient-details p {
-            font-size: 0.875rem;
-            color: #64748b;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            margin-bottom: 0;
         }
 
         .message-meta {
             text-align: right;
             display: flex;
             flex-direction: column;
-            gap: 0.25rem;
+            gap: var(--spacing-1);
         }
 
         .urgence-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--border-radius-lg);
+            font-size: var(--font-size-xs);
             font-weight: 600;
         }
 
         .urgence-faible {
-            background: #dcfce7;
-            color: #166534;
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--secondary-color);
         }
 
         .urgence-normale {
-            background: #dbeafe;
-            color: #1d4ed8;
+            background: rgba(0, 122, 255, 0.1);
+            color: var(--primary-color);
         }
 
         .urgence-elevee {
-            background: #fee2e2;
-            color: #dc2626;
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--accent-color);
         }
 
         .message-time {
-            font-size: 0.875rem;
-            color: #64748b;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
         }
 
         .message-subject {
             font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: #1e293b;
+            margin-bottom: var(--spacing-2);
+            color: var(--text-primary);
         }
 
         .message-preview {
-            color: #64748b;
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
             line-height: 1.5;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -301,119 +247,19 @@
         }
 
         .message-actions {
-            margin-top: 1rem;
+            margin-top: var(--spacing-4);
             display: flex;
-            gap: 0.5rem;
+            gap: var(--spacing-2);
+            flex-wrap: wrap;
         }
 
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.8125rem;
-        }
-
-        .btn-success {
-            background: #059669;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 0.75rem;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-        }
-
-        .modal-close:hover {
-            background: #f1f5f9;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-
+        /* Spécificités pour les modals - surcharge minimale */
         .original-message {
-            background: #f8fafc;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-            border-left: 3px solid #2563eb;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-
-        .form-input, .form-textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .form-input:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: var(--bg-tertiary);
+            padding: var(--spacing-4);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-6);
+            border-left: 3px solid var(--primary-color);
         }
 
         .form-textarea {
@@ -421,55 +267,26 @@
             resize: vertical;
         }
 
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
         /* Empty State */
         .empty-state {
             text-align: center;
-            padding: 3rem 1.5rem;
-            color: #64748b;
+            padding: var(--spacing-20) var(--spacing-6);
+            color: var(--text-secondary);
         }
 
         .empty-state i {
             font-size: 3rem;
-            margin-bottom: 1rem;
+            margin-bottom: var(--spacing-4);
             opacity: 0.5;
         }
 
-        /* Loading */
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 50%;
-            border-top-color: currentColor;
-            animation: spin 1s linear infinite;
+        .empty-state h3 {
+            margin-bottom: var(--spacing-2);
+            color: var(--text-primary);
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
+        /* Responsive pour le dashboard */
         @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .main-container {
-                padding: 1rem;
-            }
-
             .stats-grid {
                 grid-template-columns: 1fr;
             }
@@ -477,51 +294,77 @@
             .message-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.75rem;
+                gap: var(--spacing-3);
             }
 
             .message-meta {
                 text-align: left;
                 flex-direction: row;
                 align-items: center;
-                gap: 0.75rem;
+                gap: var(--spacing-3);
             }
 
-            .filters {
-                padding: 1rem;
+            .message-actions {
+                flex-direction: column;
             }
 
             .filter-btn {
-                font-size: 0.8125rem;
+                font-size: var(--font-size-xs);
             }
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header avec structure identique à index.html -->
     <header class="header">
-        <h1>
-            <i class="fas fa-user-md"></i>
-            Administration - Dr Grégory Cuffel
-        </h1>
-        <div class="user-info">
-            <a href="/admin/patients" class="btn btn-secondary">
-                <i class="fas fa-users"></i>
-                Gestion Patients
-            </a>
-            <button class="btn btn-secondary" id="headerRefreshBtn">
-                <i class="fas fa-sync-alt"></i>
-                Actualiser
-            </button>
-            <button class="btn btn-secondary" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i>
-                Déconnexion
-            </button>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <div>
+                        <h1 id="adminTitle">Administration</h1>
+                        <p id="doctorSpecialty">Tableau de Bord</p>
+                    </div>
+                </div>
+                <nav class="nav">
+                    <a href="/admin/patients" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Patients
+                    </a>
+                    <a href="/admin/schedule" class="nav-link">
+                        <i class="fas fa-clock"></i>
+                        Horaires
+                    </a>
+                    <a href="/admin/emergency" class="nav-link">
+                        <i class="fas fa-phone-alt"></i>
+                        Urgences
+                    </a>
+                    <a href="/admin/chat" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        Chat IA
+                    </a>
+                    <a href="/admin/parameters" class="nav-link">
+                        <i class="fas fa-cogs"></i>
+                        Paramètres
+                    </a>
+                    <button class="btn btn-secondary" id="headerRefreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Actualiser
+                    </button>
+                    <button class="btn btn-danger" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Déconnexion
+                    </button>
+                </nav>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <div class="main-container">
+    <main>
+        <div class="container section">
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -537,7 +380,7 @@
             <div class="stat-card urgent">
                 <div class="stat-header">
                     <div class="stat-title">Non Lus</div>
-                    <div class="stat-icon" style="background: #fef2f2; color: #dc2626;">
+                    <div class="stat-icon" style="background: rgba(255, 59, 48, 0.1); color: var(--accent-color);">
                         <i class="fas fa-envelope-open"></i>
                     </div>
                 </div>
@@ -547,7 +390,7 @@
             <div class="stat-card urgent">
                 <div class="stat-header">
                     <div class="stat-title">Urgents</div>
-                    <div class="stat-icon" style="background: #fef2f2; color: #dc2626;">
+                    <div class="stat-icon" style="background: rgba(255, 59, 48, 0.1); color: var(--accent-color);">
                         <i class="fas fa-exclamation-triangle"></i>
                     </div>
                 </div>
@@ -557,7 +400,7 @@
             <div class="stat-card success">
                 <div class="stat-header">
                     <div class="stat-title">Messages Archivés</div>
-                    <div class="stat-icon" style="background: #ecfdf5; color: #059669;">
+                    <div class="stat-icon" style="background: rgba(52, 199, 89, 0.1); color: var(--secondary-color);">
                         <i class="fas fa-archive"></i>
                     </div>
                 </div>
@@ -706,8 +549,25 @@
         let currentMessageId = null;
         let messageToDelete = null;
 
+        // Chargement des informations du cabinet
+        async function loadCabinetInfo() {
+            try {
+                const response = await fetch('/api/cabinet-info');
+                const data = await response.json();
+                
+                // Mise à jour du titre de la page et du header
+                document.getElementById('pageTitle').textContent = `Administration - ${data.docteur.nom}`;
+                document.getElementById('adminTitle').textContent = `Administration - ${data.docteur.nom}`;
+                document.getElementById('doctorSpecialty').textContent = 'Tableau de Bord';
+                
+            } catch (error) {
+                console.error('Erreur chargement infos cabinet:', error);
+            }
+        }
+
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
+            loadCabinetInfo();
             loadStats();
             loadMessages();
             setupEventListeners();
@@ -907,7 +767,7 @@
                         <div class="message-files" style="margin: 0.75rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 0.25rem;">
                             <strong style="font-size: 0.8125rem; color: #64748b;">Pièces jointes:</strong><br>
                             ${message.fichiers.map(file => `
-                                <a href="/api/admin/files/${file.id}" target="_blank" style="display: inline-block; margin: 0.25rem 0.5rem 0.25rem 0; color: #2563eb; text-decoration: none; font-size: 0.8125rem;">
+                                <a href="/api/admin/files/${file.id}" target="_blank" style="display: inline-block; margin: 0.25rem 0.5rem 0.25rem 0; color: #1e40af; text-decoration: none; font-size: 0.8125rem;">
                                     <i class="fas fa-paperclip"></i> ${escapeHtml(file.nom_original)}
                                 </a>
                             `).join('')}
