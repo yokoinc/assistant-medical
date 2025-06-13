@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Horaires d'Ouverture - Administration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Styles spécifiques page admin planning */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* Import des styles admin communs */
+        @import url('admin-common.css');
+
+        /* Import du header unifié */
+        @import url('admin-header-template.css');
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Schedule Section */
+        .schedule-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1e293b;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        /* Horaires Grid */
+        .horaires-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .horaire-row {
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 0.75rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .horaire-row:hover {
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .horaire-jour {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .jour-icon {
+            width: 2rem;
+            height: 2rem;
+            background: #1e40af;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .horaire-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .horaire-options {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .horaire-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.375rem;
+            transition: background 0.2s;
+        }
+
+        .horaire-checkbox:hover {
+            background: rgba(30, 64, 175, 0.1);
+        }
+
+        .horaire-checkbox input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: #1e40af;
+        }
+
+        .horaire-plages {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .horaire-plage {
+            background: white;
+            padding: 1.25rem;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .horaire-plage-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            margin-bottom: 0.75rem;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .horaire-time {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .horaire-time-input {
+            width: 70px;
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            text-align: center;
+            font-weight: 500;
+            transition: border-color 0.2s;
+        }
+
+        .horaire-time-input:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        }
+
+        .horaire-separator {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        /* Success/Error States */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box i {
+            margin-right: 0.5rem;
+        }
+
+        /* Preview Section */
+        .preview-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .preview-horaires {
+            padding: 1.5rem;
+        }
+
+        .preview-jour {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .preview-jour:last-child {
+            border-bottom: none;
+        }
+
+        .preview-jour-nom {
+            font-weight: 600;
+            color: #1e293b;
+        }
+
+        .preview-horaire {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .preview-ferme {
+            color: #dc2626;
+            font-style: italic;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .horaire-row {
+                padding: 1rem;
+            }
+
+            .horaire-options {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .horaire-time {
+                gap: 0.5rem;
+            }
+
+            .horaire-time-input {
+                width: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div>
+                    <h1>Horaires d'Ouverture</h1>
+                    <p>Configuration du planning</p>
+                </div>
+            </div>
+            <div class="user-nav">
+                <a href="/admin/parameters" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour Paramètres
+                </a>
+                <a href="/admin/dashboard" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Navigation Breadcrumb -->
+        <div class="nav-breadcrumb">
+            <a href="/admin/dashboard">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="/admin/parameters">Paramètres</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Horaires d'Ouverture</span>
+        </div>
+
+        <!-- Alerts -->
+        <div id="successAlert" class="alert success">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage">Horaires sauvegardés avec succès</span>
+        </div>
+
+        <div id="errorAlert" class="alert error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage">Erreur lors de la sauvegarde</span>
+        </div>
+
+        <!-- Schedule Configuration -->
+        <div class="schedule-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-calendar-alt"></i>
+                    Configuration des Horaires
+                </h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" id="saveHorairesBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder
+                    </button>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Instructions :</strong> 
+                    <ul style="margin: 0.5rem 0 0 1.5rem;">
+                        <li>Cochez "Fermé" pour les jours de fermeture</li>
+                        <li>Cochez "Journée continue" pour les horaires sans pause déjeuner</li>
+                        <li>Utilisez le format 24h (ex: 14:30 pour 14h30)</li>
+                    </ul>
+                </div>
+
+                <div class="horaires-grid" id="horairesGrid">
+                    <!-- Horaires will be loaded here -->
+                </div>
+
+                <!-- Preview -->
+                <div class="preview-section" style="margin-top: 2rem;">
+                    <div class="section-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-eye"></i>
+                            Aperçu Public
+                        </h2>
+                    </div>
+                    <div class="section-body">
+                        <p style="color: #64748b; margin-bottom: 1rem; font-size: 0.9rem;">
+                            Voici comment les horaires apparaîtront sur le site public :
+                        </p>
+                        <div class="preview-horaires" id="previewHoraires">
+                            <!-- Preview will be generated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentSettings = {};
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadHoraires();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Boutons principaux
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('saveHorairesBtn').addEventListener('click', saveHoraires);
+        }
+
+        // Chargement des horaires
+        async function loadHoraires() {
+            try {
+                const response = await fetch('/api/admin/cabinet-settings');
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentSettings = data.settings || {};
+                    populateHoraires();
+                } else {
+                    showError('Erreur lors du chargement des horaires');
+                }
+            } catch (error) {
+                console.error('Erreur chargement horaires:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        // Fonction pour convertir l'ancien format des horaires vers le nouveau
+        function convertOldFormat(horaireString) {
+            if (!horaireString || horaireString === 'Fermé') {
+                return {
+                    ferme: true,
+                    journee_continue: false,
+                    matin_debut: { heure: '08', minute: '00' },
+                    matin_fin: { heure: '12', minute: '00' },
+                    aprem_debut: { heure: '14', minute: '00' },
+                    aprem_fin: { heure: '19', minute: '00' }
+                };
+            }
+
+            // Parser "8h00 - 19h00" ou "8h00 - 12h00"
+            const match = horaireString.match(/(\d{1,2})h(\d{2})\s*-\s*(\d{1,2})h(\d{2})/);
+            if (match) {
+                const [, startH, startM, endH, endM] = match;
+                const endHour = parseInt(endH);
+                
+                // Si l'heure de fin est <= 13h, c'est juste le matin
+                if (endHour <= 13) {
+                    return {
+                        ferme: false,
+                        journee_continue: false,
+                        matin_debut: { heure: startH.padStart(2, '0'), minute: startM },
+                        matin_fin: { heure: endH.padStart(2, '0'), minute: endM },
+                        aprem_debut: { heure: '14', minute: '00' },
+                        aprem_fin: { heure: '19', minute: '00' }
+                    };
+                } else {
+                    // Journée continue
+                    return {
+                        ferme: false,
+                        journee_continue: true,
+                        matin_debut: { heure: startH.padStart(2, '0'), minute: startM },
+                        matin_fin: { heure: endH.padStart(2, '0'), minute: endM },
+                        aprem_debut: { heure: '14', minute: '00' },
+                        aprem_fin: { heure: '19', minute: '00' }
+                    };
+                }
+            }
+
+            // Format par défaut
+            return {
+                ferme: false,
+                journee_continue: false,
+                matin_debut: { heure: '08', minute: '00' },
+                matin_fin: { heure: '12', minute: '00' },
+                aprem_debut: { heure: '14', minute: '00' },
+                aprem_fin: { heure: '19', minute: '00' }
+            };
+        }
+
+        function populateHoraires() {
+            let horairesData;
+            try {
+                horairesData = currentSettings.cabinet_horaires ? 
+                    (typeof currentSettings.cabinet_horaires === 'string' ? 
+                        JSON.parse(currentSettings.cabinet_horaires) : 
+                        currentSettings.cabinet_horaires) : 
+                {
+                    "Lundi": "8h00 - 19h00",
+                    "Mardi": "8h00 - 19h00",
+                    "Mercredi": "8h00 - 19h00",
+                    "Jeudi": "8h00 - 19h00",
+                    "Vendredi": "8h00 - 19h00",
+                    "Samedi": "8h00 - 12h00",
+                    "Dimanche": "Fermé"
+                };
+            } catch (error) {
+                console.error('Erreur parsing horaires:', error);
+                horairesData = {
+                    "Lundi": "8h00 - 19h00",
+                    "Mardi": "8h00 - 19h00",
+                    "Mercredi": "8h00 - 19h00",
+                    "Jeudi": "8h00 - 19h00",
+                    "Vendredi": "8h00 - 19h00",
+                    "Samedi": "8h00 - 12h00",
+                    "Dimanche": "Fermé"
+                };
+            }
+
+            const horairesGrid = document.getElementById('horairesGrid');
+            horairesGrid.innerHTML = '';
+
+            const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            const joursIcons = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
+            
+            jours.forEach((jour, index) => {
+                // Vérifier si c'est déjà le nouveau format ou l'ancien
+                let horaireJour;
+                const dataJour = horairesData[jour];
+                
+                if (typeof dataJour === 'object' && dataJour.hasOwnProperty('ferme')) {
+                    // Nouveau format déjà en place
+                    horaireJour = dataJour;
+                } else {
+                    // Ancien format à convertir
+                    horaireJour = convertOldFormat(dataJour || 'Fermé');
+                }
+                
+                const row = document.createElement('div');
+                row.className = 'horaire-row';
+                row.innerHTML = `
+                    <div class="horaire-jour">
+                        ${jour}
+                    </div>
+                    <div class="horaire-controls">
+                        <div class="horaire-options">
+                            <label class="horaire-checkbox">
+                                <input type="checkbox" class="horaire-ferme" data-jour="${jour}" ${horaireJour.ferme ? 'checked' : ''}>
+                                <span><i class="fas fa-times-circle"></i> Fermé</span>
+                            </label>
+                            <label class="horaire-checkbox">
+                                <input type="checkbox" class="horaire-continue" data-jour="${jour}" ${horaireJour.journee_continue ? 'checked' : ''}>
+                                <span><i class="fas fa-clock"></i> Journée continue</span>
+                            </label>
+                        </div>
+                        <div class="horaire-plages" style="${horaireJour.ferme ? 'display: none;' : ''}">
+                            <div class="horaire-plage">
+                                <div class="horaire-plage-title">
+                                    <i class="fas fa-sun"></i>
+                                    Matin
+                                </div>
+                                <div class="horaire-time">
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="debut-heure" 
+                                           value="${horaireJour.matin_debut.heure}" min="0" max="23" placeholder="08">
+                                    <span>h</span>
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="debut-minute" 
+                                           value="${horaireJour.matin_debut.minute}" min="0" max="59" placeholder="00">
+                                    <span class="horaire-separator">→</span>
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="fin-heure" 
+                                           value="${horaireJour.matin_fin.heure}" min="0" max="23" placeholder="12">
+                                    <span>h</span>
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="fin-minute" 
+                                           value="${horaireJour.matin_fin.minute}" min="0" max="59" placeholder="00">
+                                </div>
+                            </div>
+                            <div class="horaire-plage" style="${horaireJour.journee_continue ? 'display: none;' : ''}">
+                                <div class="horaire-plage-title">
+                                    <i class="fas fa-moon"></i>
+                                    Après-midi
+                                </div>
+                                <div class="horaire-time">
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="debut-heure" 
+                                           value="${horaireJour.aprem_debut.heure}" min="0" max="23" placeholder="14">
+                                    <span>h</span>
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="debut-minute" 
+                                           value="${horaireJour.aprem_debut.minute}" min="0" max="59" placeholder="00">
+                                    <span class="horaire-separator">→</span>
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="fin-heure" 
+                                           value="${horaireJour.aprem_fin.heure}" min="0" max="23" placeholder="19">
+                                    <span>h</span>
+                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="fin-minute" 
+                                           value="${horaireJour.aprem_fin.minute}" min="0" max="59" placeholder="00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                horairesGrid.appendChild(row);
+                
+                // Event listeners pour les checkboxes
+                const fermeCheckbox = row.querySelector('.horaire-ferme');
+                const continueCheckbox = row.querySelector('.horaire-continue');
+                const plagesDiv = row.querySelector('.horaire-plages');
+                const apremDiv = row.querySelector('.horaire-plage:last-child');
+                
+                fermeCheckbox.addEventListener('change', function() {
+                    plagesDiv.style.display = this.checked ? 'none' : 'block';
+                    updatePreview();
+                });
+                
+                continueCheckbox.addEventListener('change', function() {
+                    apremDiv.style.display = this.checked ? 'none' : 'block';
+                    updatePreview();
+                });
+
+                // Event listeners pour les inputs
+                row.querySelectorAll('.horaire-time-input').forEach(input => {
+                    input.addEventListener('input', updatePreview);
+                });
+            });
+
+            updatePreview();
+        }
+
+        // Mise à jour de l'aperçu
+        function updatePreview() {
+            const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            const previewContainer = document.getElementById('previewHoraires');
+            
+            let previewHTML = '';
+            
+            jours.forEach(jour => {
+                const fermeCheckbox = document.querySelector(`.horaire-ferme[data-jour="${jour}"]`);
+                const continueCheckbox = document.querySelector(`.horaire-continue[data-jour="${jour}"]`);
+                
+                let horaireText = '';
+                
+                if (fermeCheckbox && fermeCheckbox.checked) {
+                    horaireText = '<span class="preview-ferme">Fermé</span>';
+                } else {
+                    const matinDebutHeure = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="debut-heure"]`)?.value || '08';
+                    const matinDebutMinute = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="debut-minute"]`)?.value || '00';
+                    const matinFinHeure = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="fin-heure"]`)?.value || '12';
+                    const matinFinMinute = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="fin-minute"]`)?.value || '00';
+                    
+                    if (continueCheckbox && continueCheckbox.checked) {
+                        horaireText = `${matinDebutHeure}h${matinDebutMinute} - ${matinFinHeure}h${matinFinMinute}`;
+                    } else {
+                        const apremDebutHeure = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="debut-heure"]`)?.value || '14';
+                        const apremDebutMinute = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="debut-minute"]`)?.value || '00';
+                        const apremFinHeure = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="fin-heure"]`)?.value || '19';
+                        const apremFinMinute = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="fin-minute"]`)?.value || '00';
+                        
+                        horaireText = `${matinDebutHeure}h${matinDebutMinute} - ${matinFinHeure}h${matinFinMinute} / ${apremDebutHeure}h${apremDebutMinute} - ${apremFinHeure}h${apremFinMinute}`;
+                    }
+                }
+                
+                previewHTML += `
+                    <div class="preview-jour">
+                        <div class="preview-jour-nom">${jour}</div>
+                        <div class="preview-horaire">${horaireText}</div>
+                    </div>
+                `;
+            });
+            
+            previewContainer.innerHTML = previewHTML;
+        }
+
+        // Sauvegarde des horaires
+        async function saveHoraires() {
+            const horaires = {};
+            const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+            
+            jours.forEach(jour => {
+                const fermeCheckbox = document.querySelector(`.horaire-ferme[data-jour="${jour}"]`);
+                const continueCheckbox = document.querySelector(`.horaire-continue[data-jour="${jour}"]`);
+                
+                const matinDebutHeure = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="debut-heure"]`);
+                const matinDebutMinute = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="debut-minute"]`);
+                const matinFinHeure = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="fin-heure"]`);
+                const matinFinMinute = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="fin-minute"]`);
+                
+                const apremDebutHeure = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="debut-heure"]`);
+                const apremDebutMinute = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="debut-minute"]`);
+                const apremFinHeure = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="fin-heure"]`);
+                const apremFinMinute = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="fin-minute"]`);
+                
+                horaires[jour] = {
+                    ferme: fermeCheckbox.checked,
+                    journee_continue: continueCheckbox.checked,
+                    matin_debut: {
+                        heure: (matinDebutHeure.value || '08').padStart(2, '0'),
+                        minute: (matinDebutMinute.value || '00').padStart(2, '0')
+                    },
+                    matin_fin: {
+                        heure: (matinFinHeure.value || '12').padStart(2, '0'),
+                        minute: (matinFinMinute.value || '00').padStart(2, '0')
+                    },
+                    aprem_debut: {
+                        heure: (apremDebutHeure.value || '14').padStart(2, '0'),
+                        minute: (apremDebutMinute.value || '00').padStart(2, '0')
+                    },
+                    aprem_fin: {
+                        heure: (apremFinHeure.value || '19').padStart(2, '0'),
+                        minute: (apremFinMinute.value || '00').padStart(2, '0')
+                    }
+                };
+            });
+
+            const settings = {
+                cabinet_horaires: JSON.stringify(horaires)
+            };
+
+            await saveSettings(settings);
+        }
+
+        // Fonction de sauvegarde
+        async function saveSettings(settings) {
+            try {
+                const response = await fetch('/api/admin/cabinet-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ settings })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showSuccess('Horaires sauvegardés avec succès');
+                    loadHoraires(); // Recharger pour synchroniser
+                } else {
+                    showError(result.error || 'Erreur lors de la sauvegarde');
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        // Utilitaires
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successAlert').classList.add('active');
+            document.getElementById('errorAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('successAlert').classList.remove('active');
+            }, 5000);
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').classList.add('active');
+            document.getElementById('successAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('errorAlert').classList.remove('active');
+            }, 5000);
+        }
+
+        // Déconnexion
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                try {
+                    const response = await fetch('/api/admin/logout', {
+                        method: 'POST'
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        window.location.href = result.redirect || '/admin';
+                    } else {
+                        alert('Erreur lors de la déconnexion');
+                    }
+                } catch (error) {
+                    console.error('Erreur déconnexion:', error);
+                    window.location.href = '/admin';
+                }
+            }
+        }
+    </script>
+</body>
+</html>

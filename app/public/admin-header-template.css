@@ -1,0 +1,108 @@
+/* ===== HEADER UNIFIÉ ADMIN - Style espace-patient ===== */
+.header {
+    background: var(--bg-blur);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    transition: var(--transition);
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-4) var(--spacing-6);
+    min-height: 64px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--font-size-lg);
+}
+
+.logo h1 {
+    font-size: var(--font-size-lg);
+    margin: 0;
+    margin-bottom: 2px;
+}
+
+.logo p {
+    font-size: var(--font-size-sm);
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.user-nav, .nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.nav-link {
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--border-radius-sm);
+    transition: var(--transition);
+    text-decoration: none;
+    font-size: var(--font-size-sm);
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+    background: rgba(0, 122, 255, 0.1);
+}
+
+/* Boutons header avec style unifié */
+.header .btn {
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    border-radius: var(--border-radius-sm);
+    box-shadow: none !important;
+}
+
+.header .btn:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Responsive header */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        gap: var(--spacing-4);
+        text-align: center;
+        padding: var(--spacing-4);
+    }
+    
+    .nav, .user-nav {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+}

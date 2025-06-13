@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Numéros d'Urgence - Administration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Styles spécifiques page admin urgences */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* Import des styles admin communs */
+        @import url('admin-common.css');
+
+        /* Import du header unifié */
+        @import url('admin-header-template.css');
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Emergency Section */
+        .emergency-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1e293b;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        /* Urgences Section */
+        .urgence-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            cursor: move;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .urgence-item:hover {
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .urgence-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+            z-index: 1000;
+        }
+
+        .urgence-item.drag-over {
+            border-color: #1e40af;
+            background: #dbeafe;
+        }
+
+        .drag-handle {
+            color: #64748b;
+            font-size: 1.2rem;
+            margin-right: 0.5rem;
+            cursor: grab;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .urgence-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr 100px;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .urgence-actions {
+            display: flex;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            min-width: auto;
+            min-height: auto;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 0.75rem;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .modal-close:hover {
+            background: #f1f5f9;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+        }
+
+        /* Success/Error States */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+            color: #64748b;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .urgence-content {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-phone-alt"></i>
+                </div>
+                <div>
+                    <h1>Numéros d'Urgence</h1>
+                    <p>Contacts d'urgence</p>
+                </div>
+            </div>
+            <div class="user-nav">
+                <a href="/admin/parameters" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour Paramètres
+                </a>
+                <a href="/admin/dashboard" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Navigation Breadcrumb -->
+        <div class="nav-breadcrumb">
+            <a href="/admin/dashboard">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="/admin/parameters">Paramètres</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Numéros d'Urgence</span>
+        </div>
+
+        <!-- Alerts -->
+        <div id="successAlert" class="alert success">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage">Opération réussie</span>
+        </div>
+
+        <div id="errorAlert" class="alert error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage">Une erreur est survenue</span>
+        </div>
+
+        <!-- Emergency Numbers Section -->
+        <div class="emergency-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-phone-alt"></i>
+                    Gestion des Numéros d'Urgence
+                </h2>
+                <div class="section-actions">
+                    <button class="btn btn-primary" onclick="openUrgenceModal()">
+                        <i class="fas fa-plus"></i>
+                        Ajouter un numéro
+                    </button>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="alert" style="background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; display: block; margin-bottom: 1.5rem;">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Information :</strong> Vous pouvez réorganiser l'ordre des numéros en glissant-déposant les éléments. L'ordre sera automatiquement sauvegardé.
+                </div>
+                
+                <div id="urgencesList">
+                    <!-- Urgences will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Urgence -->
+    <div class="modal" id="urgenceModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="urgenceModalTitle">Ajouter un numéro d'urgence</h3>
+                <button class="modal-close" id="urgenceModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <form id="urgenceForm">
+                    <input type="hidden" id="urgenceId">
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="urgenceType">Type</label>
+                        <select id="urgenceType" class="form-select" required>
+                            <option value="urgence">Urgence</option>
+                            <option value="garde">Garde</option>
+                            <option value="pharmacie">Pharmacie</option>
+                            <option value="autre">Autre</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="urgenceNom">Nom</label>
+                        <input type="text" id="urgenceNom" class="form-input" required maxlength="255" placeholder="Ex: SAMU, SOS Médecins...">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="urgenceTelephone">Téléphone</label>
+                        <input type="tel" id="urgenceTelephone" class="form-input" maxlength="20" placeholder="Ex: 15, +33 2 35 46 12 34">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="urgenceAdresse">Adresse</label>
+                        <textarea id="urgenceAdresse" class="form-textarea" placeholder="Adresse complète (optionnel)"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="urgenceHoraires">Horaires</label>
+                        <input type="text" id="urgenceHoraires" class="form-input" placeholder="Ex: 24h/24, Week-end et jours fériés">
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="urgenceCancelBtn">
+                    Annuler
+                </button>
+                <button class="btn btn-primary" id="urgenceSaveBtn">
+                    <i class="fas fa-save"></i>
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUrgences = [];
+        let editingUrgenceId = null;
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUrgences();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Boutons principaux
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Modal urgence
+            document.getElementById('urgenceModalClose').addEventListener('click', closeUrgenceModal);
+            document.getElementById('urgenceCancelBtn').addEventListener('click', closeUrgenceModal);
+            document.getElementById('urgenceSaveBtn').addEventListener('click', saveUrgence);
+            
+            // Formatage automatique du téléphone
+            document.getElementById('urgenceTelephone').addEventListener('input', formatTelephone);
+            
+            // Fermer modal en cliquant à l'extérieur
+            document.getElementById('urgenceModal').addEventListener('click', function(e) {
+                if (e.target.id === 'urgenceModal') closeUrgenceModal();
+            });
+        }
+
+        // Fonction de formatage du téléphone
+        function formatTelephone(e) {
+            let value = e.target.value.replace(/\D/g, ''); // Supprimer tout sauf les chiffres
+            
+            // Si c'est un numéro court (15, 18, 17, 112)
+            if (value.length <= 3) {
+                e.target.value = value;
+                return;
+            }
+            
+            // Si on commence par 33, on garde, sinon on force +33
+            if (value.startsWith('33')) {
+                value = value.substring(2); // Retirer le 33 initial
+            } else if (value.startsWith('0')) {
+                value = value.substring(1); // Retirer le 0 initial français
+            }
+            
+            // Limiter à 9 chiffres après +33
+            value = value.substring(0, 9);
+            
+            // Formatter avec espaces
+            let formatted = '+33';
+            if (value.length > 0) {
+                formatted += ' ' + value.charAt(0);
+                if (value.length > 1) {
+                    formatted += ' ' + value.substring(1, 3);
+                    if (value.length > 3) {
+                        formatted += ' ' + value.substring(3, 5);
+                        if (value.length > 5) {
+                            formatted += ' ' + value.substring(5, 7);
+                            if (value.length > 7) {
+                                formatted += ' ' + value.substring(7, 9);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            e.target.value = formatted;
+        }
+
+        // Gestion des urgences
+        async function loadUrgences() {
+            try {
+                const response = await fetch('/api/urgences');
+                const urgences = await response.json();
+
+                if (response.ok) {
+                    currentUrgences = urgences;
+                    displayUrgences(urgences);
+                }
+            } catch (error) {
+                console.error('Erreur chargement urgences:', error);
+            }
+        }
+
+        function displayUrgences(urgences) {
+            console.log('displayUrgences called with:', urgences);
+            const container = document.getElementById('urgencesList');
+            
+            if (urgences.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-phone-alt"></i>
+                        <h3>Aucun numéro d'urgence configuré</h3>
+                        <p>Cliquez sur "Ajouter un numéro" pour commencer</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = urgences.map(urgence => `
+                <div class="urgence-item" draggable="true" data-urgence-id="${urgence.id}" data-ordre="${urgence.ordre || 0}">
+                    <div class="drag-handle">
+                        <i class="fas fa-grip-vertical"></i>
+                    </div>
+                    <div class="urgence-content">
+                        <div>
+                            <strong>${escapeHtml(urgence.nom)}</strong>
+                            <br>
+                            <small style="color: #64748b;">Type: ${urgence.type}</small>
+                        </div>
+                        <div>
+                            <strong>${escapeHtml(urgence.telephone || '')}</strong>
+                            <br>
+                            <small style="color: #64748b;">${escapeHtml(urgence.horaires || '')}</small>
+                        </div>
+                        <div>
+                            <span class="status-badge ${urgence.actif ? 'status-active' : 'status-inactive'}">
+                                ${urgence.actif ? 'Actif' : 'Inactif'}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="urgence-actions">
+                        <button class="btn btn-secondary btn-sm" onclick="editUrgence(${urgence.id})" title="Modifier" style="background: #059669; color: white;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteUrgence(${urgence.id})" title="Supprimer">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            // Ajouter les event listeners pour le drag & drop
+            setupDragAndDrop();
+        }
+
+        // Configuration du drag & drop pour les urgences
+        function setupDragAndDrop() {
+            const urgenceItems = document.querySelectorAll('.urgence-item');
+            let draggedElement = null;
+
+            urgenceItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    draggedElement = this;
+                    this.classList.add('dragging');
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/html', this.outerHTML);
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    this.classList.remove('dragging');
+                    document.querySelectorAll('.urgence-item').forEach(el => {
+                        el.classList.remove('drag-over');
+                    });
+                });
+
+                item.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    e.dataTransfer.dropEffect = 'move';
+                    
+                    if (this !== draggedElement) {
+                        this.classList.add('drag-over');
+                    }
+                });
+
+                item.addEventListener('dragleave', function(e) {
+                    this.classList.remove('drag-over');
+                });
+
+                item.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    if (this !== draggedElement) {
+                        const container = document.getElementById('urgencesList');
+                        const allItems = Array.from(container.querySelectorAll('.urgence-item'));
+                        const draggedIndex = allItems.indexOf(draggedElement);
+                        const targetIndex = allItems.indexOf(this);
+                        
+                        if (draggedIndex < targetIndex) {
+                            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                        } else {
+                            this.parentNode.insertBefore(draggedElement, this);
+                        }
+                        
+                        // Sauvegarder le nouvel ordre
+                        saveUrgencesOrder();
+                    }
+                });
+            });
+        }
+
+        // Sauvegarder l'ordre des urgences
+        async function saveUrgencesOrder() {
+            try {
+                const container = document.getElementById('urgencesList');
+                const items = Array.from(container.querySelectorAll('.urgence-item'));
+                
+                const newOrder = items.map((item, index) => ({
+                    id: parseInt(item.dataset.urgenceId),
+                    ordre: index + 1
+                }));
+
+                console.log('Saving new order:', newOrder);
+
+                const response = await fetch('/api/admin/urgences/order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ urgences: newOrder })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    console.log('Order saved successfully');
+                    showSuccess('Ordre mis à jour avec succès');
+                } else {
+                    console.error('Error saving order:', result.error);
+                    loadUrgences();
+                }
+            } catch (error) {
+                console.error('Error saving urgences order:', error);
+                loadUrgences();
+            }
+        }
+
+        function openUrgenceModal(urgence = null) {
+            editingUrgenceId = urgence ? urgence.id : null;
+            
+            document.getElementById('urgenceModalTitle').textContent = 
+                urgence ? 'Modifier le numéro d\'urgence' : 'Ajouter un numéro d\'urgence';
+            
+            if (urgence) {
+                document.getElementById('urgenceId').value = urgence.id;
+                document.getElementById('urgenceType').value = urgence.type;
+                document.getElementById('urgenceNom').value = urgence.nom;
+                document.getElementById('urgenceTelephone').value = urgence.telephone || '';
+                document.getElementById('urgenceAdresse').value = urgence.adresse || '';
+                document.getElementById('urgenceHoraires').value = urgence.horaires || '';
+            } else {
+                document.getElementById('urgenceForm').reset();
+                document.getElementById('urgenceId').value = '';
+            }
+            
+            document.getElementById('urgenceModal').classList.add('active');
+        }
+
+        function closeUrgenceModal() {
+            document.getElementById('urgenceModal').classList.remove('active');
+            editingUrgenceId = null;
+        }
+
+        function editUrgence(urgenceId) {
+            const urgence = currentUrgences.find(u => u.id === urgenceId);
+            if (urgence) {
+                openUrgenceModal(urgence);
+            }
+        }
+
+        async function saveUrgence() {
+            try {
+                const formData = {
+                    type: document.getElementById('urgenceType').value,
+                    nom: document.getElementById('urgenceNom').value,
+                    telephone: document.getElementById('urgenceTelephone').value,
+                    adresse: document.getElementById('urgenceAdresse').value,
+                    horaires: document.getElementById('urgenceHoraires').value,
+                    actif: true
+                };
+
+                if (!formData.nom) {
+                    showError('Le nom est obligatoire');
+                    return;
+                }
+
+                const url = editingUrgenceId ? 
+                    `/api/admin/urgences/${editingUrgenceId}` : 
+                    '/api/admin/urgences';
+                const method = editingUrgenceId ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    closeUrgenceModal();
+                    showSuccess(result.message || 'Numéro d\'urgence sauvegardé');
+                    loadUrgences();
+                } else {
+                    showError(result.error || 'Erreur lors de la sauvegarde');
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde urgence:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        async function deleteUrgence(urgenceId) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer ce numéro d\'urgence ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/urgences/${urgenceId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showSuccess('Numéro d\'urgence supprimé');
+                    loadUrgences();
+                } else {
+                    showError(result.error || 'Erreur lors de la suppression');
+                }
+            } catch (error) {
+                console.error('Erreur suppression urgence:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        // Utilitaires
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successAlert').classList.add('active');
+            document.getElementById('errorAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('successAlert').classList.remove('active');
+            }, 5000);
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').classList.add('active');
+            document.getElementById('successAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('errorAlert').classList.remove('active');
+            }, 5000);
+        }
+
+        // Déconnexion
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                try {
+                    const response = await fetch('/api/admin/logout', {
+                        method: 'POST'
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        window.location.href = result.redirect || '/admin';
+                    } else {
+                        alert('Erreur lors de la déconnexion');
+                    }
+                } catch (error) {
+                    console.error('Erreur déconnexion:', error);
+                    window.location.href = '/admin';
+                }
+            }
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeUrgenceModal();
+            }
+        });
+    </script>
+</body>
+</html>

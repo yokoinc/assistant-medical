@@ -3,15 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestion Patients - Dr Grégory Cuffel</title>
+    <title id="pageTitle">Gestion Patients - Cabinet Médical</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Styles spécifiques page admin patients */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f8fafc;
@@ -19,73 +15,15 @@
             line-height: 1.6;
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            color: white;
-            padding: 1rem 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        /* Import des styles admin communs */
+        @import url('admin-common.css');
 
-        .header h1 {
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .btn-primary {
-            background: #059669;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-
-        .btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
+        /* Import du header unifié */
+        @import url('admin-header-template.css');
 
         /* Main Layout */
         .main-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 2rem;
         }
@@ -103,12 +41,49 @@
         }
 
         .nav-breadcrumb a {
-            color: #2563eb;
+            color: #1e40af;
             text-decoration: none;
         }
 
         .nav-breadcrumb a:hover {
             text-decoration: underline;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e40af;
+            text-align: center;
+        }
+
+        .stat-card.success {
+            border-left-color: #059669;
+        }
+
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
         }
 
         /* Patients Section */
@@ -141,21 +116,26 @@
             display: flex;
             gap: 0.75rem;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         /* Search and Filters */
         .filters {
             padding: 1rem 1.5rem;
             border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+
+        .filters-row {
             display: flex;
             gap: 1rem;
-            flex-wrap: wrap;
             align-items: center;
+            flex-wrap: wrap;
         }
 
         .search-box {
             flex: 1;
-            min-width: 200px;
+            min-width: 250px;
             position: relative;
         }
 
@@ -165,6 +145,13 @@
             border: 1px solid #d1d5db;
             border-radius: 0.5rem;
             font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
         .search-box i {
@@ -175,32 +162,76 @@
             color: #64748b;
         }
 
-        /* Table */
-        .table-container {
-            overflow-x: auto;
+        .filter-select {
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            background: white;
+            min-width: 150px;
         }
 
-        .patients-table {
-            width: 100%;
-            border-collapse: collapse;
+        /* Patients Grid */
+        .patients-container {
+            padding: 1.5rem;
         }
 
-        .patients-table th,
-        .patients-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
+        .patients-grid {
+            display: grid;
+            gap: 1rem;
         }
 
-        .patients-table th {
+        .patient-card {
             background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .patient-card:hover {
+            background: #f1f5f9;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+
+        .patient-card.selected {
+            border-color: #1e40af;
+            background: #dbeafe;
+        }
+
+        .patient-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-size: 1.1rem;
             font-weight: 600;
-            font-size: 0.875rem;
-            color: #374151;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
         }
 
-        .patients-table tbody tr:hover {
-            background: #f8fafc;
+        .patient-details {
+            color: #64748b;
+            font-size: 0.875rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .patient-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
         }
 
         .status-badge {
@@ -220,10 +251,62 @@
             color: #dc2626;
         }
 
-        .checkbox {
+        .patient-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+            min-width: auto;
+            min-height: auto;
+        }
+
+        /* Checkbox */
+        .patient-checkbox {
+            position: relative;
+        }
+
+        .patient-checkbox input[type="checkbox"] {
             width: 1.25rem;
             height: 1.25rem;
             cursor: pointer;
+            accent-color: #1e40af;
+        }
+
+        /* Selection Panel */
+        .selection-panel {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid #e2e8f0;
+            display: none;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1000;
+        }
+
+        .selection-panel.active {
+            display: flex;
+        }
+
+        .selection-info {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .selection-actions {
+            display: flex;
+            gap: 0.5rem;
         }
 
         /* Modal */
@@ -288,12 +371,15 @@
             flex: 1;
         }
 
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
         }
 
+        /* Form Elements */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -315,53 +401,32 @@
 
         .form-input:focus, .form-select:focus {
             outline: none;
-            border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
         }
 
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
+        /* Success/Error States */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
         }
 
-        /* Pagination */
-        .pagination {
-            padding: 1.5rem;
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            border-top: 1px solid #e2e8f0;
+        .alert.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
         }
 
-        .pagination-info {
-            color: #64748b;
-            font-size: 0.875rem;
+        .alert.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
         }
 
-        .pagination-controls {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .pagination-btn {
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            background: white;
-            border-radius: 0.25rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-        }
-
-        .pagination-btn:hover:not(:disabled) {
-            background: #f8fafc;
-        }
-
-        .pagination-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .alert.active {
+            display: block;
         }
 
         /* Empty State */
@@ -377,25 +442,43 @@
             opacity: 0.5;
         }
 
-        /* Loading */
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 50%;
-            border-top-color: currentColor;
-            animation: spin 1s linear infinite;
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+            padding: 1rem;
         }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        .pagination button {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: #f8fafc;
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination .page-active {
+            background: #1e40af;
+            color: white;
+            border-color: #1e40af;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .header {
-                padding: 1rem;
                 flex-direction: column;
                 gap: 1rem;
                 text-align: center;
@@ -410,14 +493,28 @@
                 align-items: stretch;
             }
 
-            .filters {
+            .filters-row {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .pagination {
+            .search-box {
+                min-width: auto;
+            }
+
+            .patient-header {
                 flex-direction: column;
-                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .patient-actions {
+                justify-content: flex-start;
+            }
+
+            .selection-panel {
+                left: 1rem;
+                right: 1rem;
+                transform: none;
             }
         }
     </style>
@@ -425,19 +522,26 @@
 <body>
     <!-- Header -->
     <header class="header">
-        <h1>
-            <i class="fas fa-users"></i>
-            Gestion des Patients - Dr Grégory Cuffel
-        </h1>
-        <div class="user-info">
-            <a href="/admin/dashboard" class="btn btn-secondary">
-                <i class="fas fa-arrow-left"></i>
-                Retour
-            </a>
-            <button class="btn btn-secondary" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i>
-                Déconnexion
-            </button>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div>
+                    <h1 id="pageTitle">Gestion des Patients</h1>
+                    <p>Base de données patients</p>
+                </div>
+            </div>
+            <div class="user-nav">
+                <a href="/admin/dashboard" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour Dashboard
+                </a>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </div>
         </div>
     </header>
 
@@ -453,87 +557,113 @@
             <span>Gestion des Patients</span>
         </div>
 
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalPatients">--</div>
+                <div class="stat-label">Total Patients</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-value" id="activePatients">--</div>
+                <div class="stat-label">Patients Actifs</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-value" id="inactivePatients">--</div>
+                <div class="stat-label">Patients Inactifs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="newThisMonth">--</div>
+                <div class="stat-label">Nouveaux ce mois</div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div id="successAlert" class="alert success">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage">Opération réussie</span>
+        </div>
+
+        <div id="errorAlert" class="alert error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage">Une erreur est survenue</span>
+        </div>
+
         <!-- Patients Section -->
         <div class="patients-section">
             <div class="section-header">
                 <h2 class="section-title">
-                    <i class="fas fa-users"></i>
+                    <i class="fas fa-list"></i>
                     Liste des Patients
-                    <span id="totalCount" class="status-badge status-active">0</span>
                 </h2>
                 <div class="section-actions">
-                    <button class="btn btn-danger" id="deleteSelectedBtn" disabled>
-                        <i class="fas fa-trash"></i>
-                        Supprimer sélection
-                    </button>
-                    <button class="btn btn-primary" id="addPatientBtn">
-                        <i class="fas fa-plus"></i>
-                        Nouveau Patient
-                    </button>
                     <button class="btn btn-secondary" id="refreshBtn">
                         <i class="fas fa-sync-alt"></i>
                         Actualiser
+                    </button>
+                    <button class="btn btn-primary" id="addPatientBtn">
+                        <i class="fas fa-plus"></i>
+                        Ajouter un patient
                     </button>
                 </div>
             </div>
 
             <!-- Filters -->
             <div class="filters">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Rechercher par nom, prénom, téléphone ou email...">
-                    <i class="fas fa-search"></i>
+                <div class="filters-row">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Rechercher par nom, prénom, téléphone ou email...">
+                    </div>
+                    <select id="statusFilter" class="filter-select">
+                        <option value="all">Tous les statuts</option>
+                        <option value="active">Actifs seulement</option>
+                        <option value="inactive">Inactifs seulement</option>
+                    </select>
+                    <select id="sortFilter" class="filter-select">
+                        <option value="name">Trier par nom</option>
+                        <option value="created">Plus récents</option>
+                        <option value="age">Par âge</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Table -->
-            <div class="table-container">
-                <table class="patients-table">
-                    <thead>
-                        <tr>
-                            <th>
-                                <input type="checkbox" id="selectAllCheckbox" class="checkbox">
-                            </th>
-                            <th>Nom</th>
-                            <th>Prénom</th>
-                            <th>Date de Naissance</th>
-                            <th>Téléphone</th>
-                            <th>Email</th>
-                            <th>Statut</th>
-                            <th>Ajouté le</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="patientsTableBody">
-                        <!-- Patients will be loaded here -->
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Pagination -->
-            <div class="pagination">
-                <div class="pagination-info" id="paginationInfo">
-                    Chargement...
+            <!-- Patients Container -->
+            <div class="patients-container">
+                <div id="patientsGrid" class="patients-grid">
+                    <!-- Patients will be loaded here -->
                 </div>
-                <div class="pagination-controls">
-                    <button class="pagination-btn" id="prevBtn" disabled>
-                        <i class="fas fa-chevron-left"></i>
-                        Précédent
-                    </button>
-                    <button class="pagination-btn" id="nextBtn" disabled>
-                        Suivant
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
+
+                <!-- Pagination -->
+                <div class="pagination" id="pagination" style="display: none;">
+                    <!-- Pagination buttons will be generated here -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Patient Modal -->
+    <!-- Selection Panel (appears when patients are selected) -->
+    <div class="selection-panel" id="selectionPanel">
+        <div class="selection-info">
+            <span id="selectedCount">0</span> patient(s) sélectionné(s)
+        </div>
+        <div class="selection-actions">
+            <button class="btn btn-secondary btn-sm" id="deselectAllBtn">
+                <i class="fas fa-times"></i>
+                Désélectionner tout
+            </button>
+            <button class="btn btn-danger btn-sm" id="deleteSelectedBtn">
+                <i class="fas fa-trash"></i>
+                Supprimer sélection
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal Patient -->
     <div class="modal" id="patientModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title" id="modalTitle">Nouveau Patient</h3>
-                <button class="modal-close" id="modalClose">
+                <h3 class="modal-title" id="patientModalTitle">Ajouter un patient</h3>
+                <button class="modal-close" id="patientModalClose">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -542,38 +672,38 @@
                 <form id="patientForm">
                     <input type="hidden" id="patientId">
                     
-                    <div class="form-grid">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-group">
-                            <label class="form-label" for="nom">Nom *</label>
-                            <input type="text" id="nom" class="form-input" required maxlength="100">
+                            <label class="form-label" for="patientNom">Nom *</label>
+                            <input type="text" id="patientNom" class="form-input" required maxlength="100" placeholder="MARTIN">
                         </div>
-                        
+
                         <div class="form-group">
-                            <label class="form-label" for="prenom">Prénom *</label>
-                            <input type="text" id="prenom" class="form-input" required maxlength="100">
+                            <label class="form-label" for="patientPrenom">Prénom *</label>
+                            <input type="text" id="patientPrenom" class="form-input" required maxlength="100" placeholder="Sophie">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="date_naissance">Date de Naissance *</label>
-                        <input type="date" id="date_naissance" class="form-input" required>
+                        <label class="form-label" for="patientDateNaissance">Date de naissance *</label>
+                        <input type="date" id="patientDateNaissance" class="form-input" required>
                     </div>
 
-                    <div class="form-grid">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-group">
-                            <label class="form-label" for="telephone">Téléphone</label>
-                            <input type="tel" id="telephone" class="form-input" maxlength="20">
+                            <label class="form-label" for="patientTelephone">Téléphone</label>
+                            <input type="tel" id="patientTelephone" class="form-input" maxlength="20" placeholder="+33 6 12 34 56 78">
                         </div>
-                        
+
                         <div class="form-group">
-                            <label class="form-label" for="email">Email</label>
-                            <input type="email" id="email" class="form-input">
+                            <label class="form-label" for="patientEmail">Email</label>
+                            <input type="email" id="patientEmail" class="form-input" maxlength="255" placeholder="sophie.martin@email.com">
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label class="form-label" for="actif">Statut</label>
-                        <select id="actif" class="form-select">
+                        <label class="form-label" for="patientActif">Statut</label>
+                        <select id="patientActif" class="form-select">
                             <option value="true">Actif</option>
                             <option value="false">Inactif</option>
                         </select>
@@ -582,75 +712,12 @@
             </div>
 
             <div class="modal-footer">
-                <button class="btn btn-secondary" id="cancelBtn">
+                <button class="btn btn-secondary" id="patientCancelBtn">
                     Annuler
                 </button>
-                <button class="btn btn-primary" id="saveBtn">
+                <button class="btn btn-primary" id="patientSaveBtn">
                     <i class="fas fa-save"></i>
                     Enregistrer
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Success Modal -->
-    <div class="modal" id="successModal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header" style="border-bottom: 1px solid #dcfce7; background: #f0fdf4;">
-                <h3 class="modal-title" style="color: #059669; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-check-circle"></i>
-                    <span id="successTitle">Succès</span>
-                </h3>
-                <button class="modal-close" id="successModalClose">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
-                <p id="successMessage" style="color: #374151; font-size: 1rem;">
-                    Opération réussie
-                </p>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="successOk">
-                    <i class="fas fa-check"></i>
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <div class="modal" id="confirmModal">
-        <div class="modal-content" style="max-width: 400px;">
-            <div class="modal-header" style="border-bottom: 1px solid #fee2e2; background: #fef2f2;">
-                <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Confirmer la suppression
-                </h3>
-                <button class="modal-close" id="confirmModalClose">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
-                <p id="confirmMessage" style="margin-bottom: 1.5rem; color: #374151; font-size: 1rem;">
-                    Êtes-vous sûr de vouloir supprimer ces patients ?
-                </p>
-                <p style="color: #6b7280; font-size: 0.875rem;">
-                    Cette action ne peut pas être annulée.
-                </p>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="confirmCancel">
-                    <i class="fas fa-times"></i>
-                    Annuler
-                </button>
-                <button class="btn btn-danger" id="confirmDelete">
-                    <i class="fas fa-trash"></i>
-                    Supprimer définitivement
                 </button>
             </div>
         </div>
@@ -659,12 +726,11 @@
     <script>
         // Variables globales
         let currentPatients = [];
-        let selectedPatients = [];
-        let currentPage = 0;
-        let totalPatients = 0;
-        const pageSize = 50;
-        let currentSearch = '';
+        let filteredPatients = [];
+        let selectedPatients = new Set();
         let editingPatientId = null;
+        let currentPage = 1;
+        const patientsPerPage = 10;
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -674,67 +740,43 @@
 
         function setupEventListeners() {
             // Boutons principaux
-            document.getElementById('refreshBtn').addEventListener('click', () => loadPatients());
-            document.getElementById('addPatientBtn').addEventListener('click', () => openPatientModal());
-            document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
             document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('refreshBtn').addEventListener('click', loadPatients);
+            document.getElementById('addPatientBtn').addEventListener('click', () => openPatientModal());
             
-            // Recherche
-            document.getElementById('searchInput').addEventListener('input', debounce(handleSearch, 500));
+            // Modal patient
+            document.getElementById('patientModalClose').addEventListener('click', closePatientModal);
+            document.getElementById('patientCancelBtn').addEventListener('click', closePatientModal);
+            document.getElementById('patientSaveBtn').addEventListener('click', savePatient);
             
-            // Pagination
-            document.getElementById('prevBtn').addEventListener('click', () => changePage(-1));
-            document.getElementById('nextBtn').addEventListener('click', () => changePage(1));
+            // Search et filtres
+            document.getElementById('searchInput').addEventListener('input', applyFilters);
+            document.getElementById('statusFilter').addEventListener('change', applyFilters);
+            document.getElementById('sortFilter').addEventListener('change', applyFilters);
             
-            // Sélection
-            document.getElementById('selectAllCheckbox').addEventListener('change', toggleSelectAll);
+            // Selection
+            document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
+            document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
             
-            // Modals
-            document.getElementById('modalClose').addEventListener('click', closePatientModal);
-            document.getElementById('cancelBtn').addEventListener('click', closePatientModal);
-            document.getElementById('saveBtn').addEventListener('click', savePatient);
+            // Formatage téléphone
+            document.getElementById('patientTelephone').addEventListener('input', formatTelephone);
             
-            // Success modal
-            document.getElementById('successModalClose').addEventListener('click', closeSuccessModal);
-            document.getElementById('successOk').addEventListener('click', closeSuccessModal);
-            
-            // Confirm modal
-            document.getElementById('confirmModalClose').addEventListener('click', closeConfirmModal);
-            document.getElementById('confirmCancel').addEventListener('click', closeConfirmModal);
-            document.getElementById('confirmDelete').addEventListener('click', confirmDelete);
-            
-            // Fermer modals en cliquant à l'extérieur
+            // Fermer modal en cliquant à l'extérieur
             document.getElementById('patientModal').addEventListener('click', function(e) {
                 if (e.target.id === 'patientModal') closePatientModal();
-            });
-            
-            document.getElementById('successModal').addEventListener('click', function(e) {
-                if (e.target.id === 'successModal') closeSuccessModal();
-            });
-            
-            document.getElementById('confirmModal').addEventListener('click', function(e) {
-                if (e.target.id === 'confirmModal') closeConfirmModal();
             });
         }
 
         // Chargement des patients
         async function loadPatients() {
             try {
-                const params = new URLSearchParams({
-                    search: currentSearch,
-                    limit: pageSize,
-                    offset: currentPage * pageSize
-                });
-
-                const response = await fetch(`/api/admin/patients?${params}`);
+                const response = await fetch('/api/admin/patients');
                 const data = await response.json();
 
                 if (response.ok) {
                     currentPatients = data.patients || [];
-                    totalPatients = data.total || 0;
-                    displayPatients(currentPatients);
-                    updatePagination();
-                    updateTotalCount();
+                    updateStats();
+                    applyFilters();
                 } else {
                     showError('Erreur lors du chargement des patients');
                 }
@@ -744,161 +786,249 @@
             }
         }
 
-        // Affichage des patients
-        function displayPatients(patients) {
-            const tbody = document.getElementById('patientsTableBody');
+        // Mise à jour des statistiques
+        function updateStats() {
+            const totalPatients = currentPatients.length;
+            const activePatients = currentPatients.filter(p => p.actif).length;
+            const inactivePatients = totalPatients - activePatients;
             
-            if (patients.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="9" class="empty-state">
-                            <i class="fas fa-users"></i>
-                            <h3>Aucun patient trouvé</h3>
-                            <p>Aucun patient ne correspond aux critères de recherche.</p>
-                        </td>
-                    </tr>
+            // Nouveaux ce mois (simulation)
+            const now = new Date();
+            const thisMonth = currentPatients.filter(p => {
+                const created = new Date(p.created_at);
+                return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
+            }).length;
+
+            document.getElementById('totalPatients').textContent = totalPatients;
+            document.getElementById('activePatients').textContent = activePatients;
+            document.getElementById('inactivePatients').textContent = inactivePatients;
+            document.getElementById('newThisMonth').textContent = thisMonth;
+        }
+
+        // Application des filtres
+        function applyFilters() {
+            let filtered = [...currentPatients];
+            
+            // Recherche
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            if (searchTerm) {
+                filtered = filtered.filter(patient => 
+                    patient.nom.toLowerCase().includes(searchTerm) ||
+                    patient.prenom.toLowerCase().includes(searchTerm) ||
+                    (patient.telephone && patient.telephone.toLowerCase().includes(searchTerm)) ||
+                    (patient.email && patient.email.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Filtre statut
+            const statusFilter = document.getElementById('statusFilter').value;
+            if (statusFilter === 'active') {
+                filtered = filtered.filter(p => p.actif);
+            } else if (statusFilter === 'inactive') {
+                filtered = filtered.filter(p => !p.actif);
+            }
+            
+            // Tri
+            const sortFilter = document.getElementById('sortFilter').value;
+            filtered.sort((a, b) => {
+                switch (sortFilter) {
+                    case 'name':
+                        return `${a.nom} ${a.prenom}`.localeCompare(`${b.nom} ${b.prenom}`);
+                    case 'created':
+                        return new Date(b.created_at) - new Date(a.created_at);
+                    case 'age':
+                        return new Date(a.date_naissance) - new Date(b.date_naissance);
+                    default:
+                        return 0;
+                }
+            });
+            
+            filteredPatients = filtered;
+            currentPage = 1;
+            displayPatients();
+        }
+
+        // Affichage des patients
+        function displayPatients() {
+            const container = document.getElementById('patientsGrid');
+            const startIndex = (currentPage - 1) * patientsPerPage;
+            const endIndex = startIndex + patientsPerPage;
+            const patientsToShow = filteredPatients.slice(startIndex, endIndex);
+
+            if (patientsToShow.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>Aucun patient trouvé</h3>
+                        <p>Aucun patient ne correspond aux critères de recherche.</p>
+                    </div>
                 `;
+                document.getElementById('pagination').style.display = 'none';
                 return;
             }
 
-            tbody.innerHTML = patients.map(patient => `
-                <tr>
-                    <td>
-                        <input type="checkbox" class="checkbox patient-checkbox" value="${patient.id}">
-                    </td>
-                    <td>${escapeHtml(patient.nom)}</td>
-                    <td>${escapeHtml(patient.prenom)}</td>
-                    <td>${formatDate(patient.date_naissance)}</td>
-                    <td>${escapeHtml(patient.telephone || '')}</td>
-                    <td>${escapeHtml(patient.email || '')}</td>
-                    <td>
-                        <span class="status-badge ${patient.actif ? 'status-active' : 'status-inactive'}">
-                            ${patient.actif ? 'Actif' : 'Inactif'}
-                        </span>
-                    </td>
-                    <td>${patient.created_at}</td>
-                    <td>
-                        <div style="display: flex; gap: 0.25rem;">
-                            <button class="btn btn-secondary btn-sm" onclick="editPatient(${patient.id})" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+            container.innerHTML = patientsToShow.map(patient => {
+                const age = calculateAge(patient.date_naissance);
+                return `
+                    <div class="patient-card ${selectedPatients.has(patient.id) ? 'selected' : ''}" data-patient-id="${patient.id}">
+                        <div class="patient-header">
+                            <div class="patient-info">
+                                <div class="patient-name">${escapeHtml(patient.prenom)} ${escapeHtml(patient.nom)}</div>
+                                <div class="patient-details">
+                                    <div><i class="fas fa-birthday-cake"></i> ${age} ans (${formatDate(patient.date_naissance)})</div>
+                                    ${patient.telephone ? `<div><i class="fas fa-phone"></i> ${escapeHtml(patient.telephone)}</div>` : ''}
+                                    ${patient.email ? `<div><i class="fas fa-envelope"></i> ${escapeHtml(patient.email)}</div>` : ''}
+                                </div>
+                            </div>
+                            <div class="patient-meta">
+                                <div class="patient-checkbox">
+                                    <input type="checkbox" ${selectedPatients.has(patient.id) ? 'checked' : ''} 
+                                           onchange="togglePatientSelection(${patient.id}, this.checked)">
+                                </div>
+                                <span class="status-badge ${patient.actif ? 'status-active' : 'status-inactive'}">
+                                    ${patient.actif ? 'Actif' : 'Inactif'}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="patient-actions">
+                            <button class="btn btn-secondary btn-sm" onclick="editPatient(${patient.id})" title="Modifier">
                                 <i class="fas fa-edit"></i>
+                                Modifier
                             </button>
-                            <button class="btn btn-danger btn-sm" onclick="deleteIndividualPatient(${patient.id})" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                            <button class="btn btn-danger btn-sm" onclick="deletePatient(${patient.id})" title="Supprimer">
                                 <i class="fas fa-trash"></i>
+                                Supprimer
                             </button>
                         </div>
-                    </td>
-                </tr>
-            `).join('');
+                    </div>
+                `;
+            }).join('');
 
-            // Ajouter les event listeners pour les checkboxes
-            document.querySelectorAll('.patient-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', updateSelectedPatients);
-            });
+            updatePagination();
         }
 
-        // Utilitaires
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+        // Calcul de l'âge
+        function calculateAge(dateNaissance) {
+            const today = new Date();
+            const birthDate = new Date(dateNaissance);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            return age;
         }
 
+        // Formatage de date
         function formatDate(dateString) {
-            return new Date(dateString).toLocaleDateString('fr-FR');
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR');
         }
 
-        function debounce(func, wait) {
-            let timeout;
-            return function executedFunction(...args) {
-                const later = () => {
-                    clearTimeout(timeout);
-                    func(...args);
-                };
-                clearTimeout(timeout);
-                timeout = setTimeout(later, wait);
-            };
-        }
-
-        // Recherche
-        function handleSearch() {
-            currentSearch = document.getElementById('searchInput').value;
-            currentPage = 0;
-            loadPatients();
-        }
-
-        // Pagination
-        function changePage(direction) {
-            const newPage = currentPage + direction;
-            if (newPage >= 0 && newPage * pageSize < totalPatients) {
-                currentPage = newPage;
-                loadPatients();
-            }
-        }
-
+        // Mise à jour de la pagination
         function updatePagination() {
-            const totalPages = Math.ceil(totalPatients / pageSize);
-            const startItem = currentPage * pageSize + 1;
-            const endItem = Math.min((currentPage + 1) * pageSize, totalPatients);
+            const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
+            const paginationContainer = document.getElementById('pagination');
             
-            document.getElementById('paginationInfo').textContent = 
-                `${startItem} - ${endItem} sur ${totalPatients} patients`;
-            
-            document.getElementById('prevBtn').disabled = currentPage === 0;
-            document.getElementById('nextBtn').disabled = currentPage >= totalPages - 1;
-        }
-
-        function updateTotalCount() {
-            document.getElementById('totalCount').textContent = totalPatients;
-        }
-
-        // Sélection
-        function toggleSelectAll() {
-            const selectAll = document.getElementById('selectAllCheckbox').checked;
-            document.querySelectorAll('.patient-checkbox').forEach(checkbox => {
-                checkbox.checked = selectAll;
-            });
-            updateSelectedPatients();
-        }
-
-        function updateSelectedPatients() {
-            selectedPatients = Array.from(document.querySelectorAll('.patient-checkbox:checked'))
-                .map(checkbox => parseInt(checkbox.value));
-            
-            document.getElementById('deleteSelectedBtn').disabled = selectedPatients.length === 0;
-            
-            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-            const checkboxes = document.querySelectorAll('.patient-checkbox');
-            const checkedCheckboxes = document.querySelectorAll('.patient-checkbox:checked');
-            
-            if (checkedCheckboxes.length === 0) {
-                selectAllCheckbox.indeterminate = false;
-                selectAllCheckbox.checked = false;
-            } else if (checkedCheckboxes.length === checkboxes.length) {
-                selectAllCheckbox.indeterminate = false;
-                selectAllCheckbox.checked = true;
-            } else {
-                selectAllCheckbox.indeterminate = true;
+            if (totalPages <= 1) {
+                paginationContainer.style.display = 'none';
+                return;
             }
+            
+            paginationContainer.style.display = 'flex';
+            
+            let paginationHTML = '';
+            
+            // Bouton précédent
+            paginationHTML += `
+                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+            `;
+            
+            // Pages
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                paginationHTML += `
+                    <button class="${i === currentPage ? 'page-active' : ''}" onclick="changePage(${i})">
+                        ${i}
+                    </button>
+                `;
+            }
+            
+            // Bouton suivant
+            paginationHTML += `
+                <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            `;
+            
+            paginationContainer.innerHTML = paginationHTML;
+        }
+
+        // Changement de page
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredPatients.length / patientsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                displayPatients();
+            }
+        }
+
+        // Gestion de la sélection
+        function togglePatientSelection(patientId, selected) {
+            if (selected) {
+                selectedPatients.add(patientId);
+            } else {
+                selectedPatients.delete(patientId);
+            }
+            updateSelectionPanel();
+            
+            // Mettre à jour l'apparence de la carte
+            const card = document.querySelector(`[data-patient-id="${patientId}"]`);
+            if (card) {
+                card.classList.toggle('selected', selected);
+            }
+        }
+
+        function updateSelectionPanel() {
+            const panel = document.getElementById('selectionPanel');
+            const count = selectedPatients.size;
+            
+            if (count > 0) {
+                panel.classList.add('active');
+                document.getElementById('selectedCount').textContent = count;
+            } else {
+                panel.classList.remove('active');
+            }
+        }
+
+        function deselectAll() {
+            selectedPatients.clear();
+            updateSelectionPanel();
+            displayPatients();
         }
 
         // Modal patient
         function openPatientModal(patient = null) {
             editingPatientId = patient ? patient.id : null;
             
-            document.getElementById('modalTitle').textContent = patient ? 'Modifier Patient' : 'Nouveau Patient';
+            document.getElementById('patientModalTitle').textContent = 
+                patient ? 'Modifier le patient' : 'Ajouter un patient';
             
             if (patient) {
                 document.getElementById('patientId').value = patient.id;
-                document.getElementById('nom').value = patient.nom;
-                document.getElementById('prenom').value = patient.prenom;
-                document.getElementById('date_naissance').value = patient.date_naissance;
-                document.getElementById('telephone').value = patient.telephone || '';
-                document.getElementById('email').value = patient.email || '';
-                document.getElementById('actif').value = patient.actif.toString();
+                document.getElementById('patientNom').value = patient.nom;
+                document.getElementById('patientPrenom').value = patient.prenom;
+                document.getElementById('patientDateNaissance').value = patient.date_naissance;
+                document.getElementById('patientTelephone').value = patient.telephone || '';
+                document.getElementById('patientEmail').value = patient.email || '';
+                document.getElementById('patientActif').value = patient.actif.toString();
             } else {
                 document.getElementById('patientForm').reset();
                 document.getElementById('patientId').value = '';
+                document.getElementById('patientActif').value = 'true';
             }
             
             document.getElementById('patientModal').classList.add('active');
@@ -916,23 +1046,26 @@
             }
         }
 
+        // Sauvegarde patient
         async function savePatient() {
             try {
                 const formData = {
-                    nom: document.getElementById('nom').value.trim(),
-                    prenom: document.getElementById('prenom').value.trim(),
-                    date_naissance: document.getElementById('date_naissance').value,
-                    telephone: document.getElementById('telephone').value.trim(),
-                    email: document.getElementById('email').value.trim(),
-                    actif: document.getElementById('actif').value === 'true'
+                    nom: document.getElementById('patientNom').value.trim().toUpperCase(),
+                    prenom: document.getElementById('patientPrenom').value.trim(),
+                    date_naissance: document.getElementById('patientDateNaissance').value,
+                    telephone: document.getElementById('patientTelephone').value.trim(),
+                    email: document.getElementById('patientEmail').value.trim(),
+                    actif: document.getElementById('patientActif').value === 'true'
                 };
 
                 if (!formData.nom || !formData.prenom || !formData.date_naissance) {
-                    showSuccessModal('Erreur', 'Veuillez remplir tous les champs obligatoires.', true);
+                    showError('Nom, prénom et date de naissance sont obligatoires');
                     return;
                 }
 
-                const url = editingPatientId ? `/api/admin/patients/${editingPatientId}` : '/api/admin/patients';
+                const url = editingPatientId ? 
+                    `/api/admin/patients/${editingPatientId}` : 
+                    '/api/admin/patients';
                 const method = editingPatientId ? 'PUT' : 'POST';
 
                 const response = await fetch(url, {
@@ -947,107 +1080,127 @@
 
                 if (response.ok && result.success) {
                     closePatientModal();
-                    showSuccessModal('Succès', result.message);
+                    showSuccess(result.message || 'Patient sauvegardé');
                     loadPatients();
                 } else {
-                    showSuccessModal('Erreur', result.error || 'Erreur lors de la sauvegarde', true);
+                    showError(result.error || 'Erreur lors de la sauvegarde');
                 }
             } catch (error) {
                 console.error('Erreur sauvegarde patient:', error);
-                showSuccessModal('Erreur de connexion', 'Impossible de contacter le serveur.', true);
+                showError('Erreur de connexion');
             }
         }
 
-        // Suppression
-        function deleteSelected() {
-            if (selectedPatients.length === 0) return;
-            
-            const message = selectedPatients.length === 1 ? 
-                'Êtes-vous sûr de vouloir supprimer ce patient ?' :
-                `Êtes-vous sûr de vouloir supprimer ces ${selectedPatients.length} patients ?`;
-            
-            document.getElementById('confirmMessage').textContent = message;
-            document.getElementById('confirmModal').classList.add('active');
-        }
-
-        // Suppression individuelle d'un patient
-        function deleteIndividualPatient(patientId) {
+        // Suppression patient
+        async function deletePatient(patientId) {
             const patient = currentPatients.find(p => p.id === patientId);
             if (!patient) return;
             
-            const message = `Êtes-vous sûr de vouloir supprimer le patient ${patient.prenom} ${patient.nom} ?`;
-            
-            document.getElementById('confirmMessage').textContent = message;
-            
-            // Temporairement stocker l'ID du patient à supprimer
-            selectedPatients = [patientId];
-            
-            document.getElementById('confirmModal').classList.add('active');
-        }
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer le patient ${patient.prenom} ${patient.nom} ?`)) {
+                return;
+            }
 
-        async function confirmDelete() {
             try {
-                const response = await fetch('/api/admin/patients', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ids: selectedPatients })
+                const response = await fetch(`/api/admin/patients/${patientId}`, {
+                    method: 'DELETE'
                 });
 
                 const result = await response.json();
 
                 if (response.ok && result.success) {
-                    closeConfirmModal();
-                    showSuccessModal('Succès', result.message);
-                    selectedPatients = [];
-                    // Réinitialiser les checkboxes après suppression
-                    document.getElementById('selectAllCheckbox').checked = false;
-                    document.getElementById('deleteSelectedBtn').disabled = true;
+                    showSuccess('Patient supprimé');
                     loadPatients();
                 } else {
-                    showSuccessModal('Erreur', result.error || 'Erreur lors de la suppression', true);
+                    showError(result.error || 'Erreur lors de la suppression');
                 }
             } catch (error) {
-                console.error('Erreur suppression patients:', error);
-                showSuccessModal('Erreur de connexion', 'Impossible de contacter le serveur.', true);
+                console.error('Erreur suppression patient:', error);
+                showError('Erreur de connexion');
             }
         }
 
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').classList.remove('active');
+        // Suppression multiple
+        async function deleteSelected() {
+            if (selectedPatients.size === 0) return;
+            
+            if (!confirm(`Êtes-vous sûr de vouloir supprimer ${selectedPatients.size} patient(s) sélectionné(s) ?`)) {
+                return;
+            }
+
+            try {
+                const promises = Array.from(selectedPatients).map(id => 
+                    fetch(`/api/admin/patients/${id}`, { method: 'DELETE' })
+                );
+                
+                await Promise.all(promises);
+                
+                deselectAll();
+                showSuccess(`${selectedPatients.size} patient(s) supprimé(s)`);
+                loadPatients();
+            } catch (error) {
+                console.error('Erreur suppression multiple:', error);
+                showError('Erreur lors de la suppression');
+            }
         }
 
-        // Success modal
-        function showSuccessModal(title, message, isError = false) {
-            document.getElementById('successTitle').textContent = title;
+        // Formatage téléphone
+        function formatTelephone(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            
+            if (value.startsWith('33')) {
+                value = value.substring(2);
+            } else if (value.startsWith('0')) {
+                value = value.substring(1);
+            }
+            
+            value = value.substring(0, 9);
+            
+            let formatted = '+33';
+            if (value.length > 0) {
+                formatted += ' ' + value.charAt(0);
+                if (value.length > 1) {
+                    formatted += ' ' + value.substring(1, 3);
+                    if (value.length > 3) {
+                        formatted += ' ' + value.substring(3, 5);
+                        if (value.length > 5) {
+                            formatted += ' ' + value.substring(5, 7);
+                            if (value.length > 7) {
+                                formatted += ' ' + value.substring(7, 9);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            e.target.value = formatted;
+        }
+
+        // Utilitaires
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showSuccess(message) {
             document.getElementById('successMessage').textContent = message;
+            document.getElementById('successAlert').classList.add('active');
+            document.getElementById('errorAlert').classList.remove('active');
             
-            const modal = document.getElementById('successModal');
-            const header = modal.querySelector('.modal-header');
-            const icon = modal.querySelector('.modal-title i');
-            
-            if (isError) {
-                header.style.borderBottom = '1px solid #fee2e2';
-                header.style.background = '#fef2f2';
-                modal.querySelector('.modal-title').style.color = '#dc2626';
-                icon.className = 'fas fa-exclamation-circle';
-            } else {
-                header.style.borderBottom = '1px solid #dcfce7';
-                header.style.background = '#f0fdf4';
-                modal.querySelector('.modal-title').style.color = '#059669';
-                icon.className = 'fas fa-check-circle';
-            }
-            
-            modal.classList.add('active');
-        }
-
-        function closeSuccessModal() {
-            document.getElementById('successModal').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('successAlert').classList.remove('active');
+            }, 5000);
         }
 
         function showError(message) {
-            showSuccessModal('Erreur', message, true);
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').classList.add('active');
+            document.getElementById('successAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('errorAlert').classList.remove('active');
+            }, 5000);
         }
 
         // Déconnexion
@@ -1076,18 +1229,11 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closePatientModal();
-                closeSuccessModal();
-                closeConfirmModal();
             }
             
             if (e.ctrlKey && e.key === 'n') {
                 e.preventDefault();
                 openPatientModal();
-            }
-            
-            if (e.ctrlKey && e.key === 'r') {
-                e.preventDefault();
-                loadPatients();
             }
         });
     </script>

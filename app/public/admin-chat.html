@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Chat IA - Administration</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="styles.css" rel="stylesheet">
+    <style>
+        /* Styles spécifiques page admin chat */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        /* Import des styles admin communs */
+        @import url('admin-common.css');
+
+        /* Import du header unifié */
+        @import url('admin-header-template.css');
+
+        /* Main Layout */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Navigation */
+        .nav-breadcrumb {
+            background: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .nav-breadcrumb a {
+            color: #1e40af;
+            text-decoration: none;
+        }
+
+        .nav-breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Chat Settings Grid */
+        .chat-settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .settings-section {
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #1e293b;
+        }
+
+        .section-body {
+            padding: 1.5rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #1e40af;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-description {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 0.25rem;
+        }
+
+        /* Stats Cards */
+        .chat-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #1e40af;
+        }
+
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.danger {
+            border-left-color: #dc2626;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* Success/Error States */
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #bbf7d0;
+        }
+
+        .alert.error {
+            background: #fee2e2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+        }
+
+        .alert.active {
+            display: block;
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #93c5fd;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .info-box i {
+            margin-right: 0.5rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .main-container {
+                padding: 1rem;
+            }
+
+            .chat-settings-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div>
+                    <h1>Configuration Chat IA</h1>
+                    <p>Assistant intelligent</p>
+                </div>
+            </div>
+            <div class="user-nav">
+                <a href="/admin/parameters" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour Paramètres
+                </a>
+                <a href="/admin/dashboard" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    Dashboard
+                </a>
+                <button class="btn btn-danger" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Navigation Breadcrumb -->
+        <div class="nav-breadcrumb">
+            <a href="/admin/dashboard">
+                <i class="fas fa-home"></i>
+                Dashboard
+            </a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="/admin/parameters">Paramètres</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Configuration Chat IA</span>
+        </div>
+
+        <!-- Alerts -->
+        <div id="successAlert" class="alert success">
+            <i class="fas fa-check-circle"></i>
+            <span id="successMessage">Configuration sauvegardée avec succès</span>
+        </div>
+
+        <div id="errorAlert" class="alert error">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage">Erreur lors de la sauvegarde</span>
+        </div>
+
+        <!-- Chat Statistics -->
+        <div class="chat-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="totalChats">--</div>
+                <div class="stat-label">Sessions actives</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="todayMessages">--</div>
+                <div class="stat-label">Messages aujourd'hui</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-value" id="weeklyMessages">--</div>
+                <div class="stat-label">Messages cette semaine</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="stat-value" id="limitExceeded">--</div>
+                <div class="stat-label">Limites dépassées</div>
+            </div>
+        </div>
+
+        <!-- Chat Settings Grid -->
+        <div class="chat-settings-grid">
+            <!-- Limites et Restrictions -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-shield-alt"></i>
+                        Limites et Restrictions
+                    </h2>
+                </div>
+                <div class="section-body">
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Information :</strong> Ces limites permettent de contrôler l'usage du chat IA et d'éviter les abus.
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_limite_horaire">Limite horaire de messages</label>
+                        <input type="number" id="chat_limite_horaire" class="form-input" min="1" max="100" placeholder="20">
+                        <div class="form-description">Nombre maximum de messages par heure et par patient (défaut: 20)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_limite_quotidienne">Limite quotidienne de messages</label>
+                        <input type="number" id="chat_limite_quotidienne" class="form-input" min="1" max="200" placeholder="40">
+                        <div class="form-description">Nombre maximum de messages par jour et par patient (défaut: 40)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_longueur_max">Longueur maximale d'un message</label>
+                        <input type="number" id="chat_longueur_max" class="form-input" min="100" max="2000" placeholder="300">
+                        <div class="form-description">Nombre maximum de caractères par message (défaut: 300)</div>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveLimitsBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder les limites
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuration de l'Assistant -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-robot"></i>
+                        Configuration de l'Assistant
+                    </h2>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-label" for="assistant_nom">Nom de l'Assistant IA</label>
+                        <input type="text" id="assistant_nom" class="form-input" placeholder="Assistant Médical" maxlength="50">
+                        <div class="form-description">Nom affiché dans les conversations avec les patients</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="assistant_description">Description de l'assistant</label>
+                        <textarea id="assistant_description" class="form-textarea" placeholder="Je suis votre assistant médical virtuel. Je peux vous aider avec vos questions de santé et vous orienter vers les bonnes ressources." maxlength="500"></textarea>
+                        <div class="form-description">Description utilisée dans l'interface patient (optionnel)</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="assistant_salutation">Message d'accueil</label>
+                        <textarea id="assistant_salutation" class="form-textarea" placeholder="Bonjour ! Je suis votre assistant médical virtuel. Comment puis-je vous aider aujourd'hui ?" maxlength="300"></textarea>
+                        <div class="form-description">Premier message affiché au début d'une conversation</div>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveAssistantBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder l'assistant
+                    </button>
+                </div>
+            </div>
+
+            <!-- Horaires d'Activité -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-clock"></i>
+                        Horaires d'Activité du Chat
+                    </h2>
+                </div>
+                <div class="section-body">
+                    <div class="info-box">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Conseil :</strong> Définissez les heures où le chat IA est disponible pour éviter les demandes hors horaires de consultation.
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_horaire_debut">Heure de début</label>
+                        <input type="time" id="chat_horaire_debut" class="form-input" value="08:00">
+                        <div class="form-description">Heure à partir de laquelle le chat est disponible</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_horaire_fin">Heure de fin</label>
+                        <input type="time" id="chat_horaire_fin" class="form-input" value="19:00">
+                        <div class="form-description">Heure jusqu'à laquelle le chat est disponible</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_weekend">Disponible le week-end</label>
+                        <select id="chat_weekend" class="form-select">
+                            <option value="true">Oui</option>
+                            <option value="false">Non</option>
+                        </select>
+                        <div class="form-description">Le chat IA est-il disponible le samedi et dimanche ?</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_message_fermeture">Message hors horaires</label>
+                        <textarea id="chat_message_fermeture" class="form-textarea" placeholder="Le chat médical n'est pas disponible en ce moment. Les horaires de consultation sont de 8h à 19h du lundi au vendredi." maxlength="200"></textarea>
+                        <div class="form-description">Message affiché quand le chat n'est pas disponible</div>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveScheduleBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder les horaires
+                    </button>
+                </div>
+            </div>
+
+            <!-- Paramètres Avancés -->
+            <div class="settings-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-cogs"></i>
+                        Paramètres Avancés
+                    </h2>
+                </div>
+                <div class="section-body">
+                    <div class="form-group">
+                        <label class="form-label" for="chat_auto_archive">Auto-archivage des conversations</label>
+                        <select id="chat_auto_archive" class="form-select">
+                            <option value="7">Après 7 jours</option>
+                            <option value="14">Après 14 jours</option>
+                            <option value="30">Après 30 jours</option>
+                            <option value="0">Jamais</option>
+                        </select>
+                        <div class="form-description">Délai après lequel les conversations sont automatiquement archivées</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_log_level">Niveau de journalisation</label>
+                        <select id="chat_log_level" class="form-select">
+                            <option value="minimal">Minimal</option>
+                            <option value="standard">Standard</option>
+                            <option value="detaille">Détaillé</option>
+                        </select>
+                        <div class="form-description">Niveau de détail des logs pour le chat IA</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="chat_urgence_mots_cles">Mots-clés d'urgence</label>
+                        <textarea id="chat_urgence_mots_cles" class="form-textarea" placeholder="urgence, urgent, douleur forte, saignement, malaise, difficulté respirer" maxlength="500"></textarea>
+                        <div class="form-description">Mots-clés qui déclenchent automatiquement une alerte (séparés par des virgules)</div>
+                    </div>
+
+                    <button class="btn btn-primary" id="saveAdvancedBtn">
+                        <i class="fas fa-save"></i>
+                        Sauvegarder les paramètres avancés
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentSettings = {};
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            loadChatSettings();
+            loadChatStats();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Boutons principaux
+            document.getElementById('logoutBtn').addEventListener('click', logout);
+            
+            // Boutons de sauvegarde
+            document.getElementById('saveLimitsBtn').addEventListener('click', saveLimitsSettings);
+            document.getElementById('saveAssistantBtn').addEventListener('click', saveAssistantSettings);
+            document.getElementById('saveScheduleBtn').addEventListener('click', saveScheduleSettings);
+            document.getElementById('saveAdvancedBtn').addEventListener('click', saveAdvancedSettings);
+        }
+
+        // Chargement des paramètres chat
+        async function loadChatSettings() {
+            try {
+                const response = await fetch('/api/admin/cabinet-settings');
+                const data = await response.json();
+
+                if (response.ok) {
+                    currentSettings = data.settings || {};
+                    populateChatSettings();
+                } else {
+                    showError('Erreur lors du chargement des paramètres');
+                }
+            } catch (error) {
+                console.error('Erreur chargement paramètres:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        function populateChatSettings() {
+            // Fonction helper pour remplir les champs
+            function setFieldValue(id, value, defaultValue = '') {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.value = value || defaultValue;
+                }
+            }
+
+            // Limites
+            setFieldValue('chat_limite_horaire', currentSettings.chat_limite_horaire, '20');
+            setFieldValue('chat_limite_quotidienne', currentSettings.chat_limite_quotidienne, '40');
+            setFieldValue('chat_longueur_max', currentSettings.chat_longueur_max, '300');
+
+            // Assistant
+            setFieldValue('assistant_nom', currentSettings.assistant_nom, 'Assistant Médical');
+            setFieldValue('assistant_description', currentSettings.assistant_description);
+            setFieldValue('assistant_salutation', currentSettings.assistant_salutation);
+
+            // Horaires
+            setFieldValue('chat_horaire_debut', currentSettings.chat_horaire_debut, '08:00');
+            setFieldValue('chat_horaire_fin', currentSettings.chat_horaire_fin, '19:00');
+            setFieldValue('chat_weekend', currentSettings.chat_weekend, 'true');
+            setFieldValue('chat_message_fermeture', currentSettings.chat_message_fermeture);
+
+            // Paramètres avancés
+            setFieldValue('chat_auto_archive', currentSettings.chat_auto_archive, '30');
+            setFieldValue('chat_log_level', currentSettings.chat_log_level, 'standard');
+            setFieldValue('chat_urgence_mots_cles', currentSettings.chat_urgence_mots_cles);
+        }
+
+        // Chargement des statistiques
+        async function loadChatStats() {
+            try {
+                // Pour l'instant, on met des valeurs fictives
+                // À remplacer par de vraies statistiques depuis l'API
+                document.getElementById('totalChats').textContent = '12';
+                document.getElementById('todayMessages').textContent = '156';
+                document.getElementById('weeklyMessages').textContent = '892';
+                document.getElementById('limitExceeded').textContent = '3';
+            } catch (error) {
+                console.error('Erreur chargement stats:', error);
+            }
+        }
+
+        // Sauvegarde des limites
+        async function saveLimitsSettings() {
+            const settings = {
+                chat_limite_horaire: document.getElementById('chat_limite_horaire').value,
+                chat_limite_quotidienne: document.getElementById('chat_limite_quotidienne').value,
+                chat_longueur_max: document.getElementById('chat_longueur_max').value
+            };
+
+            await saveSettings(settings, 'Limites du chat sauvegardées');
+        }
+
+        // Sauvegarde de l'assistant
+        async function saveAssistantSettings() {
+            const settings = {
+                assistant_nom: document.getElementById('assistant_nom').value,
+                assistant_description: document.getElementById('assistant_description').value,
+                assistant_salutation: document.getElementById('assistant_salutation').value
+            };
+
+            await saveSettings(settings, 'Configuration de l\'assistant sauvegardée');
+        }
+
+        // Sauvegarde des horaires
+        async function saveScheduleSettings() {
+            const settings = {
+                chat_horaire_debut: document.getElementById('chat_horaire_debut').value,
+                chat_horaire_fin: document.getElementById('chat_horaire_fin').value,
+                chat_weekend: document.getElementById('chat_weekend').value,
+                chat_message_fermeture: document.getElementById('chat_message_fermeture').value
+            };
+
+            await saveSettings(settings, 'Horaires du chat sauvegardés');
+        }
+
+        // Sauvegarde des paramètres avancés
+        async function saveAdvancedSettings() {
+            const settings = {
+                chat_auto_archive: document.getElementById('chat_auto_archive').value,
+                chat_log_level: document.getElementById('chat_log_level').value,
+                chat_urgence_mots_cles: document.getElementById('chat_urgence_mots_cles').value
+            };
+
+            await saveSettings(settings, 'Paramètres avancés sauvegardés');
+        }
+
+        // Fonction générique de sauvegarde
+        async function saveSettings(settings, successMessage) {
+            try {
+                const response = await fetch('/api/admin/cabinet-settings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ settings })
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    showSuccess(successMessage);
+                    loadChatSettings(); // Recharger pour synchroniser
+                } else {
+                    showError(result.error || 'Erreur lors de la sauvegarde');
+                }
+            } catch (error) {
+                console.error('Erreur sauvegarde:', error);
+                showError('Erreur de connexion');
+            }
+        }
+
+        // Utilitaires
+        function showSuccess(message) {
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successAlert').classList.add('active');
+            document.getElementById('errorAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('successAlert').classList.remove('active');
+            }, 5000);
+        }
+
+        function showError(message) {
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('errorAlert').classList.add('active');
+            document.getElementById('successAlert').classList.remove('active');
+            
+            setTimeout(() => {
+                document.getElementById('errorAlert').classList.remove('active');
+            }, 5000);
+        }
+
+        // Déconnexion
+        async function logout() {
+            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
+                try {
+                    const response = await fetch('/api/admin/logout', {
+                        method: 'POST'
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        window.location.href = result.redirect || '/admin';
+                    } else {
+                        alert('Erreur lors de la déconnexion');
+                    }
+                } catch (error) {
+                    console.error('Erreur déconnexion:', error);
+                    window.location.href = '/admin';
+                }
+            }
+        }
+
+        // Auto-refresh des stats toutes les 5 minutes
+        setInterval(loadChatStats, 300000);
+    </script>
+</body>
+</html>
