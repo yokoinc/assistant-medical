@@ -18,7 +18,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuration pour les proxies (nginx)
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 
 // Configuration base de données
 const DB_CONFIG = {
@@ -53,8 +53,11 @@ app.use(helmet({
             defaultSrc: ["'self'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdnjs.cloudflare.com"],
             scriptSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrcAttr: ["'unsafe-inline'"],
             imgSrc: ["'self'", "data:", "blob:"],
             fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
+            connectSrc: ["'self'", "https://api-adresse.data.gouv.fr"],
+            frameSrc: ["'self'", "https://www.bing.com"],
         },
     },
 }));
@@ -97,7 +100,14 @@ app.use(generalLimiter);
 // Middleware Express
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
-app.use(express.static('public'));
+// Configuration pour servir les fichiers statiques avec les bons Content-Type
+app.use(express.static('public', {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        }
+    }
+}));
 
 // Configuration des sessions - ✅ SÉCURISÉE ET STABLE
 app.use(session({
@@ -112,6 +122,25 @@ app.use(session({
         sameSite: 'lax'
     }
 }));
+
+// Middleware de debugging des sessions
+app.use((req, res, next) => {
+    // Logger uniquement les requêtes admin importantes pour éviter le spam
+    if (req.url.startsWith('/api/admin/') || req.url.startsWith('/admin/')) {
+        console.log('📊 Session middleware:', {
+            url: req.url,
+            method: req.method,
+            sessionExists: !!req.session,
+            sessionId: req.session?.id,
+            adminSession: !!req.session?.admin,
+            adminId: req.session?.admin?.id,
+            adminUsername: req.session?.admin?.username,
+            cookiePresent: !!req.headers.cookie,
+            cookieValue: req.headers.cookie ? req.headers.cookie.substring(0, 50) + '...' : 'none'
+        });
+    }
+    next();
+});
 
 // Configuration upload de fichiers
 const storage = multer.diskStorage({
@@ -156,35 +185,161 @@ const requireAuth = (req, res, next) => {
 };
 
 const requireAdmin = (req, res, next) => {
+    console.log('🔍 requireAdmin - Vérification session admin:', {
+        sessionExists: !!req.session,
+        sessionId: req.session?.id,
+        adminExists: !!req.session?.admin,
+        adminId: req.session?.admin?.id,
+        url: req.url,
+        method: req.method,
+        userAgent: req.get('User-Agent')?.substring(0, 50),
+        cookies: Object.keys(req.cookies || {}),
+        sessionCookie: req.get('Cookie')?.includes('medical_session') ? 'present' : 'missing',
+        adminUsername: req.session?.admin?.username,
+        loginTime: req.session?.admin?.loginTime,
+        lastActivity: req.session?.admin?.lastActivity,
+        currentTime: new Date().toISOString(),
+        sessionCookie: req.headers.cookie,
+        userAgent: req.get('User-Agent'),
+        ip: req.ip || req.connection.remoteAddress,
+        url: req.url,
+        method: req.method
+    });
+
     if (req.session && req.session.admin && req.session.admin.id) {
-        // Vérification additionnelle de la validité de la session admin
+        // Mise à jour de la dernière activité
+        req.session.admin.lastActivity = new Date().toISOString();
+        
+        // Vérification de l'âge de la session (24 heures max)
+        const loginTime = new Date(req.session.admin.loginTime);
+        const now = new Date();
+        const sessionAge = now - loginTime;
+        const maxAge = 24 * 60 * 60 * 1000; // 24 heures
+        
+        console.log('✅ Session admin valide:', {
+            adminId: req.session.admin.id,
+            username: req.session.admin.username,
+            sessionAge: Math.round(sessionAge / 1000 / 60), // en minutes
+            maxAge: Math.round(maxAge / 1000 / 60), // en minutes
+            remaining: Math.round((maxAge - sessionAge) / 1000 / 60) // temps restant en minutes
+        });
+        
+        if (sessionAge > maxAge) {
+            console.warn('⚠️ Session admin expirée (24h dépassées):', {
+                adminId: req.session.admin.id,
+                username: req.session.admin.username,
+                sessionAge: Math.round(sessionAge / 1000 / 60) + ' minutes',
+                loginTime: loginTime.toISOString()
+            });
+            
+            req.session.destroy((err) => {
+                if (err) console.error('❌ Erreur destruction session expirée:', err);
+            });
+            
+            // Si c'est une requête HTML (page), rediriger vers /admin
+            if (req.accepts('html') && !req.xhr && !req.path.startsWith('/api/')) {
+                return res.redirect('/admin');
+            }
+            
+            return res.status(401).json({ 
+                error: 'Session expirée', 
+                reason: 'Session dépassée (24h max)',
+                redirect: '/admin'
+            });
+        }
+        
         next();
     } else {
-        console.warn('🚨 Tentative d\'accès non autorisé à l\'administration');
-        res.status(401).json({ error: 'Authentification admin requise' });
+        console.warn('🚨 Tentative d\'accès non autorisé à l\'administration:', {
+            sessionExists: !!req.session,
+            adminExists: !!req.session?.admin,
+            adminId: req.session?.admin?.id,
+            url: req.url,
+            method: req.method,
+            ip: req.ip || req.connection.remoteAddress,
+            userAgent: req.get('User-Agent'),
+            sessionCookie: req.headers.cookie ? 'present' : 'missing'
+        });
+        
+        // Si c'est une requête HTML (page), rediriger vers /admin
+        if (req.accepts('html') && !req.xhr && !req.path.startsWith('/api/')) {
+            return res.redirect('/admin');
+        }
+        
+        // Sinon, renvoyer JSON pour les requêtes API
+        res.status(401).json({ 
+            error: 'Authentification admin requise',
+            redirect: '/admin'
+        });
     }
 };
 
-// Configuration ChatGPT
-const MEDICAL_SYSTEM_PROMPT = `Tu es l'assistant médical du Dr Grégory Cuffel, médecin généraliste au Havre.
+// Configuration ChatGPT - Sera générée dynamiquement
+let MEDICAL_SYSTEM_PROMPT = '';
 
-RÔLE ET LIMITES :
-- Tu accueilles les patients et les aides avec leurs questions générales
+// Fonction pour générer le prompt système avec les paramètres du cabinet
+async function generateSystemPrompt() {
+    try {
+        const settingsResult = await db.query('SELECT setting_key, setting_value FROM cabinet_settings');
+        const settings = {};
+        settingsResult.rows.forEach(row => {
+            settings[row.setting_key] = row.setting_value;
+        });
+
+        const docteurNom = settings.cabinet_nom_docteur || 'Dr Nom Prénom';
+        const specialite = settings.cabinet_specialite || 'Médecin Généraliste';
+        const ville = settings.cabinet_ville || 'Votre Ville';
+        const assistantNom = settings.assistant_nom || 'Assistant Médical';
+
+        // Récupérer les numéros d'urgence depuis la base
+        const urgencesResult = await db.query('SELECT nom, telephone FROM urgences WHERE actif = true ORDER BY ordre ASC');
+        const urgences = urgencesResult.rows.map(u => `- ${u.nom} : ${u.telephone}`).join('\n');
+
+        MEDICAL_SYSTEM_PROMPT = `Tu es ${assistantNom} du ${docteurNom}, ${specialite} à ${ville}.
+
+RÔLE ET LIMITES STRICTES :
+L'assistant médical ne répondra qu'à des questions médicales simples, du type conseils en cas de maladie virale bénigne, rhume, gastro. Il expliquera éventuellement les modalités de réalisation de certificats et d'arrêt de travail en France. Par exemple, les arrêts de travail en France ne sont pas obligatoirement réalisés le jour même. Nous avons deux jours pour les déclarer. Il pourra également chercher dans la base de données uniquement les numéros de téléphone et adresse fournies, mais en aucun cas être capable d'aller puiser d'autres informations comme la liste des patients inscrits ou les retards.
+
 - Tu NE peux PAS remplacer une consultation médicale
 - Tu NE donnes PAS de diagnostic médical
 - Tu NE prescris PAS de médicaments
+- Tu ne traites QUE les questions sur les maladies virales bénignes (rhume, gastro, etc.)
+- Tu expliques uniquement les modalités d'arrêts de travail et certificats en France
+- Tu ne peux accéder QU'AUX numéros de téléphone et adresses du cabinet
+- Tu ne peux PAS accéder à la liste des patients ou aux retards
 - En cas d'urgence, tu diriges IMMÉDIATEMENT vers les numéros d'urgence
 
-NUMÉROS D'URGENCE LE HAVRE :
+NUMÉROS D'URGENCE :
+${urgences}
+
+Réponds toujours en français, de manière claire et rassurante.`;
+
+    } catch (error) {
+        console.error('Erreur génération prompt système:', error);
+        // Fallback
+        MEDICAL_SYSTEM_PROMPT = `Tu es un assistant médical.
+
+RÔLE ET LIMITES STRICTES :
+L'assistant médical ne répondra qu'à des questions médicales simples, du type conseils en cas de maladie virale bénigne, rhume, gastro. Il expliquera éventuellement les modalités de réalisation de certificats et d'arrêt de travail en France. Par exemple, les arrêts de travail en France ne sont pas obligatoirement réalisés le jour même. Nous avons deux jours pour les déclarer. Il pourra également chercher dans la base de données uniquement les numéros de téléphone et adresse fournies, mais en aucun cas être capable d'aller puiser d'autres informations comme la liste des patients inscrits ou les retards.
+
+- Tu NE peux PAS remplacer une consultation médicale
+- Tu NE donnes PAS de diagnostic médical
+- Tu NE prescris PAS de médicaments
+- Tu ne traites QUE les questions sur les maladies virales bénignes (rhume, gastro, etc.)
+- Tu expliques uniquement les modalités d'arrêts de travail et certificats en France
+- Tu ne peux accéder QU'AUX numéros de téléphone et adresses du cabinet
+- Tu ne peux PAS accéder à la liste des patients ou aux retards
+- En cas d'urgence, tu diriges IMMÉDIATEMENT vers les numéros d'urgence
+
+NUMÉROS D'URGENCE :
 - SAMU : 15
 - Pompiers : 18
 - Police : 17
 - Urgences européennes : 112
-- CHU Le Havre Urgences : 02 32 73 32 32
-- Médecins de garde : 02 35 53 10 10
-- Pharmacies de garde : 3237
 
 Réponds toujours en français, de manière claire et rassurante.`;
+    }
+}
 
 // ===== ROUTES PUBLIQUES =====
 
@@ -201,13 +356,29 @@ app.get('/login', (req, res) => {
 
 app.get('/api/cabinet-info', async (req, res) => {
     try {
+        // Récupérer les paramètres depuis la base de données
+        const settingsResult = await db.query('SELECT setting_key, setting_value, setting_type FROM cabinet_settings');
+        
+        const settings = {};
+        settingsResult.rows.forEach(row => {
+            let value = row.setting_value;
+            if (row.setting_type === 'json' && value) {
+                try {
+                    value = JSON.parse(value);
+                } catch (e) {
+                    console.warn(`Erreur parsing JSON pour ${row.setting_key}:`, e);
+                }
+            }
+            settings[row.setting_key] = value;
+        });
+
         const cabinetInfo = {
             docteur: {
-                nom: "Dr Grégory Cuffel",
-                specialite: "Médecin Généraliste",
-                ville: "Le Havre"
+                nom: settings.cabinet_nom_docteur || "Dr Nom Prénom",
+                specialite: settings.cabinet_specialite || "Médecin Généraliste",
+                ville: settings.cabinet_ville || "Votre Ville"
             },
-            horaires: {
+            horaires: settings.cabinet_horaires || {
                 "Lundi": "8h00 - 19h00",
                 "Mardi": "8h00 - 19h00", 
                 "Mercredi": "8h00 - 19h00",
@@ -217,16 +388,17 @@ app.get('/api/cabinet-info', async (req, res) => {
                 "Dimanche": "Fermé"
             },
             contact: {
-                telephone: "02 XX XX XX XX",
-                adresse: "Adresse du cabinet, Le Havre",
-                email: "contact@cabinet-cuffel.fr"
+                telephone: settings.cabinet_telephone || "02 XX XX XX XX",
+                adresse: settings.cabinet_adresse || "Adresse du cabinet",
+                email: settings.cabinet_email || "contact@votre-cabinet.fr"
             },
             infos: {
-                "Rendez-vous": "Sur rendez-vous uniquement",
+                "Rendez-vous": settings.cabinet_rdv_mode || "Sur rendez-vous uniquement",
                 "Urgences": "Contacter le 15 (SAMU)",
-                "Parking": "Parking gratuit disponible",
-                "Accès": "Accessible PMR"
-            }
+                "Parking": settings.cabinet_parking || "Parking gratuit disponible",
+                "Accès": settings.cabinet_acces || "Accessible PMR"
+            },
+            settings: settings
         };
         res.json(cabinetInfo);
     } catch (error) {
@@ -238,7 +410,7 @@ app.get('/api/cabinet-info', async (req, res) => {
 app.get('/api/urgences', async (req, res) => {
     try {
         const result = await db.query(
-            'SELECT * FROM urgences WHERE actif = true ORDER BY type, nom'
+            'SELECT * FROM urgences WHERE actif = true ORDER BY ordre ASC'
         );
         res.json(result.rows);
     } catch (error) {
@@ -276,7 +448,7 @@ app.post('/api/auth', authLimiter, [
         if (result.rows.length === 0) {
             console.warn(`🚨 Patient non trouvé: ${prenom} ${nom} (${dateNaissance})`);
             return res.status(401).json({ 
-                error: 'Patient non trouvé dans la patientèle du Dr Cuffel' 
+                error: 'Patient non trouvé dans la patientèle du cabinet' 
             });
         }
 
@@ -315,6 +487,11 @@ app.post('/api/auth', authLimiter, [
 
 app.get('/espace-patient', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'espace-patient.html'));
+});
+
+// Redirection de /chat vers /chat-assistant pour compatibilité
+app.get('/chat', requireAuth, (req, res) => {
+    res.redirect('/chat-assistant');
 });
 
 app.get('/chat-assistant', requireAuth, (req, res) => {
@@ -368,7 +545,7 @@ app.post('/api/message-prive', requireAuth, upload.array('files', 5), async (req
 
         res.json({
             success: true,
-            message: 'Message envoyé avec succès au Dr Cuffel',
+            message: 'Message envoyé avec succès au médecin',
             messageId: messageId
         });
 
@@ -459,6 +636,9 @@ app.post('/api/chat', requireAuth, chatLimiter, async (req, res) => {
                 suggestion: 'Revenez demain ou utilisez la messagerie privée pour des questions importantes.'
             });
         }
+
+        // ✅ REGÉNÉRER LE PROMPT SYSTÈME AVEC LES PARAMÈTRES ACTUELS
+        await generateSystemPrompt();
 
         // ✅ VÉRIFIER SI OPENAI EST DISPONIBLE
         if (!openai) {
@@ -639,6 +819,20 @@ app.post('/api/admin/auth', authLimiter, [
             lastActivity: new Date().toISOString()
         };
 
+        // Debugging - Logger les détails de la session créée
+        console.log('🔐 Session admin créée:', {
+            sessionId: req.session.id,
+            adminId: admin.id,
+            username: admin.username,
+            loginTime: req.session.admin.loginTime,
+            cookie: req.session.cookie,
+            maxAge: req.session.cookie.maxAge,
+            expires: req.session.cookie.expires,
+            secure: req.session.cookie.secure,
+            httpOnly: req.session.cookie.httpOnly,
+            sameSite: req.session.cookie.sameSite
+        });
+
         // Log de sécurité pour connexion réussie
         const successInfo = {
             adminId: admin.id,
@@ -683,9 +877,35 @@ app.post('/api/admin/auth', authLimiter, [
     }
 });
 
-app.get('/admin/dashboard', requireAdmin, (req, res) => {
+app.get('/admin/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin-dashboard.html'));
 });
+
+app.get('/api/admin/stats', async (req, res) => {
+    try {
+        const stats = await db.query(`
+            SELECT 
+                COUNT(*) as total_messages,
+                COUNT(CASE WHEN lu_par_docteur = false THEN 1 END) as messages_non_lus,
+                COUNT(CASE WHEN reponse_docteur IS NULL THEN 1 END) as messages_sans_reponse,
+                COUNT(CASE WHEN niveau_urgence = 'elevee' THEN 1 END) as messages_urgents,
+                COUNT(CASE WHEN created_at >= CURRENT_DATE THEN 1 END) as messages_aujourd_hui,
+                COUNT(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '7 days' THEN 1 END) as messages_semaine,
+                COUNT(CASE WHEN created_at >= CURRENT_DATE - INTERVAL '30 days' THEN 1 END) as messages_mois,
+                COUNT(CASE WHEN archived = true THEN 1 END) as messages_archives
+            FROM messages_prives
+        `);
+
+        res.json({
+            success: true,
+            messages: stats.rows[0]
+        });
+    } catch (error) {
+        console.error('❌ Erreur chargement stats:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
 
 app.get('/admin/patients', requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'admin-patients.html'));
@@ -724,9 +944,11 @@ app.get('/api/admin/messages', requireAdmin, async (req, res) => {
         let params = [];
         
         if (status === 'unread') {
-            whereClause += ' AND m.lu_par_docteur = false';
+            whereClause += ' AND m.lu_par_docteur = false AND m.archived = false';
         } else if (status === 'archived') {
             whereClause += ' AND m.archived = true';
+        } else if (status === 'active') {
+            whereClause += ' AND m.archived = false';
         }
         
         if (urgence !== 'all') {
@@ -745,6 +967,12 @@ app.get('/api/admin/messages', requireAdmin, async (req, res) => {
         
         params.push(parseInt(limit) || 50);
         
+        console.log('📋 Filter query:', {
+            status, urgence, period,
+            whereClause,
+            params
+        });
+        
         const messages = await db.query(`
             SELECT m.*, p.nom, p.prenom, p.telephone, p.email
             FROM messages_prives m
@@ -753,15 +981,36 @@ app.get('/api/admin/messages', requireAdmin, async (req, res) => {
             ORDER BY m.created_at DESC
             LIMIT $${params.length}
         `, params);
+        
+        console.log('📋 Query returned:', messages.rows.length, 'messages');
 
         // Récupérer les fichiers associés
         for (let message of messages.rows) {
-            const fichiers = await db.query(`
-                SELECT f.id, f.nom_original, f.nom_stockage, f.type_mime, f.taille_bytes
-                FROM fichiers f
-                WHERE f.consultation_id = $1
-            `, [message.consultation_id]);
-            message.fichiers = fichiers.rows;
+            let fichiersData = [];
+            
+            // Fichiers depuis consultation (table fichiers)
+            if (message.consultation_id) {
+                const fichiers = await db.query(`
+                    SELECT f.id, f.nom_original, f.nom_stockage, f.type_mime, f.taille_bytes
+                    FROM fichiers f
+                    WHERE f.consultation_id = $1
+                `, [message.consultation_id]);
+                fichiersData = fichiers.rows;
+            }
+            
+            // Fichiers joints directs (stockés dans fichiers_joints)
+            if (message.fichiers_joints && Array.isArray(message.fichiers_joints)) {
+                message.fichiers_joints.forEach(fichier => {
+                    fichiersData.push({
+                        nom_original: fichier,
+                        nom_stockage: fichier,
+                        type_mime: 'application/octet-stream',
+                        taille_bytes: null
+                    });
+                });
+            }
+            
+            message.fichiers = fichiersData;
         }
 
         res.json({
@@ -777,6 +1026,7 @@ app.get('/api/admin/messages', requireAdmin, async (req, res) => {
                 message: msg.message,
                 urgence: msg.niveau_urgence,
                 lu: msg.lu_par_docteur,
+                archived: msg.archived,
                 repondu: !!msg.reponse_docteur,
                 reponse: msg.reponse_docteur,
                 dateMessage: moment(msg.created_at).format('DD/MM/YYYY HH:mm'),
@@ -876,6 +1126,38 @@ app.get('/api/admin/files/:fileId', requireAdmin, async (req, res) => {
     }
 });
 
+// API pour télécharger un fichier par nom de stockage (pour les fichiers sans ID)
+app.get('/api/admin/files/by-name/:filename', requireAdmin, async (req, res) => {
+    try {
+        const filename = req.params.filename;
+        if (!filename) {
+            return res.status(400).json({ error: 'Nom de fichier invalide' });
+        }
+
+        // Sécurité : vérifier que le nom de fichier ne contient pas de caractères dangereux
+        if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
+            return res.status(400).json({ error: 'Nom de fichier non autorisé' });
+        }
+
+        let filePath = path.join(__dirname, 'uploads', filename);
+
+        if (!fs.existsSync(filePath)) {
+            return res.status(404).json({ error: 'Fichier physique non trouvé' });
+        }
+
+        // Essayer de deviner le nom original à partir du nom de stockage
+        const originalName = filename.split('-').slice(4).join('-') || filename;
+        
+        res.setHeader('Content-Disposition', `attachment; filename="${originalName}"`);
+        res.setHeader('Content-Type', 'application/octet-stream');
+        res.sendFile(filePath);
+
+    } catch (error) {
+        console.error('Erreur téléchargement fichier par nom:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
 // API pour supprimer un message
 app.delete('/api/admin/messages/:id', requireAdmin, async (req, res) => {
     try {
@@ -884,7 +1166,7 @@ app.delete('/api/admin/messages/:id', requireAdmin, async (req, res) => {
             return res.status(400).json({ error: 'ID de message invalide' });
         }
 
-        // Récupérer la consultation_id du message pour trouver les fichiers
+        // Vérifier que le message existe
         const messageResult = await db.query(
             'SELECT consultation_id FROM messages_prives WHERE id = $1',
             [messageId]
@@ -896,22 +1178,23 @@ app.delete('/api/admin/messages/:id', requireAdmin, async (req, res) => {
 
         const consultationId = messageResult.rows[0].consultation_id;
 
-        // Récupérer tous les fichiers associés à cette consultation
+        // Récupérer tous les fichiers associés (via consultation_id OU message_id)
         const filesResult = await db.query(
-            'SELECT id, nom_stockage FROM fichiers WHERE consultation_id = $1',
-            [consultationId]
+            'SELECT id, nom_stockage, nom_original FROM fichiers WHERE consultation_id = $1 OR message_id = $2',
+            [consultationId, messageId]
         );
 
         // Supprimer les fichiers physiques du dossier uploads
-        const uploadDir = path.join(__dirname, 'uploads');
         let deletedFiles = 0;
+        let fileNames = [];
         
         for (const file of filesResult.rows) {
-            const filePath = path.join(uploadDir, file.nom_stockage);
+            const filePath = path.join(__dirname, file.nom_stockage);
             try {
                 if (fs.existsSync(filePath)) {
                     fs.unlinkSync(filePath);
                     deletedFiles++;
+                    fileNames.push(file.nom_original);
                     console.log(`📁 Fichier supprimé: ${file.nom_stockage}`);
                 }
             } catch (fileError) {
@@ -921,7 +1204,7 @@ app.delete('/api/admin/messages/:id', requireAdmin, async (req, res) => {
 
         // Supprimer les enregistrements de fichiers en base
         if (filesResult.rows.length > 0) {
-            await db.query('DELETE FROM fichiers WHERE consultation_id = $1', [consultationId]);
+            await db.query('DELETE FROM fichiers WHERE consultation_id = $1 OR message_id = $2', [consultationId, messageId]);
         }
 
         // Supprimer le message
@@ -931,6 +1214,7 @@ app.delete('/api/admin/messages/:id', requireAdmin, async (req, res) => {
         res.json({ 
             success: true, 
             deletedFiles: deletedFiles,
+            fileNames: fileNames,
             message: `Message supprimé avec ${deletedFiles} fichier(s)`
         });
 
@@ -1149,16 +1433,267 @@ app.delete('/api/admin/patients', requireAdmin, async (req, res) => {
 
 app.post('/api/admin/logout', requireAdmin, (req, res) => {
     const adminInfo = req.session.admin;
+    const sessionId = req.session.id;
+    
+    console.log('🚪 Début déconnexion admin:', {
+        adminId: adminInfo?.id,
+        username: adminInfo?.username,
+        sessionId: sessionId,
+        loginTime: adminInfo?.loginTime,
+        lastActivity: adminInfo?.lastActivity,
+        sessionDuration: adminInfo?.loginTime ? 
+            Math.round((new Date() - new Date(adminInfo.loginTime)) / 1000 / 60) + ' minutes' : 'unknown'
+    });
+    
     req.session.destroy((err) => {
         if (err) {
             console.error('❌ Erreur déconnexion admin:', err);
             return res.status(500).json({ error: 'Erreur déconnexion' });
         }
         if (adminInfo) {
-            console.log(`👋 Déconnexion admin: ${adminInfo.username}`);
+            console.log(`👋 Déconnexion admin réussie: ${adminInfo.username} (session: ${sessionId})`);
         }
         res.json({ success: true, redirect: '/admin' });
     });
+});
+
+// ===== ROUTES PARAMÈTRES CABINET =====
+
+// Route pour accéder à la page de configuration du cabinet
+app.get('/admin/cabinet', requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin-cabinet.html'));
+});
+
+// Route pour la page des numéros d'urgence
+app.get('/admin/emergency', requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin-emergency.html'));
+});
+
+// Route pour la page de configuration du chat IA
+app.get('/admin/chat', requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin-chat.html'));
+});
+
+// Route pour la page des horaires d'ouverture
+app.get('/admin/schedule', requireAdmin, (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin-schedule.html'));
+});
+
+// GET - Récupérer tous les paramètres du cabinet
+app.get('/api/admin/cabinet-settings', requireAdmin, async (req, res) => {
+    try {
+        const result = await db.query('SELECT setting_key, setting_value, setting_type FROM cabinet_settings');
+        
+        const settings = {};
+        result.rows.forEach(row => {
+            let value = row.setting_value;
+            
+            // Convertir selon le type
+            if (row.setting_type === 'json' && value) {
+                try {
+                    value = JSON.parse(value);
+                } catch (e) {
+                    console.warn(`Erreur parsing JSON pour ${row.setting_key}:`, e);
+                }
+            } else if (row.setting_type === 'number' && value) {
+                value = parseInt(value);
+            } else if (row.setting_type === 'boolean' && value) {
+                value = value === 'true';
+            }
+            
+            settings[row.setting_key] = value;
+        });
+
+        res.json({ success: true, settings });
+
+    } catch (error) {
+        console.error('Erreur récupération paramètres cabinet:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// POST - Sauvegarder des paramètres du cabinet
+app.post('/api/admin/cabinet-settings', requireAdmin, async (req, res) => {
+    try {
+        const { settings } = req.body;
+        
+        if (!settings || typeof settings !== 'object') {
+            return res.status(400).json({ error: 'Paramètres invalides' });
+        }
+
+        const adminId = req.session.admin.id;
+        
+        // Préparer les requêtes d'upsert
+        for (const [key, value] of Object.entries(settings)) {
+            if (value !== undefined && value !== null) {
+                await db.query(`
+                    INSERT INTO cabinet_settings (setting_key, setting_value, updated_by)
+                    VALUES ($1, $2, $3)
+                    ON CONFLICT (setting_key)
+                    DO UPDATE SET 
+                        setting_value = $2,
+                        updated_at = CURRENT_TIMESTAMP,
+                        updated_by = $3
+                `, [key, String(value), adminId]);
+            }
+        }
+
+        console.log(`✅ Paramètres cabinet mis à jour par ${req.session.admin.username}:`, Object.keys(settings));
+        res.json({ success: true, message: 'Paramètres sauvegardés avec succès' });
+
+    } catch (error) {
+        console.error('Erreur sauvegarde paramètres cabinet:', error);
+        res.status(500).json({ error: 'Erreur lors de la sauvegarde' });
+    }
+});
+
+// ===== ROUTES GESTION URGENCES =====
+
+// POST - Sauvegarder les urgences (nouvelle interface complète)
+app.post('/api/admin/urgences', requireAdmin, [
+    body('urgences').isArray({ min: 0 }),
+    body('urgences.*.nom').trim().isLength({ min: 2, max: 255 }),
+    body('urgences.*.telephone').trim().isLength({ min: 1, max: 20 }),
+    body('urgences.*.description').optional().trim().isLength({ max: 500 }),
+    body('urgences.*.site_web').optional().trim().isLength({ max: 500 }),
+    body('urgences.*.horaires').optional().trim().isLength({ max: 200 })
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: 'Données invalides', details: errors.array() });
+        }
+
+        const { urgences } = req.body;
+
+        if (!Array.isArray(urgences)) {
+            return res.status(400).json({ error: 'Format de données invalide' });
+        }
+
+        // Commencer une transaction pour assurer la cohérence
+        await db.query('BEGIN');
+
+        try {
+            // Supprimer toutes les urgences existantes
+            await db.query('DELETE FROM urgences');
+
+            // Insérer les nouvelles urgences avec leur ordre
+            for (let i = 0; i < urgences.length; i++) {
+                const urgence = urgences[i];
+                await db.query(`
+                    INSERT INTO urgences (nom, telephone, description, site_web, horaires, ordre, actif)
+                    VALUES ($1, $2, $3, $4, $5, $6, true)
+                `, [
+                    urgence.nom,
+                    urgence.telephone,
+                    urgence.description || null,
+                    urgence.site_web || null,
+                    urgence.horaires || '24h/24 - 7j/7',
+                    i + 1
+                ]);
+            }
+
+            // Valider la transaction
+            await db.query('COMMIT');
+
+            console.log(`✅ ${urgences.length} urgences sauvegardées par ${req.session.admin.username}`);
+            
+            res.json({ 
+                success: true,
+                count: urgences.length,
+                message: `${urgences.length} numéro(s) d'urgence sauvegardé(s) avec succès`
+            });
+
+        } catch (error) {
+            // Annuler la transaction en cas d'erreur
+            await db.query('ROLLBACK');
+            throw error;
+        }
+
+    } catch (error) {
+        console.error('Erreur sauvegarde urgences:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// PUT - Modifier une urgence (conservé pour compatibilité)
+app.put('/api/admin/urgences/:id', requireAdmin, [
+    body('nom').trim().isLength({ min: 2, max: 255 }),
+    body('telephone').optional().trim().isLength({ max: 20 }),
+    body('description').optional().trim().isLength({ max: 500 }),
+    body('site_web').optional().trim().isLength({ max: 500 }),
+    body('horaires').optional().trim().isLength({ max: 200 }),
+    body('actif').optional().isBoolean()
+], async (req, res) => {
+    try {
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ error: 'Données invalides', details: errors.array() });
+        }
+
+        const urgenceId = parseInt(req.params.id);
+        if (isNaN(urgenceId)) {
+            return res.status(400).json({ error: 'ID urgence invalide' });
+        }
+
+        const { nom, telephone, description, site_web, horaires, actif } = req.body;
+
+        const result = await db.query(`
+            UPDATE urgences 
+            SET nom = $1, telephone = $2, description = $3, site_web = $4, horaires = $5, actif = $6, updated_at = CURRENT_TIMESTAMP
+            WHERE id = $7
+            RETURNING id, nom
+        `, [nom, telephone || null, description || null, site_web || null, horaires || null, actif, urgenceId]);
+
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Urgence non trouvée' });
+        }
+
+        console.log(`✅ Urgence modifiée: ${result.rows[0].nom} (ID: ${result.rows[0].id}) par ${req.session.admin.username}`);
+        
+        res.json({ 
+            success: true, 
+            urgence: result.rows[0],
+            message: 'Numéro d\'urgence modifié avec succès'
+        });
+
+    } catch (error) {
+        console.error('Erreur modification urgence:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
+});
+
+// DELETE - Supprimer une urgence (conservé pour compatibilité)
+app.delete('/api/admin/urgences/:id', requireAdmin, async (req, res) => {
+    try {
+        const urgenceId = parseInt(req.params.id);
+        if (isNaN(urgenceId)) {
+            return res.status(400).json({ error: 'ID urgence invalide' });
+        }
+
+        // Récupérer le nom avant suppression pour les logs
+        const urgenceResult = await db.query('SELECT nom FROM urgences WHERE id = $1', [urgenceId]);
+        
+        if (urgenceResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Urgence non trouvée' });
+        }
+
+        const urgenceNom = urgenceResult.rows[0].nom;
+
+        // Supprimer
+        await db.query('DELETE FROM urgences WHERE id = $1', [urgenceId]);
+        
+        console.log(`🗑️ Urgence supprimée: ${urgenceNom} (ID: ${urgenceId}) par ${req.session.admin.username}`);
+        
+        res.json({ 
+            success: true,
+            message: 'Numéro d\'urgence supprimé avec succès'
+        });
+
+    } catch (error) {
+        console.error('Erreur suppression urgence:', error);
+        res.status(500).json({ error: 'Erreur serveur' });
+    }
 });
 
 // ===== UTILITAIRES =====
@@ -1192,22 +1727,37 @@ app.use((error, req, res, next) => {
 
 app.use((req, res) => {
     console.warn(`❓ Route non trouvée: ${req.method} ${req.url}`);
-    res.status(404).json({ error: 'Page non trouvée' });
+    
+    // Si c'est une requête API, retourner du JSON
+    if (req.url.startsWith('/api/')) {
+        return res.status(404).json({ error: 'Endpoint API non trouvé' });
+    }
+    
+    // Sinon, servir la page 404 HTML
+    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
 });
 
-// Test de connexion DB - ✅ GESTION D'ERREUR AMÉLIORÉE
-async function testDatabaseConnection() {
-    try {
-        const result = await db.query('SELECT NOW() as current_time, version() as db_version');
-        console.log('✅ Base de données connectée:', {
-            time: result.rows[0].current_time,
-            version: result.rows[0].db_version.split(' ')[0]
-        });
-        return true;
-    } catch (error) {
-        console.error('❌ Erreur DB:', error.message);
-        return false;
+// Test de connexion DB avec retry - ✅ GESTION D'ERREUR AMÉLIORÉE
+async function testDatabaseConnection(retries = 5, delay = 5000) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            const result = await db.query('SELECT NOW() as current_time, version() as db_version');
+            console.log('✅ Base de données connectée:', {
+                time: result.rows[0].current_time,
+                version: result.rows[0].db_version.split(' ')[0]
+            });
+            return true;
+        } catch (error) {
+            const attempt = i + 1;
+            if (attempt === retries) {
+                console.error(`❌ Erreur DB après ${retries} tentatives:`, error.message);
+                return false;
+            }
+            console.warn(`⚠️ Tentative ${attempt}/${retries} échouée, retry dans ${delay/1000}s...`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
     }
+    return false;
 }
 
 // ✅ CRÉATION AUTOMATIQUE DE L'ADMIN DEPUIS LE .ENV
@@ -1268,8 +1818,9 @@ async function createAdminFromEnv() {
 
 // Démarrage du serveur - ✅ GESTION D'ERREUR ULTRA ROBUSTE
 app.listen(PORT, '0.0.0.0', async () => {
-    console.log('🏥 Assistant Médical Dr Cuffel');
-    console.log(`🚀 Serveur démarré sur le port ${PORT}`);
+    const EXTERNAL_PORT = process.env.EXTERNAL_PORT || '4480';
+    console.log('🏥 Assistant Médical - Cabinet');
+    console.log(`🚀 Serveur démarré sur le port ${EXTERNAL_PORT}`);
     console.log(`🌍 Environnement: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🕐 Démarrage: ${new Date().toLocaleString('fr-FR')}`);
     
@@ -1281,6 +1832,10 @@ app.listen(PORT, '0.0.0.0', async () => {
     } else {
         // Créer l'admin depuis les variables .env
         await createAdminFromEnv();
+        
+        // Générer le prompt système initial
+        await generateSystemPrompt();
+        console.log('✅ Prompt système IA généré avec les paramètres du cabinet');
     }
 
     // Créer le dossier uploads
@@ -1308,12 +1863,14 @@ app.listen(PORT, '0.0.0.0', async () => {
     }
     
     console.log('✅ Application prête et sécurisée !');
-    console.log(`🌐 Container interne sur port ${PORT} - Accès externe via nginx (port configuré dans docker-compose.yml)`);
-    console.log(`📍 URLs internes container:`);
-    console.log(`   • Site: http://localhost:${PORT}`);
-    console.log(`   • Patients: http://localhost:${PORT}/login`);
-    console.log(`   • Admin: http://localhost:${PORT}/admin`);
-    console.log(`   • Health: http://localhost:${PORT}/api/health`);
+    
+    const externalPort = process.env.EXTERNAL_PORT || '4480';
+    console.log(`🌐 Application accessible sur le port externe: ${externalPort}`);
+    console.log(`📍 URLs d'accès:`);
+    console.log(`   • Site: http://localhost:${externalPort}`);
+    console.log(`   • Patients: http://localhost:${externalPort}/login`);
+    console.log(`   • Admin: http://localhost:${externalPort}/admin`);
+    console.log(`   • Health: http://localhost:${externalPort}/api/health`);
     
     console.log('🎉 Serveur complètement initialisé - Prêt à recevoir des connexions');
 });

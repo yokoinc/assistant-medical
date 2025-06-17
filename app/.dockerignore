@@ -1,0 +1,34 @@
+# Fichiers à ignorer lors du build Docker
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Fichiers temporaires
+.tmp
+.cache
+
+# Fichiers Git
+.git
+.gitignore
+
+# Documentation
+*.md
+!README.md
+
+# Fichiers de développement
+.vscode
+.idea
+
+# Logs
+logs
+*.log
+
+# Tests
+test
+tests
+*.test.js
+
+# Coverage
+coverage
+.nyc_output

@@ -3,406 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Paramètres du Cabinet - Administration</title>
+    <title>Paramètres - Administration</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <style>
-        /* Styles spécifiques page admin paramètres */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        /* Import du header unifié */
-        @import url('admin-header-template.css');
-
-        /* Import des styles admin communs */
-        @import url('admin-common.css');
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Main Layout */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Navigation */
-        .nav-breadcrumb {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-breadcrumb a {
-            color: #1e40af;
-            text-decoration: none;
-        }
-
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        /* Settings Grid */
-        .settings-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-        }
-
-        .settings-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .section-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #1e293b;
-        }
-
-        .section-body {
-            padding: 1.5rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: #1e40af;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .form-description {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-top: 0.25rem;
-        }
-
-        /* Styles supprimés - horaires gérés sur page dédiée */
-
-
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 0.75rem;
-            max-width: 500px;
-            width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-        }
-
-        .modal-close:hover {
-            background: #f1f5f9;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
-        /* Loading */
-        .loading-spinner {
-            display: inline-block;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid #e5e7eb;
-            border-radius: 50%;
-            border-top-color: currentColor;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Suggestions dropdown */
-        .suggestions-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: white;
-            border: 1px solid #d1d5db;
-            border-top: none;
-            border-radius: 0 0 0.5rem 0.5rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-height: 200px;
-            overflow-y: auto;
-            z-index: 1000;
-        }
-
-        .suggestion-item {
-            padding: 0.75rem;
-            cursor: pointer;
-            border-bottom: 1px solid #f1f5f9;
-            transition: background-color 0.2s;
-        }
-
-        .suggestion-item:hover {
-            background: #f8fafc;
-        }
-
-        .suggestion-item:last-child {
-            border-bottom: none;
-        }
-
-        .suggestion-main {
-            font-weight: 500;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
-        }
-
-        .suggestion-details {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .suggestion-loading {
-            padding: 0.75rem;
-            text-align: center;
-            color: #64748b;
-            font-style: italic;
-        }
-
-        /* Success/Error States */
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .alert.error {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .alert.active {
-            display: block;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .main-container {
-                padding: 1rem;
-            }
-
-            .settings-grid {
-                grid-template-columns: 1fr;
-            }
-
-
-            /* Styles horaires supprimés */
-        }
-    </style>
+    <link href="/styles.css?v=parameters-cards-fixed" rel="stylesheet">
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-cogs"></i>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div>
+                        <h1 id="adminTitle">Administration</h1>
+                        <p id="doctorSpecialty">Configuration Cabinet</p>
+                    </div>
                 </div>
-                <div>
-                    <h1>Paramètres du Cabinet</h1>
-                    <p>Configuration générale</p>
-                </div>
-            </div>
-            <div class="user-nav">
-                <a href="/admin/emergency" class="btn btn-secondary">
-                    <i class="fas fa-phone-alt"></i>
-                    Urgences
-                </a>
-                <a href="/admin/dashboard" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour
-                </a>
-                <button class="btn btn-danger" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Déconnexion
-                </button>
+                <nav class="nav">
+                    <a href="/admin/dashboard" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Dashboard
+                    </a>
+                    <a href="/admin/patients" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Patients
+                    </a>
+                    <a href="/admin/schedule" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        Planning
+                    </a>
+                    <a href="/admin/chat" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        Chat IA
+                    </a>
+                    <a href="/admin/cabinet" class="nav-link active">
+                        <i class="fas fa-building"></i>
+                        Cabinet
+                    </a>
+                    <a href="/admin/emergency" class="nav-link">
+                        <i class="fas fa-phone-alt"></i>
+                        Urgences
+                    </a>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Déconnexion
+                    </button>
+                </nav>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <div class="main-container">
-        <!-- Navigation Breadcrumb -->
-        <div class="nav-breadcrumb">
-            <a href="/admin/dashboard">
-                <i class="fas fa-home"></i>
-                Dashboard
-            </a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Paramètres du Cabinet</span>
-        </div>
+    <main>
+        <section class="section" style="padding-top: var(--spacing-12);">
+            <div class="container">
+                <!-- Alerts -->
+                <div id="successAlert" class="alert success" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successMessage">Paramètres sauvegardés avec succès</span>
+                </div>
 
-        <!-- Alerts -->
-        <div id="successAlert" class="alert success">
-            <i class="fas fa-check-circle"></i>
-            <span id="successMessage">Paramètres sauvegardés avec succès</span>
-        </div>
-
-        <div id="errorAlert" class="alert error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorMessage">Erreur lors de la sauvegarde</span>
-        </div>
-
-        <!-- Settings Grid -->
-        <div class="settings-grid">
+                <div id="errorAlert" class="alert error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorMessage">Erreur lors de la sauvegarde</span>
+                </div>
             <!-- Informations Générales -->
-            <div class="settings-section">
-                <div class="section-header">
+            <div class="card">
+                <div class="card-header">
                     <h2 class="section-title">
                         <i class="fas fa-user-md"></i>
                         Informations Générales
                     </h2>
                 </div>
-                <div class="section-body">
+                <div class="card-body">
                     <div class="form-group">
                         <label class="form-label" for="cabinet_nom_docteur">Nom du Médecin</label>
-                        <input type="text" id="cabinet_nom_docteur" class="form-input" placeholder="Dr Nom Prénom">
+                        <input type="text" id="cabinet_nom_docteur" class="form-control" placeholder="Dr Nom Prénom">
                         <div class="form-description">Nom complet qui apparaîtra sur toutes les pages</div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_specialite">Spécialité</label>
-                        <input type="text" id="cabinet_specialite" class="form-input" placeholder="Médecin Généraliste">
+                        <input type="text" id="cabinet_specialite" class="form-control" placeholder="Médecin Généraliste">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_ville">Ville</label>
-                        <div style="position: relative;">
-                            <input type="text" id="cabinet_ville" class="form-input" placeholder="Votre Ville" autocomplete="off">
-                            <div id="ville-suggestions" class="suggestions-dropdown" style="display: none;"></div>
+                        <div >
+                            <input type="text" id="cabinet_ville" class="form-control" placeholder="Votre Ville" autocomplete="off">
+                            <div id="ville-suggestions" class="suggestions-dropdown" ></div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="assistant_nom">Nom de l'Assistant IA</label>
-                        <input type="text" id="assistant_nom" class="form-input" placeholder="Assistant Médical">
+                        <input type="text" id="assistant_nom" class="form-control" placeholder="Assistant Médical">
                     </div>
 
                     <button class="btn btn-primary" id="saveGeneralBtn">
@@ -413,35 +111,35 @@
             </div>
 
             <!-- Coordonnées -->
-            <div class="settings-section">
-                <div class="section-header">
+            <div class="card" style="margin-top: var(--spacing-6);">
+                <div class="card-header">
                     <h2 class="section-title">
                         <i class="fas fa-address-book"></i>
                         Coordonnées
                     </h2>
                 </div>
-                <div class="section-body">
+                <div class="card-body">
                     <div class="form-group">
                         <label class="form-label" for="cabinet_telephone">Téléphone</label>
-                        <input type="tel" id="cabinet_telephone" class="form-input" placeholder="+33 X XX XX XX XX" pattern="\+33 [1-9] \d{2} \d{2} \d{2} \d{2}" maxlength="17">
+                        <input type="tel" id="cabinet_telephone" class="form-control" placeholder="+33 X XX XX XX XX" pattern="\+33 [1-9] \d{2} \d{2} \d{2} \d{2}" maxlength="17">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_email">Email (optionnel)</label>
-                        <input type="email" id="cabinet_email" class="form-input" placeholder="contact@votre-cabinet.fr">
+                        <input type="email" id="cabinet_email" class="form-control" placeholder="contact@votre-cabinet.fr">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_adresse">Adresse du cabinet</label>
-                        <div style="position: relative;">
+                        <div >
                             <textarea id="cabinet_adresse" class="form-textarea" placeholder="Adresse complète du cabinet" autocomplete="off"></textarea>
-                            <div id="adresse-suggestions" class="suggestions-dropdown" style="display: none;"></div>
+                            <div id="adresse-suggestions" class="suggestions-dropdown" ></div>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_site_web">Site de prise de rendez-vous (optionnel)</label>
-                        <input type="url" id="cabinet_site_web" class="form-input" placeholder="https://votre-site-rdv.fr">
+                        <input type="url" id="cabinet_site_web" class="form-control" placeholder="https://votre-site-rdv.fr">
                     </div>
 
                     <button class="btn btn-primary" id="saveContactBtn">
@@ -451,57 +149,35 @@
                 </div>
             </div>
 
-            <!-- Horaires - Lien vers page dédiée -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-clock"></i>
-                        Horaires d'ouverture
-                    </h2>
-                    <div class="section-actions">
-                        <a href="/admin/schedule" class="btn btn-primary">
-                            <i class="fas fa-external-link-alt"></i>
-                            Configurer les horaires
-                        </a>
-                    </div>
-                </div>
-                <div class="section-body">
-                    <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 0.5rem; border: 2px dashed #d1d5db;">
-                        <i class="fas fa-clock" style="font-size: 2rem; color: #64748b; margin-bottom: 1rem;"></i>
-                        <h3 style="color: #374151; margin-bottom: 0.5rem;">Configuration des horaires d'ouverture</h3>
-                        <p style="color: #64748b; margin-bottom: 1.5rem;">
-                            Gérez vos horaires d'ouverture avec une interface intuitive et un aperçu en temps réel
-                        </p>
-                        <a href="/admin/schedule" class="btn btn-primary">
-                            <i class="fas fa-arrow-right"></i>
-                            Accéder à la gestion des horaires
-                        </a>
-                    </div>
-                </div>
-            </div>
 
             <!-- Informations Pratiques -->
-            <div class="settings-section">
-                <div class="section-header">
+            <div class="card" style="margin-top: var(--spacing-6);">
+                <div class="card-header">
                     <h2 class="section-title">
                         <i class="fas fa-info-circle"></i>
                         Informations Pratiques
                     </h2>
                 </div>
-                <div class="section-body">
+                <div class="card-body">
                     <div class="form-group">
                         <label class="form-label" for="cabinet_rdv_mode">Mode de prise de rendez-vous</label>
-                        <input type="text" id="cabinet_rdv_mode" class="form-input" placeholder="Sur rendez-vous uniquement">
+                        <input type="text" id="cabinet_rdv_mode" class="form-control" placeholder="Sur rendez-vous uniquement">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_parking">Parking</label>
-                        <input type="text" id="cabinet_parking" class="form-input" placeholder="Parking gratuit disponible">
+                        <input type="text" id="cabinet_parking" class="form-control" placeholder="Parking gratuit disponible">
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="cabinet_acces">Accessibilité</label>
-                        <input type="text" id="cabinet_acces" class="form-input" placeholder="Accessible PMR">
+                        <input type="text" id="cabinet_acces" class="form-control" placeholder="Accessible PMR">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="cabinet_infos_pratiques">Informations pratiques importantes</label>
+                        <textarea id="cabinet_infos_pratiques" class="form-textarea" rows="4" placeholder="Consultations sur rendez-vous uniquement&#10;En cas d'urgence, contactez le 15 (SAMU)&#10;Veuillez arriver 10 minutes avant votre rendez-vous"></textarea>
+                        <small class="form-help">Ces informations seront affichées sur la page d'accueil</small>
                     </div>
 
                     <button class="btn btn-primary" id="savePracticalBtn">
@@ -511,38 +187,9 @@
                 </div>
             </div>
 
-            <!-- Paramètres Chat IA - Lien vers page dédiée -->
-            <div class="settings-section">
-                <div class="section-header">
-                    <h2 class="section-title">
-                        <i class="fas fa-robot"></i>
-                        Configuration Chat IA
-                    </h2>
-                    <div class="section-actions">
-                        <a href="/admin/chat" class="btn btn-primary">
-                            <i class="fas fa-external-link-alt"></i>
-                            Configurer le chat IA
-                        </a>
-                    </div>
-                </div>
-                <div class="section-body">
-                    <div style="text-align: center; padding: 2rem; background: #f8fafc; border-radius: 0.5rem; border: 2px dashed #d1d5db;">
-                        <i class="fas fa-robot" style="font-size: 2rem; color: #64748b; margin-bottom: 1rem;"></i>
-                        <h3 style="color: #374151; margin-bottom: 0.5rem;">Configuration du Chat IA</h3>
-                        <p style="color: #64748b; margin-bottom: 1.5rem;">
-                            Configurez les limites, l'assistant virtuel et les paramètres avancés du chat médical
-                        </p>
-                        <a href="/admin/chat" class="btn btn-primary">
-                            <i class="fas fa-arrow-right"></i>
-                            Accéder à la configuration du chat
-                        </a>
-                    </div>
-                </div>
             </div>
-
-        </div>
-    </div>
-
+        </section>
+    </main>
 
     <script>
         // Variables globales
@@ -554,9 +201,9 @@
             setupEventListeners();
         });
 
+
         function setupEventListeners() {
-            // Boutons principaux
-            document.getElementById('logoutBtn').addEventListener('click', logout);
+            // Pas besoin d'addEventListener pour logout car on utilise onclick dans le HTML
             
             // Boutons de sauvegarde
             document.getElementById('saveGeneralBtn').addEventListener('click', saveGeneralSettings);
@@ -790,6 +437,7 @@
             setFieldValue('cabinet_rdv_mode', currentSettings.cabinet_rdv_mode);
             setFieldValue('cabinet_parking', currentSettings.cabinet_parking);
             setFieldValue('cabinet_acces', currentSettings.cabinet_acces);
+            setFieldValue('cabinet_infos_pratiques', currentSettings.cabinet_infos_pratiques);
         }
 
         // Fonctions horaires supprimées - gérées sur page dédiée
@@ -824,7 +472,8 @@
             const settings = {
                 cabinet_rdv_mode: document.getElementById('cabinet_rdv_mode').value,
                 cabinet_parking: document.getElementById('cabinet_parking').value,
-                cabinet_acces: document.getElementById('cabinet_acces').value
+                cabinet_acces: document.getElementById('cabinet_acces').value,
+                cabinet_infos_pratiques: document.getElementById('cabinet_infos_pratiques').value
             };
 
             await saveSettings(settings);
@@ -890,28 +539,101 @@
             }, 5000);
         }
 
-        // Déconnexion
-        async function logout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                try {
-                    const response = await fetch('/api/admin/logout', {
-                        method: 'POST'
-                    });
+        // ===== FONCTIONS DE DÉCONNEXION =====
+        
+        // Fonction de déconnexion
+        function logout() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
 
-                    const result = await response.json();
+        // Fermer modal de déconnexion
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
 
-                    if (result.success) {
-                        window.location.href = result.redirect || '/admin';
-                    } else {
-                        alert('Erreur lors de la déconnexion');
-                    }
-                } catch (error) {
-                    console.error('Erreur déconnexion:', error);
-                    window.location.href = '/admin';
+        // Confirmer la déconnexion
+        async function confirmLogout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirect || '/admin/login';
+                } else {
+                    showError('Erreur lors de la déconnexion');
+                    closeLogoutModal();
                 }
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                window.location.href = '/admin/login';
             }
         }
 
+        // ===== EVENT LISTENERS DÉCONNEXION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal de déconnexion
+            document.getElementById('logoutModalClose').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutCancel').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutConfirm').addEventListener('click', confirmLogout);
+            
+            // Fermer modal logout en cliquant à l'extérieur
+            document.getElementById('logoutModal').addEventListener('click', function(e) {
+                if (e.target.id === 'logoutModal') {
+                    closeLogoutModal();
+                }
+            });
+            
+            // Escape pour fermer les modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeLogoutModal();
+                }
+            });
+        });
+
     </script>
+
+    <!-- Modal de déconnexion -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="border-bottom: 1px solid #fee2e2; background: #fef2f2;">
+                <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </h3>
+                <button class="modal-close" id="logoutModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; padding: var(--spacing-4) 0;">
+                    <div style="font-size: 3rem; color: #dc2626; margin-bottom: var(--spacing-4);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <p style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--spacing-3); color: var(--text-primary);">
+                        Êtes-vous sûr de vouloir vous déconnecter ?
+                    </p>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">
+                        Vous devrez vous reconnecter pour accéder au tableau de bord.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="gap: var(--spacing-3);">
+                <button class="btn btn-secondary" id="logoutCancel" style="flex: 1;">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </button>
+                <button class="btn btn-danger" id="logoutConfirm" style="flex: 1;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -9,22 +9,24 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./uploads:/var/www/uploads
     depends_on:
-      - webapp
+      webapp:
+        condition: service_healthy
     restart: unless-stopped
 
   webapp:
     build: ./app
     env_file:
-      - ./app/.env
+      - .env
     environment:
       - NODE_ENV=production
       - DB_HOST=postgres
       - DB_USER=medical_user
       - DB_NAME=medical_assistant
     volumes:
-      - ./uploads:/app/uploads
+      - ./uploads:/app/uploads  # Garde seulement uploads pour persistance des fichiers
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/health', (r) => process.exit(r.statusCode === 200 ? 0 : 1)).on('error', () => process.exit(1))"]
@@ -36,13 +38,17 @@ services:
   postgres:
     image: postgres:15-alpine
     env_file:
-      - ./app/.env
+      - .env
     environment:
       - POSTGRES_DB=medical_assistant
       - POSTGRES_USER=medical_user
+      - LOAD_TEST_DATA=${LOAD_TEST_DATA:-false}
+      - EXTERNAL_PORT=${EXTERNAL_PORT:-4480}
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-clean.sql:/docker-entrypoint-initdb.d/01-init.sql
+      - ./test-data-complete.sql:/docker-entrypoint-initdb.d/02-test-data.sql
+      - ./conditional-load.sh:/docker-entrypoint-initdb.d/03-conditional-load.sh
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U medical_user -d medical_assistant"]

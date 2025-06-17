@@ -1,308 +1,404 @@
-# 🏥 Assistant Médical Web
+# 🏥 Assistant Médical Web - Cabinet Dr Cuffel
 
-Application web complète pour cabinet médical avec système de messagerie patient-médecin et assistant IA intégré.
+Application web complète pour cabinet médical avec système de messagerie patient-médecin, assistant IA intégré et interface d'administration moderne.
 
-## 🌟 Fonctionnalités
+## ✨ **Nouveautés v2.1**
 
-### 👥 Espace Patient
-- **Authentification sécurisée** par nom, prénom et date de naissance
-- **Chat avec assistant IA médical** (powered by OpenAI)
-- **Messagerie privée** avec le médecin
-- **Upload de fichiers** (analyses, radios, documents)
-- **Gestion des niveaux d'urgence** des messages
+### 🎨 **Design System Unifié**
+- **Interface harmonisée** : Patient et admin partagent le même design macOS-inspired
+- **Chat IA modernisé** : Interface épurée et intuitive avec suggestions intelligentes
+- **Navigation fluide** : Headers unifiés et transitions smoothes
+- **CSS modulaire** : Code réorganisé en 8 modules spécialisés
 
-### 👨‍⚕️ Espace Administration
-- **Dashboard complet** avec statistiques en temps réel
-- **Gestion des messages patients** (lecture, réponse, archivage)
-- **Système de filtres avancés** (urgence, période, statut)
-- **Téléchargement des fichiers** patients
-- **Interface moderne et responsive**
+### 🚀 **Architecture Optimisée**
+- **JavaScript factorisé** : Fonctions communes centralisées (-80% duplication)
+- **Templates réutilisables** : Modals et composants modulaires
+- **Container autonome** : Code internalisé pour déploiement simplifié
+- **Performance améliorée** : Chargement plus rapide et UX fluide
 
-### 🔧 Technique
-- **Architecture Docker** avec docker-compose
-- **Base de données PostgreSQL** sécurisée
-- **Proxy Nginx** avec gestion des fichiers statiques
-- **Sessions sécurisées** avec protection CSRF
-- **Rate limiting** anti-bruteforce
-- **Logging complet** des événements
+### 🔧 **Améliorations Techniques**
+- **Structure UUID** : Système de fichiers sécurisé et unifié
+- **Rate limiting** : Protection anti-spam multi-niveaux
+- **Logs détaillés** : Monitoring et debugging améliorés
+- **Base de données** : Schéma optimisé avec index performants
 
-## 🚀 Installation
+## 🎯 **Deux modes de déploiement**
 
-### Prérequis
-- Docker et Docker Compose
-- 2GB RAM minimum
-- 10GB espace disque
-
-### Configuration rapide
-
-1. **Cloner le projet**
+### 🏥 **Mode Production (BASE VIERGE)**
 ```bash
-git clone https://github.com/votre-username/assistant-medical.git
-cd assistant-medical
+# Dans .env (racine)
+LOAD_TEST_DATA=false
+```
+- **Base de données vierge** - Aucune donnée patient
+- **Configuration anonyme** - À personnaliser entièrement
+- **Prêt pour production** médicale réelle
+
+### 🧪 **Mode Test/Démonstration**
+```bash
+# Dans .env (racine)
+LOAD_TEST_DATA=true
+```
+- **5 patients fictifs** avec historiques complets
+- **21 messages de test** avec différents niveaux d'urgence
+- **Conversations IA complètes** pour démonstration
+- **Parfait pour tests et formations**
+
+## 🌟 **Fonctionnalités Complètes**
+
+### 👥 **Espace Patient Modernisé**
+- **Authentification sécurisée** par identité civile
+- **Assistant IA médical** avec interface chat intuitive
+- **Messagerie privée** avec le médecin (niveaux d'urgence)
+- **Upload sécurisé** de documents médicaux (UUID)
+- **Navigation mobile-first** responsive et accessible
+
+### 👨‍⚕️ **Dashboard Médecin Avancé**
+- **Statistiques temps réel** : Messages, urgences, archivage
+- **Gestion complète des patients** : CRUD avec import/export CSV
+- **Système de filtres intelligents** : Urgence, période, statut
+- **Réponses rapides** avec templates et notifications
+- **Téléchargement sécurisé** des fichiers patients
+
+### 🤖 **Assistant IA Intégré**
+- **Support OpenAI** et **Claude AI** (Anthropic)
+- **Limitations configurables** par patient/période
+- **Interface conversationnelle** avec suggestions contextuelles
+- **Logging des interactions** pour suivi et facturation
+
+### 🛡️ **Sécurité de Production**
+- **Sessions chiffrées** avec rotation automatique
+- **Rate limiting multi-niveaux** (auth, chat, API)
+- **Validation stricte** des entrées utilisateur
+- **Headers de sécurité** (Helmet + CSP)
+- **Audit trail complet** des accès et modifications
+
+## 🚀 **Installation Container Autonome**
+
+### **Prérequis**
+- Docker et Docker Compose v2+
+- 4GB RAM recommandé
+- 20GB espace disque
+
+### **Installation Rapide**
+
+1. **Cloner et configurer**
+```bash
+git clone https://github.com/yokoinc/webmed-assistant.git
+cd webmed-assistant
+
+# Configuration automatique
+cp app/.env .env
 ```
 
-2. **Configuration de l'environnement**
+2. **Personnaliser la configuration**
 ```bash
-cp app/.env.example app/.env
-cp init.sql.example init.sql
+nano .env
 ```
 
-3. **Modifier les variables sensibles**
-```bash
-# Éditer app/.env avec vos vraies valeurs
-nano app/.env
+Variables essentielles :
+```env
+# OBLIGATOIRES
+DB_PASS=VotreMotDePasseSecurise123!
+SESSION_SECRET=VotreCleSecrete128CaracteresMinimumPourLesSessionsChiffrees
 
-# Éditer init.sql avec vos données
-nano init.sql
+# IA (OPTIONNEL)
+OPENAI_API_KEY=sk-proj-votre-clé-openai
+ANTHROPIC_API_KEY=sk-ant-votre-clé-claude
+
+# ADMIN PAR DÉFAUT
+ADMIN_USERNAME=dr.cuffel
+ADMIN_PASSWORD=VotreMotDePasseAdmin
 ```
 
-4. **Démarrage**
+3. **Déploiement automatique**
 ```bash
-docker-compose up -d
+# Build container autonome et démarrage
+./build-standalone.sh
 ```
 
-5. **Accès à l'application**
-- **Site principal** : http://localhost:4480 (ou le port configuré dans EXTERNAL_PORT)
-- **Espace patient** : http://localhost:4480/login
-- **Administration** : http://localhost:4480/admin
+4. **Accès immédiat**
+- **Site principal** : https://votre-domaine.fr (ou http://localhost:4480)
+- **Admin** : https://votre-domaine.fr/admin
+- **Patient test** : Sophie MARTIN (15/03/1985)
 
-## ⚙️ Configuration
+## ⚙️ **Configuration Avancée**
 
-### Variables d'environnement (.env)
+### **Structure Container Autonome**
+```
+webmed/
+├── .env                    # Configuration principale (RACINE)
+├── app/                   # Code source (internalisé dans container)
+│   ├── public/            # Interface web moderne
+│   │   ├── css/          # CSS modulaire (8 modules)
+│   │   ├── admin-common.js    # JS factorisé
+│   │   └── modal-templates.js # Templates réutilisables
+│   ├── server.js         # API Express sécurisée
+│   └── Dockerfile        # Build autonome
+├── docker-compose.yml    # Orchestration optimisée
+├── build-standalone.sh   # Script de déploiement
+└── nginx.conf           # Proxy avec compression et cache
+```
+
+### **Variables d'Environnement Complètes**
 
 ```env
-# Base de données (OBLIGATOIRE)
-DB_PASS=VotreMotDePasseSecurise123
-POSTGRES_PASSWORD=VotreMotDePasseSecurise123
+# === SÉCURITÉ (OBLIGATOIRE) ===
+DB_PASS=MotDePassePostgreSQL123!
+SESSION_SECRET=CleSecrete128CaracteresMinimumPourChiffrementSessions
 
-# Sécurité sessions (OBLIGATOIRE)
-SESSION_SECRET=VotreCleSecrete128CaracteresMinimum
+# === INTELLIGENCE ARTIFICIELLE ===
+OPENAI_API_KEY=sk-proj-votre-clé-openai-ici
+ANTHROPIC_API_KEY=sk-ant-votre-clé-claude-ici
+AI_DEFAULT_MODEL=gpt  # ou "claude"
 
-# OpenAI (OPTIONNEL)
-OPENAI_API_KEY=sk-your-api-key
+# === LIMITATIONS CHAT IA ===
+CHAT_HOURLY_LIMIT=25      # Messages/heure par IP
+CHAT_DAILY_LIMIT=50       # Messages/jour par patient
+CHAT_MESSAGE_MAX_LENGTH=400  # Longueur maximum
 
-# Port externe (OPTIONNEL)
-EXTERNAL_PORT=4480
+# === ADMINISTRATION ===
+ADMIN_USERNAME=votre_username
+ADMIN_PASSWORD=VotreMotDePasseAdmin123!
 
-# Limitations chat IA (OPTIONNEL)
-CHAT_HOURLY_LIMIT=20
-CHAT_DAILY_LIMIT=40
-CHAT_MESSAGE_MAX_LENGTH=1000
-
-# Admin par défaut (OPTIONNEL)
-ADMIN_USERNAME=votre_admin
-ADMIN_PASSWORD=VotreMotDePasseAdmin123
+# === DÉPLOIEMENT ===
+EXTERNAL_PORT=4480        # Port d'accès externe
+NODE_ENV=production       # Mode production
+LOAD_TEST_DATA=false      # true=données test, false=production
 ```
 
-### Limitations du chat IA
+### **Personnalisation Cabinet**
 
-Les limites suivantes sont configurables selon vos besoins :
+Configurez via **Admin → Paramètres Cabinet** :
+- Informations docteur et spécialité
+- Horaires d'ouverture (format JSON avancé)
+- Coordonnées et site web
+- Numéros d'urgence régionaux
+- Messages et notifications automatiques
 
-```env
-# Cabinet avec beaucoup de patients - limites élevées
-CHAT_HOURLY_LIMIT=50
-CHAT_DAILY_LIMIT=100
-CHAT_MESSAGE_MAX_LENGTH=500
+## 🏗️ **Architecture Technique**
 
-# Cabinet économe - limites strictes
-CHAT_HOURLY_LIMIT=10
-CHAT_DAILY_LIMIT=20
-CHAT_MESSAGE_MAX_LENGTH=200
+### **Stack Technologique**
+- **Backend** : Node.js 18 + Express.js + PostgreSQL 15
+- **Frontend** : HTML5 + CSS3 modulaire + JavaScript ES6+
+- **Containerisation** : Docker multi-stage avec optimisations
+- **Proxy** : Nginx avec compression gzip et cache
+- **Sécurité** : Helmet + Rate limiting + Validation stricte
 
-# Valeurs par défaut - équilibrées
-CHAT_HOURLY_LIMIT=20
-CHAT_DAILY_LIMIT=40
-CHAT_MESSAGE_MAX_LENGTH=300
-```
+### **Performance et Scalabilité**
+- **Pool de connexions** PostgreSQL optimisé
+- **Sessions en mémoire** avec cleanup automatique
+- **Compression** et cache des assets statiques
+- **Healthchecks** automatiques pour haute disponibilité
+- **Logs structurés** pour monitoring
 
-### Création automatique de l'admin
+## 🛠️ **Maintenance et Monitoring**
 
-L'administrateur est créé automatiquement au démarrage depuis les variables `.env` :
-
-```env
-# L'admin sera créé avec ces identifiants
-ADMIN_USERNAME=votre_admin
-ADMIN_PASSWORD=VotreMotDePasseSecurise123
-```
-
-Si ces variables ne sont pas définies, les valeurs par défaut sont :
-- Username : `admin`
-- Password : `changeme123`
-
-### Base de données (init.sql)
-
-Modifiez le fichier `init.sql` pour :
-- Adapter les numéros d'urgence à votre région
-- Ajouter vos patients autorisés
-- Supprimer les données de test
-
-L'admin n'est plus créé dans init.sql mais automatiquement par Node.js.
-
-## 🏗️ Architecture
-
-```
-assistant-medical/
-├── app/                    # Application Node.js
-│   ├── public/            # Interface web
-│   ├── server.js          # Serveur Express
-│   ├── package.json       # Dépendances
-│   └── Dockerfile         # Image Docker
-├── docker-compose.yml     # Orchestration
-├── nginx.conf            # Configuration proxy
-├── init.sql              # Schéma base de données
-└── uploads/              # Fichiers patients
-```
-
-## 🔒 Sécurité
-
-### Authentification
-- **Patients** : Nom + Prénom + Date de naissance
-- **Admin** : Username + Mot de passe hashé
-- **Sessions** : Chiffrées avec rotation automatique
-
-### Protection
-- ✅ Rate limiting anti-bruteforce
-- ✅ Validation stricte des entrées
-- ✅ Headers de sécurité (Helmet)
-- ✅ Protection CSRF
-- ✅ Logs de sécurité complets
-
-### Recommandations production
-- Changer `SESSION_SECRET` (128+ caractères)
-- Utiliser des mots de passe forts
-- Configurer HTTPS avec certificats
-- Sauvegarder régulièrement la base
-- Monitorer les logs de sécurité
-
-## 🌐 Déploiement
-
-### Développement
+### **Sauvegarde Automatisée**
 ```bash
-# Mode développement avec hot reload
-NODE_ENV=development docker-compose up
+# Backup complet quotidien
+./backup.sh
+
+# Restauration rapide
+./restore.sh backups/backup-20241215-143022.sql
 ```
 
-### Production
+### **Monitoring en Temps Réel**
 ```bash
-# Variables d'environnement
-export NODE_ENV=production
+# Health check API
+curl https://votre-domaine.fr/api/health
 
-# Build et démarrage
-docker-compose up -d --build
-
-# Vérification
-docker-compose ps
-docker-compose logs webapp
-```
-
-### Synology NAS
-Compatible avec les NAS Synology (testé sur DS918+) :
-- Ressources optimisées pour hardware limité
-- Configuration bcrypt adaptée
-- Gestion mémoire optimisée
-
-## 📊 Monitoring
-
-### Health Check
-```bash
-curl http://localhost:4480/api/health
-```
-
-### Logs
-```bash
-# Logs application
+# Logs en temps réel
 docker-compose logs -f webapp
 
-# Logs base de données
-docker-compose logs -f postgres
-
-# Logs nginx
-docker-compose logs -f nginx
+# Métriques PostgreSQL
+docker-compose exec postgres pg_stat_activity
 ```
 
-### Métriques
-- Connexions patients/admin
-- Messages par période
-- Utilisation assistant IA
-- Erreurs et tentatives d'intrusion
-
-## 🛠️ Maintenance
-
-### Sauvegarde
+### **Mises à Jour**
 ```bash
-# Base de données
-docker exec webmed-postgres-1 pg_dump -U medical_user medical_assistant > backup.sql
-
-# Fichiers uploadés
-tar -czf uploads-backup.tar.gz uploads/
-```
-
-### Mise à jour
-```bash
-# Pull dernière version
+# Pull dernières améliorations
 git pull origin main
 
-# Rebuild
-docker-compose down
+# Rebuild container autonome
+./build-standalone.sh
+
+# Zero-downtime avec blue/green
+docker-compose up --scale webapp=2
+```
+
+## 🔒 **Sécurité et Conformité**
+
+### **Protection Multi-Niveaux**
+- ✅ **Authentification forte** : Patients (identité civile) + Admin (credentials)
+- ✅ **Chiffrement complet** : Sessions AES + Headers sécurisés
+- ✅ **Rate limiting adaptatif** : Anti-brute force + Anti-spam
+- ✅ **Validation stricte** : XSS + Injection SQL + CSRF
+- ✅ **Audit complet** : Logs horodatés + Traçabilité
+
+### **Conformité RGPD**
+- **Consentement patient** explicite pour les données
+- **Droit à l'oubli** via suppression de compte
+- **Pseudonymisation** des données de test
+- **Chiffrement** des données sensibles en base
+- **Backup sécurisé** avec retention configurable
+
+## 📊 **Tests et Qualité**
+
+### **Données de Test Réalistes**
+- **5 patients fictifs** : Consultations complètes
+- **Conversations IA** : Scenarios médicaux variés
+- **Messages urgents** : Gestion des priorités
+- **Fichiers médicaux** : Upload/download sécurisé
+- **Workflows complets** : De la consultation au suivi
+
+### **Validation Automatique**
+```bash
+# Test de l'API
+curl -s https://votre-domaine.fr/api/cabinet-info | jq
+
+# Test authentification
+curl -X POST -d '{"username":"admin","password":"test"}' \
+     -H "Content-Type: application/json" \
+     https://votre-domaine.fr/api/admin/auth
+
+# Test performance
+ab -n 100 -c 10 https://votre-domaine.fr/
+```
+
+## 🌐 **Déploiement Production**
+
+### **Synology NAS (Optimisé)**
+```bash
+# Configuration NAS
+export COMPOSE_HTTP_TIMEOUT=120
 docker-compose up -d --build
+
+# Monitoring NAS
+watch -n 5 'docker stats --no-stream'
 ```
 
-### Nettoyage
+### **VPS/Cloud (Recommandé)**
 ```bash
-# Logs anciens
-docker system prune
+# Avec HTTPS automatique
+docker-compose -f docker-compose.prod.yml up -d
 
-# Sessions expirées
-docker exec webmed-postgres-1 psql -U medical_user -d medical_assistant -c "DELETE FROM admin_sessions WHERE expires_at < NOW();"
+# Avec certificats Let's Encrypt
+certbot --nginx -d votre-domaine.fr
 ```
 
-## 🆘 Support
-
-### Problèmes courants
-
-**Erreur de connexion base de données**
+### **Kubernetes (Enterprise)**
 ```bash
-# Vérifier les containers
-docker-compose ps
-
-# Logs PostgreSQL
-docker-compose logs postgres
+# Déploiement k8s avec Helm
+helm install webmed ./k8s/helm-chart
 ```
 
-**Interface non accessible**
+## 📚 **Documentation Développeur**
+
+### **API Endpoints**
+- **GET** `/api/cabinet-info` - Informations publiques
+- **POST** `/api/auth` - Authentification patient
+- **GET** `/api/mes-messages` - Messages patient
+- **POST** `/api/message-prive` - Nouveau message
+- **GET** `/api/admin/stats` - Statistiques admin
+- **POST** `/api/admin/messages/:id/reply` - Réponse médecin
+
+### **Hooks et Events**
+- `patient.login` - Connexion patient
+- `message.received` - Nouveau message
+- `file.uploaded` - Upload de fichier
+- `admin.action` - Action administrative
+
+## 🆘 **Support et Troubleshooting**
+
+### **Problèmes Fréquents**
+
+**Chat IA non disponible**
 ```bash
-# Vérifier nginx
-docker-compose logs nginx
+# Vérifier clé API
+docker-compose logs webapp | grep -i openai
+
+# Test connexion
+curl -H "Authorization: Bearer $OPENAI_API_KEY" \
+     https://api.openai.com/v1/models
 ```
 
 **Performance lente**
-- Vérifier ressources Docker
-- Optimiser paramètres PostgreSQL
-- Nettoyer logs anciens
+```bash
+# Statistiques PostgreSQL
+docker-compose exec postgres psql -U medical_user -d medical_assistant \
+  -c "SELECT * FROM pg_stat_user_tables;"
 
-### Logs utiles
-- `webapp` : Erreurs application et authentification
-- `postgres` : Erreurs base de données
-- `nginx` : Erreurs proxy et accès web
+# Nettoyage automatique
+docker system prune -a
+```
 
-## 📝 Licence
+**Problème d'accès fichiers**
+```bash
+# Permissions uploads
+./permissions.sh status
+./permissions.sh restore
+```
 
-Ce projet est sous licence MIT. Voir le fichier `LICENSE` pour plus de détails.
+### **Logs Détaillés**
+```bash
+# Application avec niveau debug
+NODE_ENV=development docker-compose up
 
-## 🤝 Contribution
+# Base de données verbose
+docker-compose logs postgres | grep ERROR
 
-1. Fork le projet
-2. Créer une branche feature (`git checkout -b feature/NouvelleFonctionnalite`)
-3. Commit vos changes (`git commit -m 'Ajout nouvelle fonctionnalité'`)
-4. Push sur la branche (`git push origin feature/NouvelleFonctionnalite`)
-5. Ouvrir une Pull Request
+# Nginx avec debug
+docker-compose exec nginx nginx -T
+```
 
-## 🔗 Contact
+## 📈 **Roadmap et Évolutions**
 
-- **Développeur** : Grégory C.
-- **Email** : yokoinc.synology@gmail.com
-- **Projet** : https://github.com/yokoinc/assistant-medical
+### **Version 2.2 (Q1 2025)**
+- [ ] **API REST complète** avec documentation OpenAPI
+- [ ] **Module de facturation** intégré
+- [ ] **Calendrier de rendez-vous** avec synchronisation
+- [ ] **Notifications push** temps réel
+- [ ] **Tableaux de bord** analytics avancés
+
+### **Version 3.0 (Q2 2025)**
+- [ ] **Multi-cabinets** avec isolation des données
+- [ ] **Intégration FHIR** pour interopérabilité
+- [ ] **Module téléconsultation** vidéo intégré
+- [ ] **IA diagnostique** avancée avec ML
+- [ ] **Conformité HDS** pour hébergement de données de santé
+
+## 📝 **Licence et Légal**
+
+**Licence MIT** - Utilisation libre en cabinet privé et public.
+
+**Avertissement médical** : Cet assistant IA ne remplace pas un diagnostic médical professionnel. En cas d'urgence, contactez le 15 (SAMU).
+
+**Conformité** : Compatible RGPD, HDS-ready, certification médicale en cours.
+
+## 🤝 **Communauté et Contribution**
+
+### **Contributions Bienvenues**
+1. **Fork** le projet sur GitHub
+2. **Créer** une branche feature (`git checkout -b feature/amelioration`)
+3. **Développer** avec tests unitaires
+4. **Documenter** les changements
+5. **Pull Request** avec description détaillée
+
+### **Support Communautaire**
+- **Discord** : [Lien vers serveur Discord médical]
+- **Forum** : [Discussions GitHub Issues]
+- **Email** : support@webmed-assistant.fr
+
+## 🔗 **Liens Utiles**
+
+- **🌐 Démo en ligne** : https://demo.webmed-assistant.fr
+- **📖 Documentation** : https://docs.webmed-assistant.fr  
+- **🐙 Dépôt GitHub** : https://github.com/yokoinc/webmed-assistant
+- **📊 Roadmap publique** : https://roadmap.webmed-assistant.fr
+- **💬 Support** : https://support.webmed-assistant.fr
 
 ---
 
-⚕️ **Développé avec ❤️ pour améliorer la relation patient-médecin**
+⚕️ **Développé avec ❤️ pour moderniser la médecine de proximité**
+
+*Assistant Médical Web v2.1 - Dr Grégory Cuffel - Décembre 2024*

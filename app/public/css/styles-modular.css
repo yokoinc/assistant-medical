@@ -1,0 +1,28 @@
+/**
+ * STYLES MODULAIRES - Cabinet Médical
+ * Import des modules CSS pour une meilleure organisation
+ */
+
+/* Variables et thème */
+@import url('./variables.css');
+
+/* Base et reset */
+@import url('./base.css');
+
+/* Composants système */
+@import url('./components.css');
+
+/* Headers et navigation */
+@import url('./header.css');
+
+/* Modals */
+@import url('./modals.css');
+
+/* Formulaires */
+@import url('./forms.css');
+
+/* Interface admin */
+@import url('./admin.css');
+
+/* Utilitaires et responsive */
+@import url('./utilities.css');

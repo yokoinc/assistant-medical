@@ -1,0 +1,170 @@
+/* ===== VARIABLES CSS - THÈME UNIFIÉ INSPIRÉ macOS ===== */
+:root {
+    /* Palette inspirée macOS - couleurs modernes */
+    --system-blue: #007AFF;
+    --system-green: #34C759;
+    --system-red: #FF3B30;
+    --system-orange: #FF9500;
+    --system-purple: #AF52DE;
+    --system-gray: #8E8E93;
+    --system-gray2: #AEAEB2;
+    --system-gray3: #C7C7CC;
+    --system-gray4: #D1D1D6;
+    --system-gray5: #E5E5EA;
+    --system-gray6: #F2F2F7;
+    
+    /* Couleurs principales */
+    --primary-color: var(--system-blue);
+    --primary-dark: #0056D6;
+    --primary-light: #4DA6FF;
+    
+    --secondary-color: var(--system-green);
+    --secondary-dark: #248A3D;
+    --secondary-light: #5DD579;
+    
+    --accent-color: var(--system-red);
+    --accent-light: #FF6B66;
+    --accent-warning: var(--system-orange);
+    --accent-purple: var(--system-purple);
+    
+    /* Aliases pour compatibilité */
+    --primary: var(--system-blue);
+    --secondary: var(--system-green);
+    --danger: var(--system-red);
+    --success: var(--system-green);
+    --warning: var(--system-orange);
+    
+    /* Grilles de gris macOS */
+    --gray-50: #FAFAFA;
+    --gray-100: var(--system-gray6);
+    --gray-200: var(--system-gray5);
+    --gray-300: var(--system-gray4);
+    --gray-400: var(--system-gray3);
+    --gray-500: var(--system-gray2);
+    --gray-600: var(--system-gray);
+    --gray-700: #636366;
+    --gray-800: #48484A;
+    --gray-900: #1C1C1E;
+    --white: #FFFFFF;
+    --black: #000000;
+    
+    /* Backgrounds */
+    --bg-primary: var(--white);
+    --bg-secondary: var(--gray-50);
+    --bg-tertiary: var(--gray-100);
+    --bg-card: var(--white);
+    --bg-overlay: rgba(0, 0, 0, 0.4);
+    
+    /* Textes */
+    --text-primary: var(--gray-900);
+    --text-secondary: var(--gray-700);
+    --text-tertiary: var(--gray-600);
+    --text-inverse: var(--white);
+    --text-muted: var(--gray-500);
+    
+    /* Bordures */
+    --border-color: var(--gray-300);
+    --border-light: var(--gray-200);
+    --border-dark: var(--gray-400);
+    
+    /* Espacement (système 8px) */
+    --spacing-0: 0;
+    --spacing-1: 0.125rem;  /* 2px */
+    --spacing-2: 0.25rem;   /* 4px */
+    --spacing-3: 0.375rem;  /* 6px */
+    --spacing-4: 0.5rem;    /* 8px */
+    --spacing-5: 0.625rem;  /* 10px */
+    --spacing-6: 0.75rem;   /* 12px */
+    --spacing-8: 1rem;      /* 16px */
+    --spacing-10: 1.25rem;  /* 20px */
+    --spacing-12: 1.5rem;   /* 24px */
+    --spacing-16: 2rem;     /* 32px */
+    --spacing-20: 2.5rem;   /* 40px */
+    --spacing-24: 3rem;     /* 48px */
+    --spacing-32: 4rem;     /* 64px */
+    
+    /* Typographie */
+    --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    
+    --font-size-xs: 0.75rem;    /* 12px */
+    --font-size-sm: 0.875rem;   /* 14px */
+    --font-size-base: 1rem;     /* 16px */
+    --font-size-lg: 1.125rem;   /* 18px */
+    --font-size-xl: 1.25rem;    /* 20px */
+    --font-size-2xl: 1.5rem;    /* 24px */
+    --font-size-3xl: 1.875rem;  /* 30px */
+    --font-size-4xl: 2.25rem;   /* 36px */
+    --font-size-5xl: 3rem;      /* 48px */
+    
+    --font-weight-light: 300;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+    
+    --line-height-tight: 1.25;
+    --line-height-snug: 1.375;
+    --line-height-normal: 1.5;
+    --line-height-relaxed: 1.625;
+    --line-height-loose: 2;
+    
+    /* Bordures arrondies */
+    --border-radius-none: 0;
+    --border-radius-sm: 0.125rem;   /* 2px */
+    --border-radius: 0.375rem;      /* 6px */
+    --border-radius-md: 0.5rem;     /* 8px */
+    --border-radius-lg: 0.75rem;    /* 12px */
+    --border-radius-xl: 1rem;       /* 16px */
+    --border-radius-2xl: 1.5rem;    /* 24px */
+    --border-radius-full: 9999px;
+    
+    /* Ombres */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+    
+    /* Transitions */
+    --transition-fast: 150ms ease-in-out;
+    --transition: 200ms ease-in-out;
+    --transition-slow: 300ms ease-in-out;
+    
+    /* Z-index */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    
+    /* Breakpoints (pour référence) */
+    --breakpoint-sm: 640px;
+    --breakpoint-md: 768px;
+    --breakpoint-lg: 1024px;
+    --breakpoint-xl: 1280px;
+    --breakpoint-2xl: 1536px;
+}
+
+/* Mode sombre (optionnel pour le futur) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-primary: var(--gray-900);
+        --bg-secondary: var(--gray-800);
+        --bg-tertiary: var(--gray-700);
+        --bg-card: var(--gray-800);
+        
+        --text-primary: var(--white);
+        --text-secondary: var(--gray-300);
+        --text-tertiary: var(--gray-400);
+        --text-muted: var(--gray-500);
+        
+        --border-color: var(--gray-700);
+        --border-light: var(--gray-600);
+        --border-dark: var(--gray-500);
+    }
+}

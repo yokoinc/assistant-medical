@@ -3,24 +3,321 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dr Grégory Cuffel - Médecin Généraliste Le Havre</title>
+    <title id="pageTitle">Cabinet Médical</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Surcharge pour supprimer les shadows sur la page d'accueil */
+        .header .btn {
+            box-shadow: none !important;
+        }
+        
+        .header .btn:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Styles pour les cartes de services cliquables */
+        .service-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: none; /* Suppression des ombres */
+        }
+
+        .service-card.clickable {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            color: white;
+        }
+
+        .service-card.clickable:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+        }
+
+        .card-action {
+            margin-top: var(--spacing-3);
+            padding-top: var(--spacing-3);
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+        }
+
+        .service-card.clickable .card-action {
+            color: rgba(255, 255, 255, 0.9);
+            border-top-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .card-action i {
+            font-size: 0.875rem;
+        }
+
+        /* Styles pour les horaires avec badges comme l'admin */
+        .preview-jour {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-3) 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .preview-jour:last-child {
+            border-bottom: none;
+        }
+
+        .preview-jour.today {
+            background: rgba(var(--primary-color-rgb, 0, 122, 255), 0.05);
+            margin: 0 calc(-1 * var(--spacing-4));
+            padding: var(--spacing-3) var(--spacing-4);
+            border-radius: var(--border-radius-sm);
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+        .preview-jour-nom {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-2);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .preview-jour.today .preview-jour-nom {
+            color: var(--primary-color);
+        }
+
+        .preview-horaire {
+            display: flex;
+            gap: var(--spacing-2);
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            white-space: nowrap;
+        }
+
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .badge-success {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .badge-danger {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Styles pour les cartes d'urgence individuelles */
+        .urgences-individual-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-6);
+            margin-top: var(--spacing-4);
+        }
+
+        .urgence-individual-card {
+            transition: transform 0.3s ease; /* Suppression de la transition shadow */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .urgence-individual-card:hover {
+            transform: translateY(-5px);
+            box-shadow: none; /* Suppression des ombres */
+        }
+
+        .urgence-individual-card .card-body {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .urgence-phone-large {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin: var(--spacing-4) 0;
+            letter-spacing: 0.1em;
+        }
+
+        .urgence-description {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--font-size-sm);
+            margin: var(--spacing-2) 0;
+        }
+
+        .urgence-hours {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            margin-top: auto;
+            margin-bottom: 0;
+            background: var(--bg-secondary);
+            padding: var(--spacing-2);
+            border-radius: var(--border-radius-sm);
+        }
+
+        .urgence-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            color: var(--primary-color);
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            font-weight: 600;
+            margin-top: var(--spacing-3);
+        }
+
+        .urgence-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .urgences-individual-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: var(--spacing-4);
+            }
+
+            .urgence-phone-large {
+                font-size: 2rem;
+            }
+        }
+
+        /* Styles pour le plan d'accès horizontal */
+        .acces-horizontal-grid {
+            display: grid;
+            gap: var(--spacing-6);
+            align-items: stretch;
+        }
+
+        /* Grid dynamique en fonction du contenu */
+        .acces-horizontal-grid.has-few-items {
+            grid-template-columns: auto 1fr;
+        }
+
+        .acces-horizontal-grid.has-many-items {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .acces-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-4);
+        }
+
+        .acces-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--spacing-3);
+            padding: var(--spacing-3);
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            border: none;
+        }
+
+        .acces-item i {
+            color: var(--text-secondary);
+            font-size: 1.25rem;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .acces-item-content h4 {
+            margin: 0 0 var(--spacing-1) 0;
+            font-size: var(--font-size-base);
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .acces-item-content p {
+            margin: 0;
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .acces-map {
+            box-shadow: none; /* Suppression des ombres */
+            width: 100%;
+            min-height: 400px;
+            background: #f5f5f5;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+        }
+
+        /* Alignement en hauteur pour que la carte s'étende sur toute la hauteur */
+        .acces-horizontal-grid {
+            display: grid;
+            gap: var(--spacing-6);
+            align-items: start;
+        }
+        
+        .acces-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-4);
+        }
+
+        .acces-map iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 400px;
+            border: none;
+            border-radius: var(--border-radius-lg);
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .acces-horizontal-grid {
+                grid-template-columns: 1fr;
+                gap: var(--spacing-4);
+            }
+
+            .acces-map iframe {
+                min-height: 300px;
+            }
+        }
+    </style>
 </head>
 <body>
     <header class="header">
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <i class="fas fa-user-md"></i>
-                    <h1>Dr Grégory Cuffel</h1>
-                    <p>Médecin Généraliste - Le Havre</p>
+                    <div class="logo-icon">
+                        <i class="fas fa-stethoscope"></i>
+                    </div>
+                    <div>
+                        <h1 id="doctorName">Dr Grégory Cuffel</h1>
+                        <p id="doctorSpecialty">Médecin Généraliste</p>
+                    </div>
                 </div>
                 <nav class="nav">
-                    <a href="#horaires">Horaires</a>
-                    <a href="#urgences">Urgences</a>
-                    <a href="#contact">Contact</a>
-                    <a href="/login" class="btn-patient">Espace Patient</a>
+                    <a href="#acces" class="nav-link">Contact</a>
+                    <a href="#horaires" class="nav-link">Horaires</a>
+                    <a href="#urgences" class="nav-link">Urgences</a>
+                    <a href="/login" class="btn btn-primary">Espace Patient</a>
                 </nav>
             </div>
         </div>
@@ -41,10 +338,32 @@
                             <i class="fas fa-comments"></i>
                             Accéder à l'Espace Patient
                         </a>
-                        <a href="#contact" class="btn btn-secondary">
+                        <a href="#" id="btn-rdv" class="btn btn-rdv">
                             <i class="fas fa-phone"></i>
                             Prendre Rendez-vous
                         </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section Accès au Cabinet -->
+        <section id="acces" class="section">
+            <div class="container">
+                <h2 class="section-title">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Accès au Cabinet
+                </h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="acces-horizontal-grid">
+                            <div class="acces-info" id="acces-info-content">
+                                <!-- Chargé dynamiquement -->
+                            </div>
+                            <div class="acces-map" id="acces-map-container">
+                                <iframe id="acces-map-iframe" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -54,16 +373,29 @@
         <section id="horaires" class="section">
             <div class="container">
                 <h2 class="section-title">
-                    <i class="fas fa-clock"></i>
-                    Horaires du Cabinet
+                    <i class="fas fa-calendar-week"></i>
+                    Planning de la semaine
                 </h2>
-                <div class="horaires-grid" id="horaires-content">
-                    <!-- Chargé dynamiquement -->
+                <div class="card">
+                    <div class="card-body">
+                        <div class="preview-horaires" id="horaires-content">
+                            <!-- Chargé dynamiquement -->
+                        </div>
+                    </div>
                 </div>
-                <div class="info-box">
+
+                <h2 class="section-title" style="margin-top: var(--spacing-8);">
                     <i class="fas fa-info-circle"></i>
-                    <p><strong>Consultations sur rendez-vous uniquement</strong></p>
-                    <p>En cas d'urgence, contactez le 15 (SAMU)</p>
+                    Informations pratiques
+                </h2>
+                <div class="card">
+                    <div class="card-body">
+                        <div class="info-box">
+                            <div id="infos-pratiques-content">
+                                <!-- Chargé dynamiquement -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -73,152 +405,325 @@
             <div class="container">
                 <h2 class="section-title">
                     <i class="fas fa-ambulance"></i>
-                    Numéros d'Urgence - Le Havre
+                    Numéros d'Urgence
                 </h2>
-                <div class="urgences-grid" id="urgences-content">
+                <div class="urgences-individual-grid" id="urgences-content">
                     <!-- Chargé dynamiquement -->
                 </div>
             </div>
         </section>
 
-        <!-- Section Services -->
-        <section class="section">
-            <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-stethoscope"></i>
-                    Services Proposés
-                </h2>
-                <div class="services-grid">
-                    <div class="service-card">
-                        <i class="fas fa-user-friends"></i>
-                        <h3>Médecine Générale</h3>
-                        <p>Consultations pour adultes et enfants, suivi médical personnalisé</p>
-                    </div>
-                    <div class="service-card">
-                        <i class="fas fa-syringe"></i>
-                        <h3>Vaccinations</h3>
-                        <p>Vaccins obligatoires et recommandés, carnets de vaccination</p>
-                    </div>
-                    <div class="service-card">
-                        <i class="fas fa-file-medical"></i>
-                        <h3>Certificats Médicaux</h3>
-                        <p>Certificats pour sport, travail, et démarches administratives</p>
-                    </div>
-                    <div class="service-card">
-                        <i class="fas fa-comments"></i>
-                        <h3>Espace Patient</h3>
-                        <p>Envoi de documents et messages sécurisés via votre espace privé</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Section Contact -->
-        <section id="contact" class="section">
-            <div class="container">
-                <h2 class="section-title">
-                    <i class="fas fa-map-marker-alt"></i>
-                    Contact & Localisation
-                </h2>
-                <div class="contact-grid">
-                    <div class="contact-info" id="contact-content">
-                        <!-- Chargé dynamiquement -->
-                    </div>
-                    <div class="contact-map">
-                        <div class="map-placeholder">
-                            <i class="fas fa-map"></i>
-                            <p>Plan d'accès au cabinet</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <h4>Dr Grégory Cuffel</h4>
-                    <p>Médecin Généraliste</p>
-                    <p>Le Havre, Seine-Maritime</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Urgences 24h/24</h4>
-                    <p><strong>SAMU :</strong> 15</p>
-                    <p><strong>Pompiers :</strong> 18</p>
-                    <p><strong>Police :</strong> 17</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Patients</h4>
-                    <a href="/login">Espace Patient</a>
-                    <a href="#horaires">Horaires</a>
-                    <a href="#contact">Contact</a>
-                </div>
-            </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 Cabinet Dr Grégory Cuffel - Tous droits réservés</p>
+                <p>&copy; 2025 <span id="doctorNameFooter">Cabinet Médical</span> - Développé par yokoinc | Powered by Claude AI</p>
             </div>
         </div>
     </footer>
 
     <script>
+        // Fonction pour faire défiler vers une section
+        function scrollToSection(sectionId) {
+            const element = document.getElementById(sectionId);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
         // Chargement des informations du cabinet
         async function loadCabinetInfo() {
             try {
                 const response = await fetch('/api/cabinet-info');
                 const data = await response.json();
                 
-                // Affichage des horaires
+                console.log('Données cabinet chargées:', data);
+                
+                // Mise à jour du titre de la page et des informations du médecin
+                const pageTitle = document.getElementById('pageTitle');
+                const doctorName = document.getElementById('doctorName');
+                const doctorSpecialty = document.getElementById('doctorSpecialty');
+                const doctorNameFooter = document.getElementById('doctorNameFooter');
+                
+                if (pageTitle) pageTitle.textContent = `${data.docteur.nom} - ${data.docteur.specialite} ${data.docteur.ville}`;
+                if (doctorName) doctorName.textContent = data.docteur.nom;
+                if (doctorSpecialty) doctorSpecialty.textContent = `${data.docteur.specialite} - ${data.docteur.ville}`;
+                if (doctorNameFooter) doctorNameFooter.textContent = data.docteur.nom;
+                
+                // Affichage des horaires avec le style admin
+                console.log('Horaires reçus:', data.horaires);
                 const horairesContent = document.getElementById('horaires-content');
-                let horairesHTML = '<div class="horaires-list">';
-                for (const [jour, horaire] of Object.entries(data.horaires)) {
+                if (!horairesContent) {
+                    console.error('Element horaires-content non trouvé');
+                    return;
+                }
+                
+                let horairesHTML = '';
+                const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+                
+                jours.forEach(jour => {
+                    const horaire = data.horaires[jour];
                     const isToday = new Date().toLocaleDateString('fr-FR', { weekday: 'long' }).toLowerCase() === jour.toLowerCase();
+                    
+                    let horaireHTML = '';
+                    
+                    // Gestion du nouveau format des horaires (objet) ou ancien format (string)
+                    if (typeof horaire === 'object' && horaire !== null) {
+                        if (horaire.ferme) {
+                            horaireHTML = '<span class="badge badge-danger">Fermé</span>';
+                        } else if (horaire.journee_continue) {
+                            horaireHTML = `<span class="badge badge-success">${horaire.matin_debut.heure}h${horaire.matin_debut.minute} - ${horaire.matin_fin.heure}h${horaire.matin_fin.minute}</span>`;
+                        } else {
+                            horaireHTML = `<span class="badge badge-primary">${horaire.matin_debut.heure}h${horaire.matin_debut.minute} - ${horaire.matin_fin.heure}h${horaire.matin_fin.minute}</span> <span class="badge badge-primary">${horaire.aprem_debut.heure}h${horaire.aprem_debut.minute} - ${horaire.aprem_fin.heure}h${horaire.aprem_fin.minute}</span>`;
+                        }
+                    } else {
+                        // Ancien format (string) - Parser pour créer des badges
+                        if (!horaire || horaire === 'Fermé') {
+                            horaireHTML = '<span class="badge badge-danger">Fermé</span>';
+                        } else {
+                            // Tenter de parser l'ancien format "8h00 - 19h00" ou "8h00 - 12h00 / 14h00 - 19h00"
+                            if (horaire.includes('/')) {
+                                const parts = horaire.split('/').map(p => p.trim());
+                                horaireHTML = `<span class="badge badge-primary">${parts[0]}</span> <span class="badge badge-primary">${parts[1]}</span>`;
+                            } else {
+                                horaireHTML = `<span class="badge badge-success">${horaire}</span>`;
+                            }
+                        }
+                    }
+                    
                     horairesHTML += `
-                        <div class="horaire-item ${isToday ? 'today' : ''}">
-                            <span class="jour">${jour}</span>
-                            <span class="heure">${horaire}</span>
+                        <div class="preview-jour ${isToday ? 'today' : ''}">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                ${jour}
+                            </div>
+                            <div class="preview-horaire">${horaireHTML}</div>
                         </div>
                     `;
-                }
-                horairesHTML += '</div>';
+                });
+                
                 horairesContent.innerHTML = horairesHTML;
+                console.log('Horaires HTML généré avec badges:', horairesHTML);
 
-                // Affichage des informations de contact
+                // Affichage des informations de contact (optionnel - seulement si l'élément existe)
                 const contactContent = document.getElementById('contact-content');
-                contactContent.innerHTML = `
-                    <div class="contact-item">
-                        <i class="fas fa-phone"></i>
-                        <div>
-                            <strong>Téléphone</strong>
-                            <p>${data.contact.telephone}</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <strong>Email</strong>
-                            <p>${data.contact.email}</p>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <strong>Adresse</strong>
-                            <p>${data.contact.adresse}</p>
-                        </div>
-                    </div>
-                    <div class="info-list">
-                        ${Object.entries(data.infos).map(([key, value]) => `
-                            <div class="info-item">
-                                <strong>${key}:</strong> ${value}
+                if (contactContent) {
+                    let contactHTML = '';
+                    
+                    // Bloc contact
+                    const hasContactInfo = (data.contact.telephone && data.contact.telephone.trim() !== '') ||
+                                         (data.contact.email && data.contact.email.trim() !== '') ||
+                                         (data.contact.adresse && data.contact.adresse.trim() !== '');
+                    
+                    if (hasContactInfo) {
+                        contactHTML += `<div class="contact-block">`;
+                        
+                        // Téléphone
+                        if (data.contact.telephone && data.contact.telephone.trim() !== '') {
+                            contactHTML += `
+                                <div class="contact-item">
+                                    <i class="fas fa-phone"></i>
+                                    <div>
+                                        <strong>Téléphone</strong>
+                                        <p>${data.contact.telephone}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Email
+                        if (data.contact.email && data.contact.email.trim() !== '') {
+                            contactHTML += `
+                                <div class="contact-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <div>
+                                        <strong>Email</strong>
+                                        <p>${data.contact.email}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // Adresse
+                        if (data.contact.adresse && data.contact.adresse.trim() !== '') {
+                            contactHTML += `
+                                <div class="contact-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <div>
+                                        <strong>Adresse</strong>
+                                        <p>${data.contact.adresse.replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        contactHTML += `</div>`;
+                    }
+                    
+                    // Bloc informations pratiques
+                    if (Object.keys(data.infos).length > 0) {
+                        contactHTML += `
+                            <div class="info-block">
+                                ${Object.entries(data.infos).map(([key, value]) => `
+                                    <div class="info-item">
+                                        <strong>${key}:</strong> ${value}
+                                    </div>
+                                `).join('')}
                             </div>
-                        `).join('')}
-                    </div>
-                `;
+                        `;
+                    }
+                    
+                    contactContent.innerHTML = contactHTML;
+                }
+                
+                // Gestion du bouton Prendre Rendez-vous
+                const btnRdv = document.getElementById('btn-rdv');
+                if (btnRdv) {
+                    if (data.contact.site_web && data.contact.site_web.trim() !== '') {
+                        btnRdv.href = data.contact.site_web;
+                        btnRdv.target = '_blank';
+                        btnRdv.innerHTML = '<i class="fas fa-calendar-plus"></i> Prendre Rendez-vous';
+                    } else {
+                        btnRdv.href = '#acces';
+                        btnRdv.innerHTML = '<i class="fas fa-phone"></i> Nous Contacter';
+                    }
+                }
+                
+                // Gestion de la carte (afficher seulement si adresse présente et éléments existent)
+                const mapContainer = document.getElementById('contact-map-container');
+                const mapIframe = document.getElementById('map-iframe');
+                const contactGrid = document.querySelector('.contact-grid');
+                
+                if (mapContainer && mapIframe && data.contact.adresse && data.contact.adresse.trim() !== '') {
+                    // Utiliser Bing Maps Embed (fonctionne sans clé API)
+                    const adresseForMap = encodeURIComponent(data.contact.adresse);
+                    const bingMapsUrl = `https://www.bing.com/maps/embed?h=600&w=800&cp=49.4944~0.1079&lvl=15&typ=d&sty=r&src=SHELL&FORM=MBEDV8&q=${adresseForMap}`;
+                    
+                    mapIframe.src = bingMapsUrl;
+                    mapContainer.style.display = 'block';
+                    if (contactGrid) contactGrid.classList.remove('no-map');
+                } else if (mapContainer) {
+                    // Masquer la carte si pas d'adresse et ajuster la grille
+                    mapContainer.style.display = 'none';
+                    if (contactGrid) contactGrid.classList.add('no-map');
+                }
+
+                // Chargement des informations pratiques
+                const infosPratiquesContent = document.getElementById('infos-pratiques-content');
+                
+                if (infosPratiquesContent) {
+                    let infosPratiquesText = '';
+                    
+                    // Récupérer depuis les paramètres admin ou utiliser le défaut
+                    if (data.settings && data.settings.cabinet_infos_pratiques) {
+                        infosPratiquesText = data.settings.cabinet_infos_pratiques;
+                    } else {
+                        // Valeur par défaut si pas configuré
+                        infosPratiquesText = 'Consultations sur rendez-vous uniquement\nEn cas d\'urgence, contactez le 15 (SAMU)\nVeuillez arriver 10 minutes avant votre rendez-vous';
+                    }
+                    
+                    // Convertir les sauts de ligne en éléments de liste
+                    const lignes = infosPratiquesText.split('\n').filter(ligne => ligne.trim());
+                    
+                    if (lignes.length > 0) {
+                        const htmlContent = `
+                            <ul style="margin: 0 0 0 var(--spacing-4);">
+                                ${lignes.map(ligne => `<li>${ligne.trim()}</li>`).join('')}
+                            </ul>
+                        `;
+                        infosPratiquesContent.innerHTML = htmlContent;
+                    }
+                }
 
             } catch (error) {
                 console.error('Erreur chargement infos cabinet:', error);
+                // Affichage des horaires par défaut en cas d'erreur avec le style admin
+                const horairesContent = document.getElementById('horaires-content');
+                if (horairesContent) {
+                    horairesContent.innerHTML = `
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Lundi
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-primary">8h00 - 12h00</span> 
+                                <span class="badge badge-primary">14h00 - 19h00</span>
+                            </div>
+                        </div>
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Mardi
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-primary">8h00 - 12h00</span> 
+                                <span class="badge badge-primary">14h00 - 19h00</span>
+                            </div>
+                        </div>
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Mercredi
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-primary">8h00 - 12h00</span> 
+                                <span class="badge badge-primary">14h00 - 19h00</span>
+                            </div>
+                        </div>
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Jeudi
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-primary">8h00 - 12h00</span> 
+                                <span class="badge badge-primary">14h00 - 19h00</span>
+                            </div>
+                        </div>
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Vendredi
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-primary">8h00 - 12h00</span> 
+                                <span class="badge badge-primary">14h00 - 19h00</span>
+                            </div>
+                        </div>
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Samedi
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-success">8h00 - 12h00</span>
+                            </div>
+                        </div>
+                        <div class="preview-jour">
+                            <div class="preview-jour-nom">
+                                <i class="fas fa-calendar-day"></i>
+                                Dimanche
+                            </div>
+                            <div class="preview-horaire">
+                                <span class="badge badge-danger">Fermé</span>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Fallback pour les informations pratiques en cas d'erreur
+                const infosPratiquesContent = document.getElementById('infos-pratiques-content');
+                if (infosPratiquesContent && !infosPratiquesContent.innerHTML.trim()) {
+                    infosPratiquesContent.innerHTML = `
+                        <ul style="margin: 0 0 0 var(--spacing-4);">
+                            <li>Consultations sur rendez-vous uniquement</li>
+                            <li>En cas d'urgence, contactez le 15 (SAMU)</li>
+                            <li>Veuillez arriver 10 minutes avant votre rendez-vous</li>
+                        </ul>
+                    `;
+                }
             }
         }
 
@@ -230,20 +735,63 @@
                 
                 const urgencesContent = document.getElementById('urgences-content');
                 urgencesContent.innerHTML = urgences.map(urgence => `
-                    <div class="urgence-card ${urgence.type}">
-                        <div class="urgence-header">
-                            <i class="fas fa-phone-alt"></i>
-                            <h3>${urgence.nom}</h3>
+                    <div class="card urgence-individual-card">
+                        <div class="card-body">
+                            <div class="urgence-phone-large">${urgence.telephone}</div>
+                            <h3 style="text-align: center; margin: var(--spacing-2) 0;">${urgence.nom}</h3>
+                            <div class="urgence-description">${urgence.description || 'Service d\'urgence'}</div>
+                            <div class="urgence-hours">${urgence.horaires || '24h/24 - 7j/7'}</div>
+                            ${urgence.site_web ? `
+                                <div style="text-align: center; margin-top: var(--spacing-3);">
+                                    <a href="${urgence.site_web}" target="_blank" class="urgence-link">
+                                        <i class="fas fa-globe"></i> Site web
+                                    </a>
+                                </div>
+                            ` : ''}
                         </div>
-                        <div class="urgence-phone">${urgence.telephone}</div>
-                        ${urgence.adresse ? `<p class="urgence-address">${urgence.adresse}</p>` : ''}
-                        ${urgence.horaires ? `<p class="urgence-hours">${urgence.horaires}</p>` : ''}
-                        ${urgence.site_web ? `<a href="${urgence.site_web}" target="_blank" class="urgence-link">Site web</a>` : ''}
                     </div>
                 `).join('');
 
             } catch (error) {
                 console.error('Erreur chargement urgences:', error);
+                // Affichage des numéros d'urgence par défaut en cas d'erreur
+                const urgencesContent = document.getElementById('urgences-content');
+                if (urgencesContent) {
+                    urgencesContent.innerHTML = `
+                        <div class="card urgence-individual-card">
+                            <div class="card-body">
+                                <div class="urgence-phone-large">15</div>
+                                <h3 style="text-align: center; margin: var(--spacing-2) 0;">SAMU</h3>
+                                <div class="urgence-description">Numéro d'urgence gratuit</div>
+                                <div class="urgence-hours">24h/24 - 7j/7</div>
+                            </div>
+                        </div>
+                        <div class="card urgence-individual-card">
+                            <div class="card-body">
+                                <div class="urgence-phone-large">18</div>
+                                <h3 style="text-align: center; margin: var(--spacing-2) 0;">Pompiers</h3>
+                                <div class="urgence-description">Numéro d'urgence gratuit</div>
+                                <div class="urgence-hours">24h/24 - 7j/7</div>
+                            </div>
+                        </div>
+                        <div class="card urgence-individual-card">
+                            <div class="card-body">
+                                <div class="urgence-phone-large">17</div>
+                                <h3 style="text-align: center; margin: var(--spacing-2) 0;">Police/Gendarmerie</h3>
+                                <div class="urgence-description">Numéro d'urgence gratuit</div>
+                                <div class="urgence-hours">24h/24 - 7j/7</div>
+                            </div>
+                        </div>
+                        <div class="card urgence-individual-card">
+                            <div class="card-body">
+                                <div class="urgence-phone-large">112</div>
+                                <h3 style="text-align: center; margin: var(--spacing-2) 0;">Urgence Européenne</h3>
+                                <div class="urgence-description">Numéro d'urgence gratuit</div>
+                                <div class="urgence-hours">24h/24 - 7j/7</div>
+                            </div>
+                        </div>
+                    `;
+                }
             }
         }
 
@@ -261,10 +809,174 @@
             });
         });
 
+
+        // Chargement des informations d'accès au cabinet
+        async function loadAccesInfo() {
+            try {
+                const response = await fetch('/api/cabinet-info');
+                const data = await response.json();
+                
+                const accesInfoContent = document.getElementById('acces-info-content');
+                const accesMapContainer = document.getElementById('acces-map-container');
+                const accesMapIframe = document.getElementById('acces-map-iframe');
+                
+                let accesHTML = '';
+                
+                // Adresse du cabinet
+                if (data.contact.adresse && data.contact.adresse.trim() !== '') {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="acces-item-content">
+                                <h4>Adresse</h4>
+                                <p>${data.contact.adresse.replace(/\\n/g, '<br>').replace(/\n/g, '<br>')}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Configuration de la carte
+                    const adresseForMap = encodeURIComponent(data.contact.adresse);
+                    const bingMapsUrl = `https://www.bing.com/maps/embed?h=600&w=800&cp=49.4944~0.1079&lvl=15&typ=d&sty=r&src=SHELL&FORM=MBEDV8&q=${adresseForMap}`;
+                    accesMapIframe.src = bingMapsUrl;
+                    accesMapContainer.style.display = 'block';
+                } else {
+                    accesMapContainer.style.display = 'none';
+                }
+                
+                // Téléphone
+                if (data.contact.telephone && data.contact.telephone.trim() !== '') {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-phone"></i>
+                            <div class="acces-item-content">
+                                <h4>Téléphone</h4>
+                                <p>${data.contact.telephone}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Modalités d'accès depuis les paramètres admin
+                if (data.infos && data.infos['Rendez-vous']) {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-calendar-check"></i>
+                            <div class="acces-item-content">
+                                <h4>Rendez-vous</h4>
+                                <p>${data.infos['Rendez-vous']}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (data.infos && data.infos['Parking']) {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-parking"></i>
+                            <div class="acces-item-content">
+                                <h4>Parking</h4>
+                                <p>${data.infos['Parking']}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                if (data.infos && data.infos['Accès']) {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-wheelchair"></i>
+                            <div class="acces-item-content">
+                                <h4>Accessibilité</h4>
+                                <p>${data.infos['Accès']}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Email si disponible
+                if (data.contact.email && data.contact.email.trim() !== '') {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-envelope"></i>
+                            <div class="acces-item-content">
+                                <h4>Email</h4>
+                                <p>${data.contact.email}</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // Site web si disponible
+                if (data.contact.site_web && data.contact.site_web.trim() !== '') {
+                    accesHTML += `
+                        <div class="acces-item">
+                            <i class="fas fa-globe"></i>
+                            <div class="acces-item-content">
+                                <h4>Prise de rendez-vous</h4>
+                                <p><a href="${data.contact.site_web}" target="_blank" style="color: var(--primary-color); text-decoration: none;">Prendre rendez-vous en ligne</a></p>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                accesInfoContent.innerHTML = accesHTML;
+                
+                // Ajustement dynamique de la grille en fonction du nombre d'éléments
+                const accesGrid = document.querySelector('.acces-horizontal-grid');
+                const itemCount = accesHTML.split('acces-item').length - 1; // Compter les éléments
+                
+                if (itemCount <= 3) {
+                    accesGrid.classList.add('has-few-items');
+                    accesGrid.classList.remove('has-many-items');
+                } else {
+                    accesGrid.classList.add('has-many-items');
+                    accesGrid.classList.remove('has-few-items');
+                }
+                
+                // Ajustement de la hauteur de la carte après chargement
+                setTimeout(() => {
+                    const accesInfoElement = document.getElementById('acces-info-content');
+                    const accesMapElement = document.querySelector('.acces-map');
+                    const accesMapIframe = document.querySelector('.acces-map iframe');
+                    
+                    if (accesInfoElement && accesMapElement && accesMapIframe) {
+                        const infoHeight = accesInfoElement.offsetHeight;
+                        const minHeight = Math.max(400, infoHeight);
+                        
+                        accesMapElement.style.height = `${minHeight}px`;
+                        accesMapIframe.style.height = `${minHeight}px`;
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('Erreur chargement infos accès:', error);
+                // Affichage par défaut en cas d'erreur
+                const accesInfoContent = document.getElementById('acces-info-content');
+                if (accesInfoContent) {
+                    accesInfoContent.innerHTML = `
+                        <div class="acces-item">
+                            <i class="fas fa-info-circle"></i>
+                            <div class="acces-item-content">
+                                <h4>Informations d'accès</h4>
+                                <p>Configurez les informations d'accès dans l'administration pour les afficher ici.</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // Ajustement pour le cas d'erreur (peu d'éléments)
+                    const accesGrid = document.querySelector('.acces-horizontal-grid');
+                    accesGrid.classList.add('has-few-items');
+                    accesGrid.classList.remove('has-many-items');
+                }
+                document.getElementById('acces-map-container').style.display = 'none';
+            }
+        }
+
         // Chargement initial
         document.addEventListener('DOMContentLoaded', () => {
             loadCabinetInfo();
             loadUrgences();
+            loadAccesInfo();
         });
     </script>
 </body>

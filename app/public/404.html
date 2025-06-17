@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page non trouvée - Cabinet Médical</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Styles spécifiques page 404 selon le design system unifié */
+        body {
+            background: var(--bg-secondary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .error-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-8);
+            text-align: center;
+        }
+
+        .error-content {
+            max-width: 600px;
+            width: 100%;
+            background: var(--bg-card);
+            padding: var(--spacing-16);
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-xl);
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .error-content::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+        }
+
+
+        .error-number {
+            font-size: 8rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-6);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-top: var(--spacing-4);
+        }
+
+        .error-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-4);
+        }
+
+        .error-description {
+            font-size: var(--font-size-lg);
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-8);
+            line-height: 1.6;
+        }
+
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .error-content {
+                padding: var(--spacing-8);
+                margin: var(--spacing-4);
+            }
+
+            .error-number {
+                font-size: 6rem;
+            }
+
+            .error-title {
+                font-size: var(--font-size-2xl);
+            }
+
+            .error-description {
+                font-size: var(--font-size-base);
+            }
+
+        }
+
+        @media (max-width: 480px) {
+            .error-container {
+                padding: var(--spacing-4);
+            }
+
+            .error-content {
+                padding: var(--spacing-6);
+            }
+
+            .error-number {
+                font-size: 4rem;
+            }
+
+        }
+
+        /* Animation d'entrée */
+        .error-content {
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="error-container">
+        <div class="error-content">
+            <div class="error-number">404</div>
+            <h1 class="error-title">Page non trouvée</h1>
+            
+            <p class="error-description">
+                Désolé, la page que vous recherchez n'existe pas ou a été déplacée. 
+                Elle a peut-être été supprimée ou l'adresse a été mal saisie.
+            </p>
+        </div>
+    </main>
+
+    <script>
+        // Raccourci clavier pour retour accueil
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' || e.key === 'h') {
+                window.location.href = '/';
+            }
+        });
+    </script>
+</body>
+</html>

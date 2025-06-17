@@ -1,8 +1,18 @@
 -- ===== ASSISTANT MÉDICAL - EXEMPLE INIT.SQL =====
--- Copiez ce fichier vers init.sql et modifiez les valeurs
+-- ⚠️  IMPORTANT: Copiez ce fichier vers init.sql et modifiez les valeurs ⚠️
+-- 
+-- Pour utiliser ce fichier :
+-- 1. Copiez : cp init.sql.example init.sql
+-- 2. Modifiez les informations du cabinet dans init.sql
+-- 3. Adaptez les numéros d'urgence à votre région
+-- 4. Configurez vos identifiants dans app/.env
+-- 5. Lancez : docker-compose up -d
+--
+-- Configuration pour medical_assistant database avec medical_user
+-- Version harmonisée avec docker-compose.yml et .env
 
 -- Création de la base de données complète pour l'assistant médical
--- Version exemple avec données anonymisées
+-- Version 2.0 avec nouveau format des horaires
 
 -- ===== CRÉATION DES TABLES =====
 
@@ -75,16 +85,18 @@ CREATE TABLE IF NOT EXISTS fichiers (
     uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Table des numéros d'urgence et de garde
+-- Table des numéros d'urgence et de garde (mise à jour pour la nouvelle interface)
 CREATE TABLE IF NOT EXISTS urgences (
     id SERIAL PRIMARY KEY,
-    type VARCHAR(50) NOT NULL,
     nom VARCHAR(255) NOT NULL,
-    telephone VARCHAR(20),
-    adresse TEXT,
-    site_web VARCHAR(255),
-    horaires TEXT,
-    actif BOOLEAN DEFAULT true
+    telephone VARCHAR(20) NOT NULL,
+    description TEXT,
+    site_web TEXT,
+    horaires TEXT DEFAULT '24h/24 - 7j/7',
+    ordre INTEGER DEFAULT 0,
+    actif BOOLEAN DEFAULT true,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Table des sessions admin (optionnel, pour un suivi avancé)
@@ -112,18 +124,66 @@ CREATE TABLE IF NOT EXISTS chat_usage (
     UNIQUE(patient_id, usage_date)
 );
 
+-- Table des paramètres du cabinet médical
+CREATE TABLE IF NOT EXISTS cabinet_settings (
+    id SERIAL PRIMARY KEY,
+    setting_key VARCHAR(100) UNIQUE NOT NULL,
+    setting_value TEXT,
+    setting_type VARCHAR(50) DEFAULT 'string', -- string, json, number, boolean
+    description TEXT,
+    category VARCHAR(50) DEFAULT 'general', -- general, contact, horaires, urgences
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_by INTEGER REFERENCES admins(id)
+);
+
 -- ===== INSERTION DES DONNÉES =====
 
--- Insertion des numéros d'urgence (à adapter selon votre région)
-INSERT INTO urgences (type, nom, telephone, adresse, site_web, horaires) VALUES
-('urgence', 'SAMU', '15', 'Service d''Aide Médicale Urgente', null, '24h/24'),
-('urgence', 'Pompiers', '18', 'Service de secours', null, '24h/24'),
-('urgence', 'Police/Gendarmerie', '17', 'Forces de l''ordre', null, '24h/24'),
-('urgence', 'Numéro d''urgence européen', '112', 'Urgences européennes', null, '24h/24'),
-('urgence', 'CHU - Urgences', '02 XX XX XX XX', 'Adresse de votre hôpital', 'https://www.votre-hopital.fr', '24h/24'),
-('garde', 'Médecins de garde', '02 XX XX XX XX', 'Service de permanence des soins', 'https://www.ordre.medecin.fr', 'Week-end et jours fériés'),
-('pharmacie', 'Pharmacie de garde', '3237', 'Numéro pour connaître la pharmacie de garde', null, '24h/24')
+-- Insertion des numéros d'urgence (modifiez selon votre région)
+INSERT INTO urgences (nom, telephone, description, site_web, horaires, ordre) VALUES
+('SAMU', '15', 'Urgences médicales', NULL, '24h/24 - 7j/7', 1),
+('Pompiers', '18', 'Secours d''urgence', NULL, '24h/24 - 7j/7', 2),
+('Police/Gendarmerie', '17', 'Urgences sécuritaires', NULL, '24h/24 - 7j/7', 3),
+('Urgence Européenne', '112', 'Toutes urgences depuis un mobile', NULL, '24h/24 - 7j/7', 4),
+('Hôpital Local - Urgences', '+33 X XX XX XX XX', 'Service d''urgences hospitalier', 'https://www.hopital-local.fr/urgences', '24h/24 - 7j/7', 5),
+('Médecin de Garde', '+33 3237', 'Service de permanence des soins', 'https://www.3237.fr', 'Weekend uniquement', 6),
+('Pharmacie de Garde', '+33 3237', 'Pharmacie de permanence', 'https://www.3237.fr', 'Dimanche uniquement', 7),
+('SOS Médecins Local', '+33 X XX XX XX XX', 'Médecins à domicile', 'https://www.sosmedecins-local.fr', '24h/24 - 7j/7', 8),
+('Cabinet Dr Cuffel - Urgences', '+33 X XX XX XX XX', 'Urgences du cabinet', 'https://www.doctolib.fr/medecin-generaliste/', 'Lundi au Vendredi', 9),
+('Dentiste de Garde', '+33 X XX XX XX XX', 'Urgences dentaires', 'https://www.ordre-chirurgiens-dentistes.fr/garde', 'Dimanche uniquement', 10),
+('Vétérinaire d''Urgence', '+33 X XX XX XX XX', 'Urgences vétérinaires', 'https://www.veterinaire-urgence-local.fr', 'Nuit uniquement (20h-8h)', 11),
+('Centre Antipoison', '+33 1 40 05 48 48', 'Intoxications et empoisonnements', 'https://www.centres-antipoison.net', '24h/24 - 7j/7', 12)
 ON CONFLICT DO NOTHING;
+
+-- ===== INSERTION DES PARAMÈTRES PAR DÉFAUT =====
+
+INSERT INTO cabinet_settings (setting_key, setting_value, setting_type, description, category) VALUES
+-- Informations générales du cabinet
+('cabinet_nom_docteur', 'Dr Cuffel', 'string', 'Nom complet du médecin', 'general'),
+('cabinet_specialite', 'Médecin Généraliste', 'string', 'Spécialité médicale', 'general'),
+('cabinet_ville', 'Votre Ville', 'string', 'Ville d''exercice', 'general'),
+
+-- Contact
+('cabinet_telephone', '+33 X XX XX XX XX', 'string', 'Numéro de téléphone du cabinet', 'contact'),
+('cabinet_email', 'cabinet@example.com', 'string', 'Email du cabinet', 'contact'),
+('cabinet_adresse', 'Adresse du cabinet
+Code postal Ville', 'string', 'Adresse complète du cabinet', 'contact'),
+('cabinet_site_web', 'https://www.doctolib.fr/medecin-generaliste/', 'string', 'Site de prise de rendez-vous', 'contact'),
+
+-- Horaires (nouveau format avec matin/après-midi)
+('cabinet_horaires', '{"Lundi": {"ferme": false, "journee_continue": false, "matin_debut": {"heure": "08", "minute": "30"}, "matin_fin": {"heure": "12", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "18", "minute": "30"}}, "Mardi": {"ferme": false, "journee_continue": false, "matin_debut": {"heure": "08", "minute": "30"}, "matin_fin": {"heure": "12", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "18", "minute": "30"}}, "Mercredi": {"ferme": false, "journee_continue": true, "matin_debut": {"heure": "08", "minute": "30"}, "matin_fin": {"heure": "17", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "18", "minute": "30"}}, "Jeudi": {"ferme": false, "journee_continue": false, "matin_debut": {"heure": "08", "minute": "30"}, "matin_fin": {"heure": "12", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "18", "minute": "30"}}, "Vendredi": {"ferme": false, "journee_continue": false, "matin_debut": {"heure": "08", "minute": "30"}, "matin_fin": {"heure": "12", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "17", "minute": "00"}}, "Samedi": {"ferme": false, "journee_continue": true, "matin_debut": {"heure": "09", "minute": "00"}, "matin_fin": {"heure": "13", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "18", "minute": "30"}}, "Dimanche": {"ferme": true, "journee_continue": false, "matin_debut": {"heure": "08", "minute": "00"}, "matin_fin": {"heure": "12", "minute": "00"}, "aprem_debut": {"heure": "14", "minute": "00"}, "aprem_fin": {"heure": "19", "minute": "00"}}}', 'json', 'Horaires d''ouverture par jour (nouveau format)', 'horaires'),
+
+-- Informations pratiques
+('cabinet_parking', 'Parking gratuit disponible devant le cabinet', 'string', 'Informations sur le parking', 'general'),
+('cabinet_acces', 'Accessible PMR - Ascenseur disponible', 'string', 'Informations d''accessibilité', 'general'),
+('cabinet_rdv_mode', 'Sur rendez-vous via Doctolib ou téléphone', 'string', 'Mode de prise de rendez-vous', 'general'),
+
+-- Paramètres système
+('assistant_nom', 'MediBot', 'string', 'Nom de l''assistant IA', 'general'),
+('chat_limite_horaire', '25', 'number', 'Limite de messages chat par heure', 'general'),
+('chat_limite_quotidienne', '50', 'number', 'Limite de messages chat par jour', 'general'),
+('chat_longueur_max', '400', 'number', 'Longueur maximale d''un message chat', 'general')
+
+ON CONFLICT (setting_key) DO NOTHING;
 
 -- ===== CRÉATION DE L'ADMIN PAR DÉFAUT =====
 -- L'admin sera créé automatiquement par Node.js depuis les variables du .env
@@ -132,10 +192,194 @@ ON CONFLICT DO NOTHING;
 -- ===== INSERTION DES PATIENTS DE TEST =====
 -- Supprimez ou modifiez ces données en production
 INSERT INTO patients (nom, prenom, date_naissance, telephone, email, actif) VALUES
-('TEST', 'Patient', '1990-01-01', '06 12 34 56 78', 'test@example.com', true),
-('EXEMPLE', 'Marie', '1985-05-15', '06 11 22 33 44', 'marie.exemple@email.com', true),
-('DEMO', 'Pierre', '1975-09-22', '06 55 66 77 88', 'pierre.demo@email.com', true)
+('MARTIN', 'Sophie', '1985-03-15', '+33 6 12 34 56 78', 'sophie.martin@email.com', true),
+('DUBOIS', 'Pierre', '1978-11-22', '+33 6 23 45 67 89', 'pierre.dubois@email.com', true),
+('BERNARD', 'Marie', '1992-07-08', '+33 6 34 56 78 90', 'marie.bernard@email.com', true),
+('PETIT', 'Jean', '1965-12-03', '+33 6 45 67 89 01', 'jean.petit@email.com', true),
+('MOREAU', 'Claire', '1988-09-14', '+33 6 56 78 90 12', 'claire.moreau@email.com', true)
 ON CONFLICT (nom, prenom, date_naissance) DO NOTHING;
+
+-- ===== INSERTION DES CONSULTATIONS DE TEST =====
+INSERT INTO consultations (patient_id, session_token, conversation_history, statut, created_at) VALUES
+(1, 'test_session_sophie_001', '[{"role": "patient", "content": "Bonjour, je voudrais des informations sur les vaccins de voyage", "timestamp": "2025-06-10T14:30:00Z"}, {"role": "assistant", "content": "Bonjour Sophie ! Je serais ravi de vous aider concernant les vaccins de voyage. Puis-je savoir dans quelle région ou quel pays vous comptez voyager ?", "timestamp": "2025-06-10T14:30:15Z"}, {"role": "patient", "content": "Je pars en Thaïlande le mois prochain", "timestamp": "2025-06-10T14:31:00Z"}, {"role": "assistant", "content": "Excellent choix de destination ! Pour la Thaïlande, je recommande de vérifier vos vaccins contre l''hépatite A et B, la fièvre typhoïde, et l''encéphalite japonaise selon la durée de votre séjour. Je vous conseille de prendre rendez-vous avec Dr Martin pour un bilan pré-voyage complet.", "timestamp": "2025-06-10T14:31:30Z"}]', 'completed', '2025-06-10 14:30:00'),
+(2, 'test_session_pierre_002', '[{"role": "patient", "content": "Bonsoir, j''ai des douleurs dans le dos depuis 3 jours", "timestamp": "2025-06-09T19:45:00Z"}, {"role": "assistant", "content": "Bonsoir Pierre. Je comprends que les douleurs dorsales puissent être très gênantes. Pouvez-vous me décrire plus précisément où se situe la douleur et si elle irradie quelque part ?", "timestamp": "2025-06-09T19:45:20Z"}, {"role": "patient", "content": "C''est au niveau des lombaires, ça tire jusque dans la jambe droite", "timestamp": "2025-06-09T19:46:00Z"}]', 'active', '2025-06-09 19:45:00'),
+(3, 'test_session_marie_003', '[{"role": "patient", "content": "Bonjour, je voudrais savoir si je peux prendre de l''ibuprofène en étant enceinte", "timestamp": "2025-06-11T09:15:00Z"}, {"role": "assistant", "content": "Bonjour Marie ! C''est une excellente question concernant la sécurité pendant la grossesse. L''ibuprofène n''est généralement pas recommandé pendant la grossesse, surtout après le premier trimestre. À quel stade de grossesse êtes-vous ?", "timestamp": "2025-06-11T09:15:25Z"}]', 'active', '2025-06-11 09:15:00')
+ON CONFLICT DO NOTHING;
+
+-- ===== INSERTION DES MESSAGES PRIVÉS DE TEST =====
+INSERT INTO messages_prives (patient_id, consultation_id, sujet, message, niveau_urgence, fichiers_joints, lu_par_docteur, created_at) VALUES
+(1, 1, 'Résultats prise de sang', 'Bonjour Docteur Martin,
+
+J''ai reçu mes résultats de prise de sang que vous m''aviez prescrite. Tout semble normal mais j''aimerais votre avis sur le taux de fer qui me semble un peu bas.
+
+Pouvez-vous me rappeler quand vous aurez un moment ?
+
+Merci beaucoup.
+Sophie', 'normale', '["resultats_prise_sang_sophie.pdf"]', false, '2025-06-10 16:45:00'),
+
+(2, 2, 'URGENT - Douleurs persistantes', 'Docteur,
+
+Mes douleurs lombaires se sont aggravées cette nuit. J''ai maintenant du mal à me lever du lit et la douleur descend jusqu''au pied.
+
+J''ai pris du paracétamol mais ça ne fait rien. Dois-je aller aux urgences ou puis-je attendre notre RDV de demain ?
+
+Pierre Dubois
++33 6 23 45 67 89', 'elevee', '[]', false, '2025-06-11 06:30:00'),
+
+(3, 3, 'Question sur traitement grossesse', 'Bonjour Dr Martin,
+
+Suite à notre discussion sur le chat, j''aimerais avoir une ordonnance pour un antalgique compatible avec ma grossesse (je suis à 18 SA).
+
+J''ai aussi quelques questions sur l''alimentation pendant la grossesse.
+
+Pouvez-vous me rappeler ou me donner un RDV cette semaine ?
+
+Marie Bernard', 'normale', '[]', true, '2025-06-11 10:00:00'),
+
+(4, NULL, 'Renouvellement ordonnance', 'Bonjour,
+
+Je dois renouveler mon traitement pour l''hypertension. Mon ordonnance se termine la semaine prochaine.
+
+Pouvez-vous me faire une ordonnance ou dois-je prendre RDV ?
+
+Mon dernier bilan était bon il y a 2 mois.
+
+Cordialement,
+Jean Petit', 'faible', '["derniere_ordonnance_jean.jpg"]', false, '2025-06-09 14:20:00'),
+
+(5, NULL, 'Certificat médical sport', 'Bonjour Docteur,
+
+J''ai besoin d''un certificat médical pour reprendre le sport (fitness et course à pied).
+
+Je n''ai pas eu de problème de santé particulier cette année.
+
+Quand pourriez-vous me recevoir ?
+
+Merci,
+Claire Moreau', 'faible', '[]', false, '2025-06-08 11:15:00'),
+
+-- Messages supplémentaires pour les tests
+(1, NULL, 'Effets secondaires médicament', 'Bonjour Docteur,
+
+Depuis que j''ai commencé le nouveau traitement que vous m''avez prescrit, j''ai des nausées le matin et des vertiges.
+
+Est-ce normal ? Dois-je arrêter le traitement ?
+
+J''ai pris une photo de l''ordonnance pour vous rappeler de quel médicament il s''agit.
+
+Sophie Martin', 'normale', '["ordonnance_photo_sophie.jpg", "symptomes_journal_sophie.pdf"]', false, '2025-06-12 08:30:00'),
+
+(2, NULL, 'Suivi kinésithérapie', 'Docteur,
+
+Mon kinésithérapeute me demande un certificat médical pour prolonger mes séances de rééducation du dos.
+
+Mes douleurs se sont améliorées mais il pense que j''ai encore besoin de 10 séances.
+
+Pouvez-vous me faire ce certificat ?
+
+Pierre', 'faible', '[]', true, '2025-06-12 14:20:00'),
+
+(3, NULL, 'Echographie grossesse - Questions', 'Bonjour Dr Martin,
+
+J''ai passé mon échographie du 2e trimestre hier. Tout va bien pour le bébé !
+
+J''ai quelques questions sur les résultats et j''aimerais vous montrer le compte-rendu.
+
+Quand puis-je passer vous voir ?
+
+Marie', 'normale', '["echographie_2eme_trimestre.pdf", "resultats_laboratoire_marie.pdf"]', false, '2025-06-12 16:45:00'),
+
+(4, NULL, 'Tension artérielle - Surveillance', 'Bonjour Docteur,
+
+Comme convenu, je vous envoie mes relevés de tension des 2 dernières semaines.
+
+Les chiffres me semblent un peu hauts malgré le traitement.
+
+Faut-il ajuster la posologie ?
+
+Jean Petit', 'normale', '["carnet_tension_jean.pdf", "photo_tensiometre.jpg"]', false, '2025-06-12 19:30:00'),
+
+(5, NULL, 'Allergie alimentaire - Urgent', 'Docteur Martin,
+
+J''ai fait une réaction allergique après avoir mangé des fruits de mer ce soir. J''ai des plaques rouges et des démangeaisons.
+
+J''ai pris un antihistaminique mais ça ne passe pas complètement.
+
+Dois-je m''inquiéter ? Faut-il que j''aille aux urgences ?
+
+Claire', 'elevee', '["photos_allergie_claire1.jpg", "photos_allergie_claire2.jpg"]', false, '2025-06-12 21:15:00'),
+
+-- Messages archivés pour tester les filtres
+(1, NULL, 'Vaccination voyage - Résolu', 'Bonjour,
+
+Merci pour les conseils sur les vaccins pour la Thaïlande.
+
+J''ai pris rendez-vous au centre de vaccination internationale.
+
+Tout est en ordre pour mon voyage !
+
+Sophie', 'faible', '[]', true, '2025-06-05 10:00:00'),
+
+(3, NULL, 'Résultats analyse urine - OK', 'Dr Martin,
+
+Les résultats de l''analyse d''urine que vous m''aviez prescrite sont normaux.
+
+Merci pour le suivi de ma grossesse.
+
+Marie', 'faible', '["analyse_urine_marie.pdf"]', true, '2025-06-07 15:30:00')
+
+ON CONFLICT DO NOTHING;
+
+-- ===== INSERTION DES FICHIERS DE TEST =====
+INSERT INTO fichiers (consultation_id, nom_original, nom_stockage, type_mime, taille_bytes, uploaded_at) VALUES
+-- Fichiers des messages originaux
+(1, 'resultats_prise_sang_sophie.pdf', 'uploads/2025/06/10/sophie_resultats_1718896500.pdf', 'application/pdf', 245760, '2025-06-10 16:45:00'),
+(2, 'radio_dos_pierre.jpg', 'uploads/2025/06/09/pierre_radio_1718815200.jpg', 'image/jpeg', 1048576, '2025-06-09 20:00:00'),
+(NULL, 'derniere_ordonnance_jean.jpg', 'uploads/2025/06/09/jean_ordonnance_1718797200.jpg', 'image/jpeg', 512000, '2025-06-09 14:20:00'),
+
+-- Fichiers des nouveaux messages
+(NULL, 'ordonnance_photo_sophie.jpg', 'uploads/2025/06/12/sophie_ordonnance_1718974200.jpg', 'image/jpeg', 421000, '2025-06-12 08:30:00'),
+(NULL, 'symptomes_journal_sophie.pdf', 'uploads/2025/06/12/sophie_journal_1718974200.pdf', 'application/pdf', 156000, '2025-06-12 08:30:00'),
+(NULL, 'echographie_2eme_trimestre.pdf', 'uploads/2025/06/12/marie_echo_1718996700.pdf', 'application/pdf', 890000, '2025-06-12 16:45:00'),
+(NULL, 'resultats_laboratoire_marie.pdf', 'uploads/2025/06/12/marie_labo_1718996700.pdf', 'application/pdf', 234000, '2025-06-12 16:45:00'),
+(NULL, 'carnet_tension_jean.pdf', 'uploads/2025/06/12/jean_tension_1719007800.pdf', 'application/pdf', 125000, '2025-06-12 19:30:00'),
+(NULL, 'photo_tensiometre.jpg', 'uploads/2025/06/12/jean_appareil_1719007800.jpg', 'image/jpeg', 678000, '2025-06-12 19:30:00'),
+(NULL, 'photos_allergie_claire1.jpg', 'uploads/2025/06/12/claire_allergie1_1719014100.jpg', 'image/jpeg', 534000, '2025-06-12 21:15:00'),
+(NULL, 'photos_allergie_claire2.jpg', 'uploads/2025/06/12/claire_allergie2_1719014100.jpg', 'image/jpeg', 498000, '2025-06-12 21:15:00'),
+(NULL, 'analyse_urine_marie.pdf', 'uploads/2025/06/07/marie_urine_1718640600.pdf', 'application/pdf', 167000, '2025-06-07 15:30:00')
+ON CONFLICT DO NOTHING;
+
+-- ===== INSERTION DU SUIVI CHAT =====
+INSERT INTO chat_usage (patient_id, consultation_id, message_count, usage_date, created_at) VALUES
+(1, 1, 4, '2025-06-10', '2025-06-10 14:30:00'),
+(2, 2, 3, '2025-06-09', '2025-06-09 19:45:00'),
+(3, 3, 2, '2025-06-11', '2025-06-11 09:15:00'),
+(1, 1, 2, '2025-06-09', '2025-06-09 16:20:00'),
+(4, NULL, 1, '2025-06-08', '2025-06-08 10:30:00'),
+-- Suivi pour les nouveaux messages
+(1, NULL, 3, '2025-06-12', '2025-06-12 08:30:00'),
+(2, NULL, 2, '2025-06-12', '2025-06-12 14:20:00'),
+(3, NULL, 1, '2025-06-12', '2025-06-12 16:45:00'),
+(4, NULL, 2, '2025-06-12', '2025-06-12 19:30:00'),
+(5, NULL, 4, '2025-06-12', '2025-06-12 21:15:00'),
+(1, NULL, 2, '2025-06-05', '2025-06-05 10:00:00'),
+(3, NULL, 1, '2025-06-07', '2025-06-07 15:30:00')
+ON CONFLICT (patient_id, usage_date) DO NOTHING;
+
+-- Fonction pour mettre à jour le timestamp automatiquement
+CREATE OR REPLACE FUNCTION update_cabinet_settings_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger pour mettre à jour automatiquement updated_at
+CREATE TRIGGER trigger_update_cabinet_settings_timestamp
+    BEFORE UPDATE ON cabinet_settings
+    FOR EACH ROW
+    EXECUTE FUNCTION update_cabinet_settings_timestamp();
 
 -- ===== CRÉATION DES INDEX =====
 
@@ -151,9 +395,21 @@ CREATE INDEX IF NOT EXISTS idx_admin_sessions_token ON admin_sessions(session_to
 CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires ON admin_sessions(expires_at);
 CREATE INDEX IF NOT EXISTS idx_chat_usage_patient_date ON chat_usage(patient_id, usage_date);
 CREATE INDEX IF NOT EXISTS idx_chat_usage_date ON chat_usage(usage_date);
+CREATE INDEX IF NOT EXISTS idx_cabinet_settings_key ON cabinet_settings(setting_key);
+CREATE INDEX IF NOT EXISTS idx_cabinet_settings_category ON cabinet_settings(category);
 
 -- ===== NOTES IMPORTANTES =====
--- 1. Modifiez les identifiants admin par défaut
--- 2. Adaptez les numéros d'urgence à votre région
--- 3. Supprimez les patients de test en production
--- 4. Les mots de passe seront hashés automatiquement par l'application
+-- 1. Configuration harmonisée avec docker-compose.yml et .env
+--    - Base de données: medical_assistant
+--    - Utilisateur: medical_user  
+--    - Mot de passe: défini dans .env (DB_PASS)
+-- 2. Identifiants admin configurés dans .env (ADMIN_USERNAME/ADMIN_PASSWORD)
+-- 3. Personnalisez les informations du cabinet via l'interface admin (/admin/parameters)
+-- 4. Adaptez les numéros d'urgence à votre région
+-- 5. Supprimez les patients et messages de test en production
+-- 6. Le nouveau format des horaires supporte matin/après-midi et journées continues
+-- 7. Les messages de test incluent différents niveaux d'urgence
+-- 8. Les fichiers de test sont fictifs (vérifiez que le dossier uploads/ existe)
+-- 9. Le format du téléphone respecte : +33 X XX XX XX XX
+-- 10. Les noms de famille sont en MAJUSCULES pour uniformité
+-- 11. Accès web: http://localhost:4480 (modifiable via EXTERNAL_PORT dans .env)

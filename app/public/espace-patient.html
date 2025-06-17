@@ -4,129 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Espace Patient - Dr Grégory Cuffel</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Styles spécifiques à l'espace patient */
+        /* Styles spécifiques à l'espace patient selon le design system unifié */
         .patient-page {
             min-height: 100vh;
             background: var(--bg-secondary);
         }
 
-        .patient-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
-            color: white;
-            padding: var(--spacing-lg) 0;
-            box-shadow: var(--shadow);
-        }
 
-        .patient-header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: var(--spacing-md);
-        }
 
-        .patient-info h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: var(--spacing-xs);
-        }
-
-        .patient-info p {
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-
-        .patient-nav {
-            display: flex;
-            gap: var(--spacing-sm);
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: var(--spacing-sm) var(--spacing-md);
-            border-radius: var(--border-radius);
-            font-size: 0.9rem;
+        /* Styles pour les boutons de navigation patient (utilisant les classes admin) */
+        .nav-link {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
             cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
         }
 
-        .nav-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .nav-btn.active {
-            background: var(--secondary-color);
-            border-color: var(--secondary-color);
-        }
-
-        .logout-btn {
-            background: var(--accent-color);
-            border-color: var(--accent-color);
-        }
-
-        .logout-btn:hover {
-            background: var(--accent-light);
+        .nav-link.active {
+            color: var(--primary-color);
+            background: rgba(0, 122, 255, 0.1);
         }
 
         .patient-content {
-            padding: var(--spacing-xl) 0;
+            padding: var(--spacing-12) 0;
         }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--spacing-lg);
-            margin-bottom: var(--spacing-xl);
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: var(--spacing-8);
+            margin-bottom: var(--spacing-12);
         }
 
         .dashboard-card {
             background: var(--bg-card);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
-            box-shadow: var(--shadow);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-8);
             transition: var(--transition);
-            border-top: 4px solid var(--primary-color);
+            border-top: 5px solid var(--primary-color);
+            box-shadow: none; /* Suppression des ombres */
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .dashboard-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
         }
 
         .dashboard-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+            box-shadow: none; /* Suppression des ombres */
         }
 
-        .dashboard-card.message-card {
-            border-top-color: var(--secondary-color);
+        .dashboard-card.message-card::before {
+            background: linear-gradient(90deg, var(--secondary-color), var(--secondary-light));
         }
 
-        .dashboard-card.assistant-card {
-            border-top-color: var(--primary-light);
+        .dashboard-card.assistant-card::before {
+            background: linear-gradient(90deg, var(--accent-purple), var(--primary-light));
         }
 
         .card-header {
             display: flex;
             align-items: center;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            gap: var(--spacing-4);
+            margin-bottom: var(--spacing-6);
         }
 
         .card-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
+            width: 72px;
+            height: 72px;
+            min-width: 72px;
+            min-height: 72px;
+            border-radius: var(--border-radius-lg);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: var(--font-size-3xl);
             color: white;
+            flex-shrink: 0;
+            box-shadow: none; /* Suppression des ombres */
         }
 
         .upload-card .card-icon {
@@ -138,79 +108,109 @@
         }
 
         .assistant-card .card-icon {
-            background: linear-gradient(135deg, var(--primary-light), var(--primary-color));
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-light));
         }
 
         .card-title {
-            font-size: 1.3rem;
+            font-size: var(--font-size-xl);
             font-weight: 600;
             color: var(--text-primary);
             margin: 0;
+            margin-bottom: var(--spacing-1);
         }
 
         .card-description {
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-6);
             line-height: 1.6;
+            font-size: var(--font-size-base);
         }
 
         .card-actions {
             display: flex;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-3);
             flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+        /* Styles spécifiques pour les boutons de l'espace patient */
+        .card-actions .btn {
+            min-width: 180px;
+            width: 100%;
+            height: 48px;
+            padding: var(--spacing-3) var(--spacing-4);
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            justify-content: center;
+            flex: 1;
+            border-radius: var(--border-radius);
+        }
+
+        .card-actions .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: none; /* Suppression des ombres */
         }
 
         /* Section Nouveau Message */
         .message-form {
             background: var(--bg-card);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
-            box-shadow: var(--shadow);
-            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-8);
+            margin-bottom: var(--spacing-8);
             display: none;
+            box-shadow: none; /* Suppression des ombres */
         }
 
         .message-form.active {
             display: block;
-            animation: fadeInUp 0.3s ease-out;
+            animation: fadeInUp 0.4s ease-out;
         }
 
         .form-row {
             display: grid;
-            grid-template-columns: 1fr 200px;
-            gap: var(--spacing-md);
-            margin-bottom: var(--spacing-md);
+            grid-template-columns: 2fr 1fr;
+            gap: var(--spacing-4);
+            margin-bottom: var(--spacing-4);
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-2);
         }
 
         .form-label {
             font-weight: 600;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: var(--font-size-sm);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+
+        .form-label i {
+            color: var(--primary-color);
+            font-size: var(--font-size-sm);
         }
 
         .form-input, .form-textarea, .form-select {
-            padding: var(--spacing-md);
+            padding: var(--spacing-3) var(--spacing-4);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
-            font-size: 1rem;
+            font-size: var(--font-size-base);
             transition: var(--transition);
-            font-family: inherit;
+            font-family: var(--font-family);
+            background: var(--bg-primary);
         }
 
         .form-input:focus, .form-textarea:focus, .form-select:focus {
             outline: none;
             border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: none; /* Suppression des ombres */
         }
 
         .form-textarea {
-            min-height: 120px;
+            min-height: 140px;
             resize: vertical;
         }
 
@@ -232,52 +232,65 @@
 
         .file-upload-zone {
             border: 2px dashed var(--border-color);
-            border-radius: var(--border-radius);
-            padding: var(--spacing-lg);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-8);
             text-align: center;
-            margin: var(--spacing-md) 0;
+            margin: var(--spacing-4) 0;
             transition: var(--transition);
             cursor: pointer;
+            background: var(--bg-secondary);
         }
 
         .file-upload-zone:hover,
         .file-upload-zone.dragover {
             border-color: var(--primary-color);
-            background: rgba(37, 99, 235, 0.05);
+            background: rgba(0, 122, 255, 0.05);
+            transform: translateY(-2px);
         }
 
         .file-upload-zone i {
-            font-size: 2rem;
+            font-size: var(--font-size-4xl);
             color: var(--primary-color);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-3);
         }
 
         .file-list {
-            margin-top: var(--spacing-md);
+            margin-top: var(--spacing-4);
         }
 
         .file-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: var(--spacing-sm);
+            padding: var(--spacing-3);
             background: var(--bg-secondary);
             border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-xs);
+            margin-bottom: var(--spacing-2);
+            border: 1px solid var(--border-color);
+            transition: var(--transition);
+        }
+
+        .file-item:hover {
+            background: var(--bg-tertiary);
         }
 
         .file-info {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-3);
         }
 
         .file-remove {
             color: var(--accent-color);
             cursor: pointer;
-            padding: var(--spacing-xs);
+            padding: var(--spacing-2);
             border-radius: 50%;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
         }
 
         .file-remove:hover {
@@ -288,22 +301,23 @@
         /* Section Historique Messages */
         .messages-history {
             background: var(--bg-card);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            border-radius: var(--border-radius-lg);
             display: none;
+            box-shadow: none; /* Suppression des ombres */
         }
 
         .messages-history.active {
             display: block;
-            animation: fadeInUp 0.3s ease-out;
+            animation: fadeInUp 0.4s ease-out;
         }
 
         .messages-header {
-            padding: var(--spacing-lg);
+            padding: var(--spacing-6);
             border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            background: var(--bg-tertiary);
         }
 
         .messages-list {
@@ -312,7 +326,7 @@
         }
 
         .message-item {
-            padding: var(--spacing-md);
+            padding: var(--spacing-6);
             border-bottom: 1px solid var(--border-color);
             transition: var(--transition);
         }
@@ -329,53 +343,57 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-3);
         }
 
         .message-sujet {
             font-weight: 600;
             color: var(--text-primary);
+            font-size: var(--font-size-lg);
         }
 
         .message-date {
-            font-size: 0.85rem;
+            font-size: var(--font-size-sm);
             color: var(--text-secondary);
         }
 
         .message-urgence {
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            padding: var(--spacing-1) var(--spacing-2);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-xs);
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .urgence-faible {
-            background: rgba(5, 150, 105, 0.1);
+            background: rgba(52, 199, 89, 0.1);
             color: var(--secondary-color);
         }
 
         .urgence-normale {
-            background: rgba(37, 99, 235, 0.1);
+            background: rgba(0, 122, 255, 0.1);
             color: var(--primary-color);
         }
 
         .urgence-elevee {
-            background: rgba(220, 38, 38, 0.1);
+            background: rgba(255, 59, 48, 0.1);
             color: var(--accent-color);
         }
 
         .message-content {
             color: var(--text-secondary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-3);
             line-height: 1.6;
+            font-size: var(--font-size-base);
         }
 
         .message-status {
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
-            font-size: 0.85rem;
+            gap: var(--spacing-2);
+            font-size: var(--font-size-sm);
+            font-weight: 500;
         }
 
         .status-repondu {
@@ -388,204 +406,34 @@
 
         .message-reponse {
             background: var(--bg-secondary);
-            padding: var(--spacing-md);
+            padding: var(--spacing-4);
             border-radius: var(--border-radius);
-            margin-top: var(--spacing-sm);
-            border-left: 3px solid var(--secondary-color);
+            margin-top: var(--spacing-3);
+            border-left: 4px solid var(--secondary-color);
         }
 
         .reponse-header {
             font-weight: 600;
             color: var(--secondary-color);
-            margin-bottom: var(--spacing-xs);
+            margin-bottom: var(--spacing-2);
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-2);
+            font-size: var(--font-size-sm);
         }
 
-        /* Debug Console Styles */
-        .debug-console {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(10px);
-            color: #00ff00;
-            border-top: 2px solid rgba(51, 51, 51, 0.8);
-            max-height: 300px;
-            overflow-y: auto;
-            z-index: 9999;
-            font-family: 'Courier New', monospace;
-            font-size: 12px;
-            transform: translateY(100%);
-            transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-            opacity: 0;
-            pointer-events: none;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.3);
-        }
-
-        .debug-console.active {
-            transform: translateY(0);
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .debug-header {
-            background: rgba(51, 51, 51, 0.9);
-            backdrop-filter: blur(5px);
-            padding: 8px 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(85, 85, 85, 0.6);
-            cursor: move;
-        }
-
-        .debug-header h4 {
-            margin: 0;
-            font-size: 14px;
-            color: #fff;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .debug-header .debug-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .debug-header button {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-            transition: all 0.2s ease;
-        }
-
-        .debug-header button:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .debug-content {
-            padding: 10px 15px;
-            white-space: pre-wrap;
-            background: rgba(26, 26, 26, 0.9);
-            backdrop-filter: blur(5px);
-        }
-
-        .debug-line {
-            margin-bottom: 3px;
-            padding: 2px 0;
-            border-left: 3px solid transparent;
-            padding-left: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .debug-line:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-left-color: #00ff00;
-        }
-
-        .debug-timestamp {
-            color: #888;
-            margin-right: 12px;
-            font-weight: bold;
-            font-size: 10px;
-        }
-
-        .debug-level-info {
-            color: #00ff00;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-        }
-
-        .debug-level-warn {
-            color: #ffaa00;
-            text-shadow: 0 0 5px rgba(255, 170, 0, 0.3);
-        }
-
-        .debug-level-error {
-            color: #ff4444;
-            text-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
-            font-weight: bold;
-        }
-
-        .debug-toggle {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #333, #555);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            padding: 12px;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 10001;
-            font-size: 18px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
-        }
-
-        .debug-toggle:hover {
-            transform: translateY(-2px) scale(1.1);
-            background: linear-gradient(135deg, #555, #777);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .debug-toggle.active {
-            background: linear-gradient(135deg, #00ff00, #00cc00);
-            color: #000;
-            animation: pulse-debug 2s infinite;
-        }
-
-        @keyframes pulse-debug {
-            0%, 100% { 
-                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 255, 0, 0.4);
-            }
-            50% { 
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4), 0 0 0 10px rgba(0, 255, 0, 0);
-            }
-        }
-
-        .debug-minimize {
-            position: fixed;
-            bottom: 310px;
-            right: 20px;
-            background: rgba(51, 51, 51, 0.9);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            z-index: 10000;
-            font-size: 12px;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(5px);
-        }
-
-        .debug-minimize.visible {
-            opacity: 1;
-            transform: translateX(0);
-        }
 
         /* Responsive */
         @media (max-width: 768px) {
             .patient-header-content {
                 flex-direction: column;
                 text-align: center;
+                gap: var(--spacing-6);
             }
 
             .dashboard-grid {
                 grid-template-columns: 1fr;
+                gap: var(--spacing-6);
             }
 
             .form-row {
@@ -594,36 +442,50 @@
 
             .patient-nav {
                 justify-content: center;
+                gap: var(--spacing-1);
             }
 
             .card-actions {
                 justify-content: center;
+                flex-direction: column;
             }
 
-            .debug-console {
-                max-height: 150px;
+            .card-actions .btn {
+                width: 100%;
             }
+
         }
 
         @media (max-width: 480px) {
             .patient-header {
-                padding: var(--spacing-md) 0;
+                padding: var(--spacing-6) 0;
             }
 
             .patient-content {
-                padding: var(--spacing-md) 0;
+                padding: var(--spacing-8) 0;
             }
 
             .dashboard-card {
-                padding: var(--spacing-md);
+                padding: var(--spacing-6);
             }
 
             .message-form {
-                padding: var(--spacing-md);
+                padding: var(--spacing-6);
+            }
+
+            .card-icon {
+                width: 60px;
+                height: 60px;
+                font-size: var(--font-size-2xl);
+            }
+
+            .nav-btn {
+                padding: var(--spacing-1) var(--spacing-2);
+                font-size: var(--font-size-xs);
             }
         }
 
-        /* Animations */
+        /* Animations améliorées */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -648,36 +510,54 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* Animation d'entrée pour les cartes */
+        .dashboard-card {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .dashboard-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .dashboard-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
     </style>
 </head>
 <body>
     <div class="patient-page">
         <!-- Header Patient -->
-        <header class="patient-header">
+        <header class="header">
             <div class="container">
-                <div class="patient-header-content">
-                    <div class="patient-info">
-                        <h1 id="patientWelcome">Espace Patient</h1>
-                        <p>Dr Grégory Cuffel - Médecin Généraliste</p>
+                <div class="header-content">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <i class="fas fa-user-circle"></i>
+                        </div>
+                        <div>
+                            <h1 id="patientWelcome">Espace Patient</h1>
+                            <p id="doctorInfo">Médecin Généraliste</p>
+                        </div>
                     </div>
-                    <nav class="patient-nav">
-                        <button class="nav-btn active" data-section="dashboard">
+                    <nav class="nav">
+                        <button class="nav-link active" data-section="dashboard">
                             <i class="fas fa-home"></i>
                             Accueil
                         </button>
-                        <button class="nav-btn" data-section="nouveau-message">
+                        <button class="nav-link" data-section="nouveau-message">
                             <i class="fas fa-plus"></i>
                             Nouveau Message
                         </button>
-                        <button class="nav-btn" data-section="historique">
+                        <button class="nav-link" data-section="historique">
                             <i class="fas fa-history"></i>
                             Mes Messages
                         </button>
-                        <a href="/chat-assistant" class="nav-btn">
+                        <a href="/chat-assistant" class="nav-link">
                             <i class="fas fa-robot"></i>
                             Assistant
                         </a>
-                        <button class="nav-btn logout-btn" id="logoutBtn">
+                        <button class="btn btn-secondary" id="logoutBtn">
                             <i class="fas fa-sign-out-alt"></i>
                             Déconnexion
                         </button>
@@ -699,9 +579,9 @@
                                 </div>
                                 <h3 class="card-title">Envoyer des Documents</h3>
                             </div>
-                            <p class="card-description">
+                            <p class="card-description" id="uploadDescription">
                                 Envoyez vos documents médicaux (analyses, ordonnances, images) 
-                                de manière sécurisée au Dr Cuffel.
+                                de manière sécurisée à votre médecin.
                             </p>
                             <div class="card-actions">
                                 <button class="btn btn-primary" data-section="nouveau-message">
@@ -719,8 +599,8 @@
                                 </div>
                                 <h3 class="card-title">Messages Privés</h3>
                             </div>
-                            <p class="card-description">
-                                Posez vos questions médicales ou informez le Dr Cuffel 
+                            <p class="card-description" id="messageDescription">
+                                Posez vos questions médicales ou informez votre médecin 
                                 de votre état de santé en toute confidentialité.
                             </p>
                             <div class="card-actions">
@@ -756,22 +636,14 @@
                         </div>
                     </div>
 
-                    <!-- Informations importantes -->
-                    <div class="info-box">
-                        <i class="fas fa-info-circle"></i>
-                        <div>
-                            <p><strong>Important :</strong> En cas d'urgence médicale, contactez le 15 (SAMU) ou rendez-vous aux urgences.</p>
-                            <p>Les messages envoyés ici ne constituent pas une consultation d'urgence.</p>
-                        </div>
-                    </div>
                 </section>
 
                 <!-- Nouveau Message -->
                 <section id="nouveau-message" class="content-section">
                     <div class="message-form" id="messageForm">
-                        <h2 style="margin-bottom: var(--spacing-lg); color: var(--text-primary);">
+                        <h2 style="margin-bottom: var(--spacing-lg); color: var(--text-primary);" id="newMessageTitle">
                             <i class="fas fa-edit"></i>
-                            Nouveau Message au Dr Cuffel
+                            Nouveau Message
                         </h2>
 
                         <form id="newMessageForm">
@@ -872,32 +744,6 @@
             </div>
         </main>
 
-        <!-- Debug Console -->
-        <div class="debug-console" id="debugConsole">
-            <div class="debug-header">
-                <h4>
-                    <i class="fas fa-bug"></i>
-                    Console de Debug
-                </h4>
-                <div class="debug-controls">
-                    <button onclick="debugLogger.clear()" title="Effacer les logs">
-                        <i class="fas fa-trash"></i> Clear
-                    </button>
-                    <button onclick="debugLogger.toggle()" title="Fermer la console">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="debug-content" id="debugContent"></div>
-        </div>
-
-        <button class="debug-toggle" id="debugToggleBtn" title="Ouvrir/Fermer la console de debug">
-            <i class="fas fa-bug"></i>
-        </button>
-
-        <button class="debug-minimize" id="debugMinimizeBtn" title="Minimiser la console">
-            <i class="fas fa-window-minimize"></i>
-        </button>
     </div>
 
     <script>
@@ -907,41 +753,6 @@
             constructor() {
                 this.logs = [];
                 this.maxLogs = 100;
-                this.isVisible = false;
-                this.setupToggleButton();
-            }
-            
-            setupToggleButton() {
-                // S'assurer que le DOM est chargé
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', () => this.attachToggleEvent());
-                } else {
-                    this.attachToggleEvent();
-                }
-            }
-            
-            attachToggleEvent() {
-                const toggleBtn = document.getElementById('debugToggleBtn');
-                const minimizeBtn = document.getElementById('debugMinimizeBtn');
-                
-                if (toggleBtn) {
-                    toggleBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.toggle();
-                    });
-                    console.log('✅ Event listener attaché au bouton debug');
-                } else {
-                    console.error('❌ Bouton debug toggle non trouvé');
-                }
-                
-                if (minimizeBtn) {
-                    minimizeBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.toggle();
-                    });
-                }
             }
             
             log(level, message, data = null) {
@@ -968,81 +779,20 @@
                 // Afficher dans la console du navigateur
                 console[level](message, data || '');
                 
-                // Afficher dans le debug console
-                this.updateDebugConsole();
             }
             
             info(message, data) { this.log('info', message, data); }
             warn(message, data) { this.log('warn', message, data); }
             error(message, data) { this.log('error', message, data); }
             
-            updateDebugConsole() {
-                if (!this.isVisible) return;
-                
-                const debugContent = document.getElementById('debugContent');
-                if (!debugContent) return;
-                
-                debugContent.innerHTML = this.logs.map((log, index) => `
-                    <div class="debug-line debug-level-${log.level}" data-index="${index}">
-                        <span class="debug-timestamp">${log.timestamp}</span>
-                        <strong>[${log.level.toUpperCase()}]</strong> ${this.escapeHtml(log.message)}
-                        ${log.data ? `\n<span style="color: #666; margin-left: 20px;">${this.escapeHtml(log.data)}</span>` : ''}
-                    </div>
-                `).join('');
-                
-                debugContent.scrollTop = debugContent.scrollHeight;
-            }
-            
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-            
-            toggle() {
-                this.isVisible = !this.isVisible;
-                const debugConsole = document.getElementById('debugConsole');
-                const toggleBtn = document.getElementById('debugToggleBtn');
-                const minimizeBtn = document.getElementById('debugMinimizeBtn');
-                
-                if (debugConsole) {
-                    debugConsole.classList.toggle('active', this.isVisible);
-                    
-                    if (this.isVisible) {
-                        this.updateDebugConsole();
-                        this.info('🔍 Console de debug ouverte');
-                    } else {
-                        this.info('👁️ Console de debug fermée');
-                    }
-                }
-                
-                if (toggleBtn) {
-                    toggleBtn.classList.toggle('active', this.isVisible);
-                }
-                
-                if (minimizeBtn) {
-                    minimizeBtn.classList.toggle('visible', this.isVisible);
-                }
-            }
-            
             clear() {
                 this.logs = [];
-                this.updateDebugConsole();
-                this.info('🧹 Logs effacés');
             }
         }
         
         // Instance globale du logger
         const debugLogger = new DebugLogger();
         
-        // Fonctions globales pour l'interface debug
-        function toggleDebugConsole() {
-            debugLogger.toggle();
-        }
-        
-        function clearDebugConsole() {
-            debugLogger.clear();
-        }
         
         // Intercepter les erreurs JavaScript
         window.addEventListener('error', function(e) {
@@ -1081,8 +831,11 @@
             }
         });
 
-        function initializePatientSpace() {
+        async function initializePatientSpace() {
             debugLogger.info('🔧 Configuration de l\'espace patient');
+            
+            // Charger les informations du cabinet
+            await loadCabinetInfo();
             
             // Vérifier l'authentification (côté client basique)
             const currentPatient = sessionStorage.getItem('currentPatient');
@@ -1100,6 +853,32 @@
             // Afficher les sections
             showSection('dashboard');
             debugLogger.info('📱 Interface utilisateur initialisée');
+        }
+
+        // Chargement des informations du cabinet
+        async function loadCabinetInfo() {
+            try {
+                debugLogger.info('📋 Chargement des informations du cabinet');
+                const response = await fetch('/api/cabinet-info');
+                const data = await response.json();
+                
+                // Mise à jour des textes avec les informations du médecin
+                const doctorName = data.docteur.nom;
+                const specialty = data.docteur.specialite;
+                
+                document.getElementById('doctorInfo').textContent = `${doctorName} - ${specialty}`;
+                document.getElementById('uploadDescription').textContent = 
+                    `Envoyez vos documents médicaux (analyses, ordonnances, images) de manière sécurisée au ${doctorName}.`;
+                document.getElementById('messageDescription').textContent = 
+                    `Posez vos questions médicales ou informez le ${doctorName} de votre état de santé en toute confidentialité.`;
+                document.getElementById('newMessageTitle').innerHTML = 
+                    `<i class="fas fa-edit"></i> Nouveau Message au ${doctorName}`;
+                
+                debugLogger.info('✅ Informations cabinet mises à jour:', { doctorName, specialty });
+                
+            } catch (error) {
+                debugLogger.error('❌ Erreur chargement infos cabinet:', error);
+            }
         }
 
         function setupEventListeners() {
@@ -1169,7 +948,7 @@
                 });
 
                 // Désactiver tous les boutons nav
-                document.querySelectorAll('.nav-btn').forEach(btn => {
+                document.querySelectorAll('.nav-link').forEach(btn => {
                     btn.classList.remove('active');
                 });
 
@@ -1301,14 +1080,14 @@
 
             if (!allowedTypes.includes(file.type)) {
                 const errorMsg = `Type de fichier non autorisé: ${file.name}`;
-                alert(errorMsg);
+                showAlert('Erreur', errorMsg, true);
                 debugLogger.error('❌ Type non autorisé:', { file: file.name, type: file.type, allowedTypes });
                 return false;
             }
 
             if (file.size > maxSize) {
                 const errorMsg = `Fichier trop volumineux: ${file.name} (max 50MB)`;
-                alert(errorMsg);
+                showAlert('Erreur', errorMsg, true);
                 debugLogger.error('❌ Fichier trop volumineux:', { file: file.name, size: file.size, maxSize });
                 return false;
             }
@@ -1573,7 +1352,7 @@
                         <div style="padding: var(--spacing-xl); text-align: center; color: var(--text-secondary);">
                             <i class="fas fa-envelope-open" style="font-size: 3rem; margin-bottom: var(--spacing-md); opacity: 0.5;"></i>
                             <h3 style="margin-bottom: var(--spacing-sm);">Aucun message pour le moment</h3>
-                            <p>Envoyez votre premier message au Dr Cuffel</p>
+                            <p>Envoyez votre premier message à votre médecin</p>
                             <button class="btn btn-primary" data-section="nouveau-message" style="margin-top: var(--spacing-md);">
                                 <i class="fas fa-edit"></i>
                                 Écrire un message
@@ -1600,6 +1379,10 @@
                         repondu: message.repondu
                     });
                     
+                    // Récupérer le nom du médecin depuis les informations du cabinet
+                    const doctorInfo = document.getElementById('doctorInfo').textContent;
+                    const doctorName = doctorInfo.includes(' - ') ? doctorInfo.split(' - ')[0] : 'votre médecin';
+                    
                     return `
                         <div class="message-item">
                             <div class="message-header">
@@ -1625,7 +1408,7 @@
                                 <div class="message-reponse">
                                     <div class="reponse-header">
                                         <i class="fas fa-user-md"></i>
-                                        Réponse du Dr Cuffel - ${message.dateReponse}
+                                        Réponse du ${doctorName} - ${message.dateReponse}
                                     </div>
                                     <div>${escapeHtml(message.reponse).replace(/\n/g, '<br>')}</div>
                                 </div>
@@ -1656,37 +1439,9 @@
             return div.innerHTML;
         }
 
-        async function handleLogout() {
+        function handleLogout() {
             debugLogger.info('🚪 Tentative de déconnexion');
-            
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                try {
-                    debugLogger.info('📡 Envoi requête déconnexion');
-                    
-                    const response = await fetch('/api/logout', {
-                        method: 'POST'
-                    });
-
-                    const result = await response.json();
-                    debugLogger.info('📦 Réponse déconnexion:', result);
-
-                    if (result.success) {
-                        debugLogger.info('✅ Déconnexion réussie');
-                        sessionStorage.removeItem('currentPatient');
-                        window.location.href = result.redirect || '/';
-                    } else {
-                        debugLogger.error('❌ Erreur déconnexion serveur:', result);
-                        alert('Erreur lors de la déconnexion');
-                    }
-
-                } catch (error) {
-                    debugLogger.error('❌ Erreur déconnexion:', error);
-                    // Redirection forcée en cas d'erreur
-                    window.location.href = '/';
-                }
-            } else {
-                debugLogger.info('❌ Déconnexion annulée par l\'utilisateur');
-            }
+            openModal('logoutModal');
         }
 
         // ===== FONCTIONS UTILITAIRES =====
@@ -1756,16 +1511,27 @@
                     
                     // Vérifier que le brouillon n'est pas trop ancien (24h)
                     if (Date.now() - draftData.timestamp < 24 * 60 * 60 * 1000) {
-                        if (confirm('Un brouillon de message a été trouvé. Voulez-vous le restaurer ?')) {
-                            document.getElementById('sujet').value = draftData.sujet;
-                            document.getElementById('message').value = draftData.message;
-                            updateCharCount();
-                            debugLogger.info('📄 Brouillon restauré');
-                        }
+                        showConfirm(
+                            'Brouillon trouvé', 
+                            'Un brouillon de message a été trouvé. Voulez-vous le restaurer ?',
+                            function() {
+                                // Callback de confirmation
+                                document.getElementById('sujet').value = draftData.sujet;
+                                document.getElementById('message').value = draftData.message;
+                                updateCharCount();
+                                debugLogger.info('📄 Brouillon restauré');
+                                localStorage.removeItem('messageDraft');
+                            },
+                            function() {
+                                // Callback d'annulation
+                                localStorage.removeItem('messageDraft');
+                                debugLogger.info('❌ Restauration brouillon annulée');
+                            }
+                        );
+                    } else {
+                        // Nettoyer le brouillon s'il est trop ancien
+                        localStorage.removeItem('messageDraft');
                     }
-                    
-                    // Nettoyer le brouillon après restauration ou refus
-                    localStorage.removeItem('messageDraft');
                 }
             } catch (error) {
                 debugLogger.error('❌ Erreur chargement brouillon:', error);
@@ -1795,40 +1561,165 @@
             stopMessageCheck();
         });
 
-        // ===== RACCOURCIS CLAVIER =====
+        // ===== SYSTÈME DE MODALES (style admin) =====
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function showAlert(title, message, isError = false) {
+            document.getElementById('alertTitle').textContent = title;
+            document.getElementById('alertMessage').textContent = message;
+            
+            const alertModal = document.getElementById('alertModal');
+            const modalContent = alertModal.querySelector('.modal-content');
+            
+            if (isError) {
+                modalContent.style.borderTop = '4px solid var(--accent-color)';
+            } else {
+                modalContent.style.borderTop = '4px solid var(--primary-color)';
+            }
+            
+            openModal('alertModal');
+        }
+
+        function showConfirm(title, message, onConfirm, onCancel) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmMessage').textContent = message;
+            
+            const confirmButton = document.getElementById('confirmButton');
+            confirmButton.onclick = function() {
+                closeModal('confirmModal');
+                if (onConfirm) onConfirm();
+            };
+            
+            // Gérer l'annulation
+            const cancelButton = document.querySelector('#confirmModal .btn-secondary');
+            cancelButton.onclick = function() {
+                closeModal('confirmModal');
+                if (onCancel) onCancel();
+            };
+            
+            openModal('confirmModal');
+        }
+
+        // Fonction de déconnexion séparée
+        async function performLogout() {
+            closeModal('logoutModal');
+            
+            try {
+                debugLogger.info('📡 Envoi requête déconnexion');
+                
+                const response = await fetch('/api/logout', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+                debugLogger.info('📦 Réponse déconnexion:', result);
+
+                if (result.success) {
+                    debugLogger.info('✅ Déconnexion réussie');
+                    sessionStorage.removeItem('currentPatient');
+                    window.location.href = result.redirect || '/';
+                } else {
+                    debugLogger.error('❌ Erreur déconnexion serveur:', result);
+                    showAlert('Erreur', 'Erreur lors de la déconnexion', true);
+                }
+
+            } catch (error) {
+                debugLogger.error('❌ Erreur déconnexion:', error);
+                // Redirection forcée en cas d'erreur
+                window.location.href = '/';
+            }
+        }
+
+        // Gestionnaire ESC pour fermer les modales
         document.addEventListener('keydown', function(e) {
-            // Ctrl + D pour toggle debug console
-            if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                debugLogger.toggle();
-                debugLogger.info('⌨️ Debug console togglé via raccourci Ctrl+D');
-            }
-            
-            // Ctrl + Shift + C pour clear debug console
-            if (e.ctrlKey && e.shiftKey && e.key === 'C') {
-                e.preventDefault();
-                debugLogger.clear();
-                debugLogger.info('⌨️ Debug console nettoyé via raccourci Ctrl+Shift+C');
-            }
-            
-            // Escape pour fermer la console si ouverte
-            if (e.key === 'Escape' && debugLogger.isVisible) {
-                e.preventDefault();
-                debugLogger.toggle();
-                debugLogger.info('⌨️ Debug console fermée via Escape');
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal.active');
+                if (activeModal) {
+                    closeModal(activeModal.id);
+                }
             }
         });
 
-        debugLogger.info('🎹 Raccourcis clavier configurés:');
-        debugLogger.info('   • Ctrl+D: toggle debug console');
-        debugLogger.info('   • Ctrl+Shift+C: clear debug console');
-        debugLogger.info('   • Escape: fermer debug console');
-        
-        // Message de bienvenue dans la console
-        setTimeout(() => {
-            debugLogger.info('🎉 Console de debug initialisée avec succès !');
-            debugLogger.info('💡 Cliquez sur l\'icône bug en bas à droite ou utilisez Ctrl+D');
-        }, 100);
+        // Fermer modal en cliquant à l'extérieur
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal')) {
+                closeModal(e.target.id);
+            }
+        });
+
+        debugLogger.info('🎉 Espace patient initialisé avec succès !');
     </script>
+
+    <!-- Modales (système admin) -->
+    <!-- Modal de confirmation -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirmTitle">Confirmation</h3>
+                <button class="modal-close" onclick="closeModal('confirmModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage">Êtes-vous sûr ?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('confirmModal')">Annuler</button>
+                <button class="btn btn-primary" id="confirmButton">Confirmer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal d'alerte/notification -->
+    <div class="modal" id="alertModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="alertTitle">Information</h3>
+                <button class="modal-close" onclick="closeModal('alertModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="alertMessage">Message</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('alertModal')">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de déconnexion -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Déconnexion</h3>
+                <button class="modal-close" onclick="closeModal('logoutModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Êtes-vous sûr de vouloir vous déconnecter ?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('logoutModal')">Annuler</button>
+                <button class="btn btn-primary" onclick="performLogout()">Se déconnecter</button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

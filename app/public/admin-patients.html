@@ -4,659 +4,295 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Gestion Patients - Cabinet Médical</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/styles.css?v=patients-bottom-spacing">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
     <style>
-        /* Styles spécifiques page admin patients */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        /* Import des styles admin communs */
-        @import url('admin-common.css');
-
-        /* Import du header unifié */
-        @import url('admin-header-template.css');
-
-        /* Main Layout */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Navigation */
-        .nav-breadcrumb {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-breadcrumb a {
-            color: #1e40af;
-            text-decoration: none;
-        }
-
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        /* Stats Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-left: 4px solid #1e40af;
-            text-align: center;
-        }
-
-        .stat-card.success {
-            border-left-color: #059669;
-        }
-
-        .stat-card.warning {
-            border-left-color: #f59e0b;
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #1e293b;
-            margin-bottom: 0.5rem;
-        }
-
-        .stat-label {
-            color: #64748b;
-            font-size: 0.875rem;
-        }
-
-        /* Patients Section */
-        .patients-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .section-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .section-actions {
-            display: flex;
-            gap: 0.75rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        /* Search and Filters */
-        .filters {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-        }
-
-        .filters-row {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-            position: relative;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem 1rem 0.75rem 2.5rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            transition: border-color 0.2s;
-        }
-
-        .search-box input:focus {
-            outline: none;
-            border-color: #1e40af;
-            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-        }
-
-        .filter-select {
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            background: white;
-            min-width: 150px;
-        }
-
-        /* Patients Grid */
-        .patients-container {
-            padding: 1.5rem;
-        }
-
-        .patients-grid {
-            display: grid;
-            gap: 1rem;
-        }
-
+        /* Réduction drastique de la hauteur des cartes patients */
         .patient-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.75rem;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            padding: var(--spacing-2) var(--spacing-3) !important;
+            min-height: auto !important;
         }
-
-        .patient-card:hover {
-            background: #f1f5f9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            transform: translateY(-2px);
-        }
-
-        .patient-card.selected {
-            border-color: #1e40af;
-            background: #dbeafe;
-        }
-
+        
         .patient-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 1rem;
-            gap: 1rem;
+            margin-bottom: var(--spacing-2) !important;
+            gap: var(--spacing-2) !important;
         }
-
+        
         .patient-info {
-            flex: 1;
+            gap: var(--spacing-1) !important;
         }
-
+        
         .patient-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: #1e293b;
-            margin-bottom: 0.25rem;
+            font-size: var(--font-size-base) !important;
+            margin-bottom: var(--spacing-1) !important;
+            line-height: 1.2 !important;
         }
-
+        
         .patient-details {
-            color: #64748b;
-            font-size: 0.875rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
+            gap: var(--spacing-1) !important;
+            font-size: var(--font-size-xs) !important;
         }
-
-        .patient-meta {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            flex-wrap: wrap;
+        
+        .patient-details > div {
+            margin-bottom: 0 !important;
+            line-height: 1.3 !important;
         }
-
-        .status-badge {
-            padding: 0.25rem 0.75rem;
-            border-radius: 999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        .status-active {
-            background: #dcfce7;
-            color: #166534;
-        }
-
-        .status-inactive {
-            background: #fee2e2;
-            color: #dc2626;
-        }
-
+        
         .patient-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-            justify-content: flex-end;
+            gap: var(--spacing-2) !important;
+            margin-top: var(--spacing-2) !important;
+        }
+        
+        .patient-actions .btn {
+            padding: var(--spacing-1) var(--spacing-2) !important;
+            font-size: var(--font-size-xs) !important;
         }
 
-        .btn-sm {
-            padding: 0.375rem 0.75rem;
-            font-size: 0.8125rem;
-            min-width: auto;
-            min-height: auto;
-        }
-
-        /* Checkbox */
-        .patient-checkbox {
-            position: relative;
-        }
-
-        .patient-checkbox input[type="checkbox"] {
-            width: 1.25rem;
-            height: 1.25rem;
-            cursor: pointer;
-            accent-color: #1e40af;
-        }
-
-        /* Selection Panel */
-        .selection-panel {
-            position: fixed;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-            border: 1px solid #e2e8f0;
-            display: none;
-            align-items: center;
-            gap: 1rem;
-            z-index: 1000;
-        }
-
-        .selection-panel.active {
-            display: flex;
-        }
-
-        .selection-info {
-            font-weight: 500;
-            color: #374151;
-        }
-
-        .selection-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        /* Modal */
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 0.75rem;
-            max-width: 600px;
-            width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-        }
-
-        .modal-close {
-            background: none;
-            border: none;
-            color: #64748b;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-        }
-
-        .modal-close:hover {
-            background: #f1f5f9;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-
-        .form-input, .form-select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .form-input:focus, .form-select:focus {
-            outline: none;
-            border-color: #1e40af;
-            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-        }
-
-        /* Success/Error States */
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .alert.error {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .alert.active {
-            display: block;
-        }
-
-        /* Empty State */
-        .empty-state {
+        /* Styles pour l'import CSV */
+        .csv-upload-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-8);
             text-align: center;
-            padding: 3rem 1.5rem;
-            color: #64748b;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 0.5rem;
-            margin-top: 2rem;
-            padding: 1rem;
-        }
-
-        .pagination button {
-            padding: 0.5rem 0.75rem;
-            border: 1px solid #d1d5db;
-            background: white;
-            border-radius: 0.375rem;
+            background: var(--bg-secondary);
+            transition: var(--transition);
             cursor: pointer;
-            transition: all 0.2s;
         }
 
-        .pagination button:hover:not(:disabled) {
-            background: #f8fafc;
+        .csv-upload-zone:hover,
+        .csv-upload-zone.dragover {
+            border-color: var(--primary-color);
+            background: rgba(0, 122, 255, 0.05);
         }
 
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .upload-content i {
+            font-size: 3rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-3);
         }
 
-        .pagination .page-active {
-            background: #1e40af;
-            color: white;
-            border-color: #1e40af;
+        .upload-content h4 {
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-2);
         }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
+        .upload-content p {
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-4);
+        }
 
-            .main-container {
-                padding: 1rem;
-            }
+        .csv-stats {
+            display: flex;
+            gap: var(--spacing-4);
+            padding: var(--spacing-3);
+            background: var(--bg-secondary);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-3);
+        }
 
-            .section-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .csv-stat {
+            text-align: center;
+        }
 
-            .filters-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .csv-stat-value {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--primary-color);
+        }
 
-            .search-box {
-                min-width: auto;
-            }
+        .csv-stat-label {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
 
-            .patient-header {
-                flex-direction: column;
-                align-items: stretch;
-            }
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-secondary);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: var(--spacing-2);
+        }
 
-            .patient-actions {
-                justify-content: flex-start;
-            }
-
-            .selection-panel {
-                left: 1rem;
-                right: 1rem;
-                transform: none;
-            }
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-color);
+            transition: width 0.3s ease;
+            width: 0%;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header exactement comme dashboard -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-users"></i>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <h1 id="adminTitle">Administration</h1>
+                        <p id="doctorSpecialty">Gestion des Patients</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 id="pageTitle">Gestion des Patients</h1>
-                    <p>Base de données patients</p>
-                </div>
-            </div>
-            <div class="user-nav">
-                <a href="/admin/dashboard" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour Dashboard
-                </a>
-                <button class="btn btn-danger" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Déconnexion
-                </button>
+                <nav class="nav">
+                    <a href="/admin/dashboard" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Dashboard
+                    </a>
+                    <a href="/admin/patients" class="nav-link active">
+                        <i class="fas fa-users"></i>
+                        Patients
+                    </a>
+                    <a href="/admin/schedule" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        Planning
+                    </a>
+                    <a href="/admin/chat" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        Chat IA
+                    </a>
+                    <a href="/admin/cabinet" class="nav-link">
+                        <i class="fas fa-building"></i>
+                        Cabinet
+                    </a>
+                    <a href="/admin/emergency" class="nav-link">
+                        <i class="fas fa-phone-alt"></i>
+                        Urgences
+                    </a>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Déconnexion
+                    </button>
+                </nav>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <div class="main-container">
-        <!-- Navigation Breadcrumb -->
-        <div class="nav-breadcrumb">
-            <a href="/admin/dashboard">
-                <i class="fas fa-home"></i>
-                Dashboard
-            </a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Gestion des Patients</span>
-        </div>
-
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value" id="totalPatients">--</div>
-                <div class="stat-label">Total Patients</div>
-            </div>
-            <div class="stat-card success">
-                <div class="stat-value" id="activePatients">--</div>
-                <div class="stat-label">Patients Actifs</div>
-            </div>
-            <div class="stat-card warning">
-                <div class="stat-value" id="inactivePatients">--</div>
-                <div class="stat-label">Patients Inactifs</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="newThisMonth">--</div>
-                <div class="stat-label">Nouveaux ce mois</div>
-            </div>
-        </div>
-
-        <!-- Alerts -->
-        <div id="successAlert" class="alert success">
-            <i class="fas fa-check-circle"></i>
-            <span id="successMessage">Opération réussie</span>
-        </div>
-
-        <div id="errorAlert" class="alert error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorMessage">Une erreur est survenue</span>
-        </div>
-
-        <!-- Patients Section -->
-        <div class="patients-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-list"></i>
-                    Liste des Patients
-                </h2>
-                <div class="section-actions">
-                    <button class="btn btn-secondary" id="refreshBtn">
-                        <i class="fas fa-sync-alt"></i>
-                        Actualiser
-                    </button>
-                    <button class="btn btn-primary" id="addPatientBtn">
-                        <i class="fas fa-plus"></i>
-                        Ajouter un patient
-                    </button>
-                </div>
-            </div>
-
-            <!-- Filters -->
-            <div class="filters">
-                <div class="filters-row">
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="searchInput" placeholder="Rechercher par nom, prénom, téléphone ou email...">
+    <main>
+        <!-- Section Stats -->
+        <section class="section" style="padding-top: var(--spacing-12); padding-bottom: 0;">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Total Patients</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="totalPatients">--</div>
+                        <div class="stat-subtitle">Patients enregistrés</div>
                     </div>
-                    <select id="statusFilter" class="filter-select">
-                        <option value="all">Tous les statuts</option>
-                        <option value="active">Actifs seulement</option>
-                        <option value="inactive">Inactifs seulement</option>
-                    </select>
-                    <select id="sortFilter" class="filter-select">
-                        <option value="name">Trier par nom</option>
-                        <option value="created">Plus récents</option>
-                        <option value="age">Par âge</option>
-                    </select>
+
+                    <div class="stat-card success">
+                        <div class="stat-header">
+                            <div class="stat-title">Actifs</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-check"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="activePatients">--</div>
+                        <div class="stat-subtitle">Patients actifs</div>
+                    </div>
+
+                    <div class="stat-card urgent">
+                        <div class="stat-header">
+                            <div class="stat-title">Inactifs</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-times"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="inactivePatients">--</div>
+                        <div class="stat-subtitle">Patients inactifs</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <div class="stat-title">Ce mois</div>
+                            <div class="stat-icon">
+                                <i class="fas fa-user-plus"></i>
+                            </div>
+                        </div>
+                        <div class="stat-value" id="newThisMonth">--</div>
+                        <div class="stat-subtitle">Nouveaux patients</div>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Patients Container -->
-            <div class="patients-container">
-                <div id="patientsGrid" class="patients-grid">
-                    <!-- Patients will be loaded here -->
-                </div>
+        <!-- Section Patients -->
+        <section style="padding: 0 0 var(--spacing-16) 0;">
+            <div class="container">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-list"></i>
+                            Liste des Patients
+                        </h2>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary" id="refreshBtn">
+                                <i class="fas fa-sync-alt"></i>
+                                Actualiser
+                            </button>
+                            <button class="btn btn-info" id="importCsvBtn">
+                                <i class="fas fa-file-import"></i>
+                                Importer CSV
+                            </button>
+                            <button class="btn btn-primary" id="addPatientBtn">
+                                <i class="fas fa-plus"></i>
+                                Ajouter un patient
+                            </button>
+                        </div>
+                    </div>
 
-                <!-- Pagination -->
-                <div class="pagination" id="pagination" style="display: none;">
-                    <!-- Pagination buttons will be generated here -->
+                    <div class="card-body">
+                        <!-- Filtres -->
+                        <div class="filters-row">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="searchInput" placeholder="Rechercher par nom, prénom, téléphone ou email...">
+                            </div>
+                            <select id="statusFilter" class="form-select">
+                                <option value="all">Tous les statuts</option>
+                                <option value="active">Actifs seulement</option>
+                                <option value="inactive">Inactifs seulement</option>
+                            </select>
+                            <select id="sortFilter" class="form-select">
+                                <option value="name">Trier par nom</option>
+                                <option value="created">Plus récents</option>
+                                <option value="age">Par âge</option>
+                            </select>
+                        </div>
+
+                        <!-- Alertes -->
+                        <div id="successAlert" class="alert alert-success" style="display: none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="successMessage">Opération réussie</span>
+                        </div>
+
+                        <div id="errorAlert" class="alert alert-danger" style="display: none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span id="errorMessage">Une erreur est survenue</span>
+                        </div>
+
+                        <!-- Liste des patients -->
+                        <div id="patientsGrid" class="patients-grid">
+                            <!-- Patients will be loaded here -->
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination" id="pagination" style="display: none;">
+                            <!-- Pagination buttons will be generated here -->
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Selection Panel (appears when patients are selected) -->
-    <div class="selection-panel" id="selectionPanel">
-        <div class="selection-info">
-            <span id="selectedCount">0</span> patient(s) sélectionné(s)
-        </div>
-        <div class="selection-actions">
-            <button class="btn btn-secondary btn-sm" id="deselectAllBtn">
-                <i class="fas fa-times"></i>
-                Désélectionner tout
-            </button>
-            <button class="btn btn-danger btn-sm" id="deleteSelectedBtn">
-                <i class="fas fa-trash"></i>
-                Supprimer sélection
-            </button>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <!-- Modal Patient -->
     <div class="modal" id="patientModal">
@@ -675,35 +311,35 @@
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-group">
                             <label class="form-label" for="patientNom">Nom *</label>
-                            <input type="text" id="patientNom" class="form-input" required maxlength="100" placeholder="MARTIN">
+                            <input type="text" id="patientNom" class="form-control" required maxlength="100" placeholder="MARTIN">
                         </div>
 
                         <div class="form-group">
                             <label class="form-label" for="patientPrenom">Prénom *</label>
-                            <input type="text" id="patientPrenom" class="form-input" required maxlength="100" placeholder="Sophie">
+                            <input type="text" id="patientPrenom" class="form-control" required maxlength="100" placeholder="Sophie">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="patientDateNaissance">Date de naissance *</label>
-                        <input type="date" id="patientDateNaissance" class="form-input" required>
+                        <input type="date" id="patientDateNaissance" class="form-control" required>
                     </div>
 
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div class="form-group">
                             <label class="form-label" for="patientTelephone">Téléphone</label>
-                            <input type="tel" id="patientTelephone" class="form-input" maxlength="20" placeholder="+33 6 12 34 56 78">
+                            <input type="tel" id="patientTelephone" class="form-control" maxlength="20" placeholder="+33 6 12 34 56 78">
                         </div>
 
                         <div class="form-group">
                             <label class="form-label" for="patientEmail">Email</label>
-                            <input type="email" id="patientEmail" class="form-input" maxlength="255" placeholder="sophie.martin@email.com">
+                            <input type="email" id="patientEmail" class="form-control" maxlength="255" placeholder="sophie.martin@email.com">
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="patientActif">Statut</label>
-                        <select id="patientActif" class="form-select">
+                        <select id="patientActif" class="form-control">
                             <option value="true">Actif</option>
                             <option value="false">Inactif</option>
                         </select>
@@ -718,6 +354,133 @@
                 <button class="btn btn-primary" id="patientSaveBtn">
                     <i class="fas fa-save"></i>
                     Enregistrer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Import CSV -->
+    <div class="modal" id="importCsvModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-file-import"></i>
+                    Importer des patients via CSV
+                </h3>
+                <button class="modal-close" id="importCsvModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <!-- Instructions -->
+                <div class="alert alert-info" style="margin-bottom: var(--spacing-4);">
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--spacing-3);">
+                        <div>
+                            <h4><i class="fas fa-info-circle"></i> Format CSV attendu</h4>
+                        </div>
+                        <button type="button" class="btn btn-secondary btn-sm" id="downloadSampleBtn">
+                            <i class="fas fa-download"></i>
+                            Télécharger exemple CSV
+                        </button>
+                    </div>
+                    <p>Le fichier CSV doit contenir les colonnes suivantes (avec header) :</p>
+                    <code>nom,prenom,date_naissance,telephone,email</code>
+                    <br><br>
+                    <strong>Exemple :</strong><br>
+                    <code>MARTIN,Sophie,1985-03-15,+33612345678,sophie.martin@email.com</code>
+                </div>
+
+                <!-- Zone de drop -->
+                <div class="csv-upload-zone" id="csvUploadZone">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <h4>Déposez votre fichier CSV ici</h4>
+                        <p>ou cliquez pour sélectionner un fichier</p>
+                        <input type="file" id="csvFileInput" accept=".csv,.txt" style="display: none;">
+                        <button type="button" class="btn btn-primary" onclick="document.getElementById('csvFileInput').click();">
+                            <i class="fas fa-folder-open"></i>
+                            Choisir un fichier
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Preview des données -->
+                <div id="csvPreviewSection" style="display: none; margin-top: var(--spacing-4);">
+                    <h4><i class="fas fa-eye"></i> Aperçu des données</h4>
+                    <div class="table-container" style="max-height: 300px; overflow-y: auto;">
+                        <table class="table" id="csvPreviewTable">
+                            <thead id="csvPreviewHeader"></thead>
+                            <tbody id="csvPreviewBody"></tbody>
+                        </table>
+                    </div>
+                    <div id="csvStats" class="csv-stats"></div>
+                </div>
+
+                <!-- Messages d'erreur -->
+                <div id="csvErrors" style="display: none; margin-top: var(--spacing-4);">
+                    <div class="alert alert-danger">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Erreurs détectées</h4>
+                        <ul id="csvErrorsList"></ul>
+                    </div>
+                </div>
+
+                <!-- Progression -->
+                <div id="csvProgress" style="display: none; margin-top: var(--spacing-4);">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="csvProgressBar"></div>
+                    </div>
+                    <p id="csvProgressText">Traitement en cours...</p>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="importCsvCancelBtn">
+                    Annuler
+                </button>
+                <button class="btn btn-primary" id="importCsvSubmitBtn" disabled>
+                    <i class="fas fa-upload"></i>
+                    Importer les patients
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de déconnexion -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="border-bottom: 1px solid #fee2e2; background: #fef2f2;">
+                <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </h3>
+                <button class="modal-close" id="logoutModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; padding: var(--spacing-4) 0;">
+                    <div style="font-size: 3rem; color: #dc2626; margin-bottom: var(--spacing-4);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <p style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--spacing-3); color: var(--text-primary);">
+                        Êtes-vous sûr de vouloir vous déconnecter ?
+                    </p>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">
+                        Vous devrez vous reconnecter pour accéder au tableau de bord.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="gap: var(--spacing-3);">
+                <button class="btn btn-secondary" id="logoutCancel" style="flex: 1;">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </button>
+                <button class="btn btn-danger" id="logoutConfirm" style="flex: 1;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
                 </button>
             </div>
         </div>
@@ -740,23 +503,45 @@
 
         function setupEventListeners() {
             // Boutons principaux
-            document.getElementById('logoutBtn').addEventListener('click', logout);
             document.getElementById('refreshBtn').addEventListener('click', loadPatients);
             document.getElementById('addPatientBtn').addEventListener('click', () => openPatientModal());
+            document.getElementById('importCsvBtn').addEventListener('click', () => openImportCsvModal());
             
             // Modal patient
             document.getElementById('patientModalClose').addEventListener('click', closePatientModal);
             document.getElementById('patientCancelBtn').addEventListener('click', closePatientModal);
             document.getElementById('patientSaveBtn').addEventListener('click', savePatient);
             
+            // Modal import CSV
+            document.getElementById('importCsvModalClose').addEventListener('click', closeImportCsvModal);
+            document.getElementById('importCsvCancelBtn').addEventListener('click', closeImportCsvModal);
+            document.getElementById('csvFileInput').addEventListener('change', handleCsvFileSelect);
+            document.getElementById('importCsvSubmitBtn').addEventListener('click', importCsvData);
+            document.getElementById('downloadSampleBtn').addEventListener('click', downloadSampleCsv);
+            
+            // Drag & Drop
+            const csvUploadZone = document.getElementById('csvUploadZone');
+            csvUploadZone.addEventListener('click', () => document.getElementById('csvFileInput').click());
+            csvUploadZone.addEventListener('dragover', handleDragOver);
+            csvUploadZone.addEventListener('dragleave', handleDragLeave);
+            csvUploadZone.addEventListener('drop', handleDrop);
+            
+            // Modal de déconnexion
+            document.getElementById('logoutModalClose').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutCancel').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutConfirm').addEventListener('click', confirmLogout);
+            
+            // Fermer modal logout en cliquant à l'extérieur
+            document.getElementById('logoutModal').addEventListener('click', function(e) {
+                if (e.target.id === 'logoutModal') {
+                    closeLogoutModal();
+                }
+            });
+            
             // Search et filtres
             document.getElementById('searchInput').addEventListener('input', applyFilters);
             document.getElementById('statusFilter').addEventListener('change', applyFilters);
             document.getElementById('sortFilter').addEventListener('change', applyFilters);
-            
-            // Selection
-            document.getElementById('deselectAllBtn').addEventListener('click', deselectAll);
-            document.getElementById('deleteSelectedBtn').addEventListener('click', deleteSelected);
             
             // Formatage téléphone
             document.getElementById('patientTelephone').addEventListener('input', formatTelephone);
@@ -766,6 +551,7 @@
                 if (e.target.id === 'patientModal') closePatientModal();
             });
         }
+
 
         // Chargement des patients
         async function loadPatients() {
@@ -870,7 +656,7 @@
             container.innerHTML = patientsToShow.map(patient => {
                 const age = calculateAge(patient.date_naissance);
                 return `
-                    <div class="patient-card ${selectedPatients.has(patient.id) ? 'selected' : ''}" data-patient-id="${patient.id}">
+                    <div class="patient-card" data-patient-id="${patient.id}">
                         <div class="patient-header">
                             <div class="patient-info">
                                 <div class="patient-name">${escapeHtml(patient.prenom)} ${escapeHtml(patient.nom)}</div>
@@ -881,11 +667,7 @@
                                 </div>
                             </div>
                             <div class="patient-meta">
-                                <div class="patient-checkbox">
-                                    <input type="checkbox" ${selectedPatients.has(patient.id) ? 'checked' : ''} 
-                                           onchange="togglePatientSelection(${patient.id}, this.checked)">
-                                </div>
-                                <span class="status-badge ${patient.actif ? 'status-active' : 'status-inactive'}">
+                                <span class="badge ${patient.actif ? 'badge-success' : 'badge-danger'}">
                                     ${patient.actif ? 'Actif' : 'Inactif'}
                                 </span>
                             </div>
@@ -943,7 +725,7 @@
             
             // Bouton précédent
             paginationHTML += `
-                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
+                <button class="btn btn-secondary" ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">
                     <i class="fas fa-chevron-left"></i>
                 </button>
             `;
@@ -951,7 +733,7 @@
             // Pages
             for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
                 paginationHTML += `
-                    <button class="${i === currentPage ? 'page-active' : ''}" onclick="changePage(${i})">
+                    <button class="btn ${i === currentPage ? 'btn-primary' : 'btn-secondary'}" onclick="changePage(${i})">
                         ${i}
                     </button>
                 `;
@@ -959,7 +741,7 @@
             
             // Bouton suivant
             paginationHTML += `
-                <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
+                <button class="btn btn-secondary" ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">
                     <i class="fas fa-chevron-right"></i>
                 </button>
             `;
@@ -976,40 +758,6 @@
             }
         }
 
-        // Gestion de la sélection
-        function togglePatientSelection(patientId, selected) {
-            if (selected) {
-                selectedPatients.add(patientId);
-            } else {
-                selectedPatients.delete(patientId);
-            }
-            updateSelectionPanel();
-            
-            // Mettre à jour l'apparence de la carte
-            const card = document.querySelector(`[data-patient-id="${patientId}"]`);
-            if (card) {
-                card.classList.toggle('selected', selected);
-            }
-        }
-
-        function updateSelectionPanel() {
-            const panel = document.getElementById('selectionPanel');
-            const count = selectedPatients.size;
-            
-            if (count > 0) {
-                panel.classList.add('active');
-                document.getElementById('selectedCount').textContent = count;
-            } else {
-                panel.classList.remove('active');
-            }
-        }
-
-        function deselectAll() {
-            selectedPatients.clear();
-            updateSelectionPanel();
-            displayPatients();
-        }
-
         // Modal patient
         function openPatientModal(patient = null) {
             editingPatientId = patient ? patient.id : null;
@@ -1021,7 +769,7 @@
                 document.getElementById('patientId').value = patient.id;
                 document.getElementById('patientNom').value = patient.nom;
                 document.getElementById('patientPrenom').value = patient.prenom;
-                document.getElementById('patientDateNaissance').value = patient.date_naissance;
+                document.getElementById('patientDateNaissance').value = patient.date_naissance ? patient.date_naissance.split('T')[0] : '';
                 document.getElementById('patientTelephone').value = patient.telephone || '';
                 document.getElementById('patientEmail').value = patient.email || '';
                 document.getElementById('patientActif').value = patient.actif.toString();
@@ -1119,27 +867,316 @@
             }
         }
 
-        // Suppression multiple
-        async function deleteSelected() {
-            if (selectedPatients.size === 0) return;
+        // ===== FONCTIONS IMPORT CSV =====
+        
+        let csvData = [];
+        let validCsvData = [];
+
+        function openImportCsvModal() {
+            document.getElementById('importCsvModal').classList.add('active');
+            resetCsvModal();
+        }
+
+        function closeImportCsvModal() {
+            document.getElementById('importCsvModal').classList.remove('active');
+            resetCsvModal();
+        }
+
+        function resetCsvModal() {
+            csvData = [];
+            validCsvData = [];
+            document.getElementById('csvFileInput').value = '';
+            document.getElementById('csvPreviewSection').style.display = 'none';
+            document.getElementById('csvErrors').style.display = 'none';
+            document.getElementById('csvProgress').style.display = 'none';
+            document.getElementById('importCsvSubmitBtn').disabled = true;
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('dragover');
             
-            if (!confirm(`Êtes-vous sûr de vouloir supprimer ${selectedPatients.size} patient(s) sélectionné(s) ?`)) {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processCsvFile(files[0]);
+            }
+        }
+
+        function handleCsvFileSelect(e) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                processCsvFile(files[0]);
+            }
+        }
+
+        async function processCsvFile(file) {
+            if (!file.name.toLowerCase().endsWith('.csv') && !file.name.toLowerCase().endsWith('.txt')) {
+                showError('Veuillez sélectionner un fichier CSV (.csv ou .txt)');
                 return;
             }
 
             try {
-                const promises = Array.from(selectedPatients).map(id => 
-                    fetch(`/api/admin/patients/${id}`, { method: 'DELETE' })
+                const text = await file.text();
+                const lines = text.split('\n').filter(line => line.trim());
+                
+                if (lines.length < 2) {
+                    showError('Le fichier CSV doit contenir au moins une ligne de header et une ligne de données');
+                    return;
+                }
+
+                // Parse CSV
+                csvData = lines.map(line => {
+                    // Simple CSV parser - handles basic cases
+                    return line.split(',').map(cell => cell.trim().replace(/^["']|["']$/g, ''));
+                });
+
+                const headers = csvData[0];
+                const dataRows = csvData.slice(1);
+
+                // Validation des headers
+                const requiredHeaders = ['nom', 'prenom', 'date_naissance'];
+                const headerMap = {};
+                
+                headers.forEach((header, index) => {
+                    headerMap[header.toLowerCase()] = index;
+                });
+
+                const missingHeaders = requiredHeaders.filter(header => 
+                    !headerMap.hasOwnProperty(header)
                 );
-                
-                await Promise.all(promises);
-                
-                deselectAll();
-                showSuccess(`${selectedPatients.size} patient(s) supprimé(s)`);
-                loadPatients();
+
+                if (missingHeaders.length > 0) {
+                    showError(`Headers manquants: ${missingHeaders.join(', ')}`);
+                    return;
+                }
+
+                // Validation des données
+                const errors = [];
+                validCsvData = [];
+
+                dataRows.forEach((row, index) => {
+                    const rowNumber = index + 2; // +2 car ligne 1 = header
+                    const patient = {};
+                    let rowErrors = [];
+
+                    // Nom (requis)
+                    patient.nom = row[headerMap.nom] || '';
+                    if (!patient.nom) {
+                        rowErrors.push('Nom manquant');
+                    }
+
+                    // Prénom (requis)
+                    patient.prenom = row[headerMap.prenom] || '';
+                    if (!patient.prenom) {
+                        rowErrors.push('Prénom manquant');
+                    }
+
+                    // Date de naissance (requis)
+                    patient.date_naissance = row[headerMap.date_naissance] || '';
+                    if (!patient.date_naissance) {
+                        rowErrors.push('Date de naissance manquante');
+                    } else if (!isValidDate(patient.date_naissance)) {
+                        rowErrors.push('Date de naissance invalide (format: YYYY-MM-DD)');
+                    }
+
+                    // Téléphone (optionnel)
+                    patient.telephone = row[headerMap.telephone] || '';
+
+                    // Email (optionnel)
+                    patient.email = row[headerMap.email] || '';
+                    if (patient.email && !isValidEmail(patient.email)) {
+                        rowErrors.push('Email invalide');
+                    }
+
+                    if (rowErrors.length > 0) {
+                        errors.push(`Ligne ${rowNumber}: ${rowErrors.join(', ')}`);
+                    } else {
+                        validCsvData.push(patient);
+                    }
+                });
+
+                // Affichage des résultats
+                displayCsvPreview(headers, dataRows, errors);
+
             } catch (error) {
-                console.error('Erreur suppression multiple:', error);
-                showError('Erreur lors de la suppression');
+                console.error('Erreur processing CSV:', error);
+                showError('Erreur lors de la lecture du fichier');
+            }
+        }
+
+        function displayCsvPreview(headers, dataRows, errors) {
+            // Afficher erreurs si il y en a
+            if (errors.length > 0) {
+                document.getElementById('csvErrors').style.display = 'block';
+                document.getElementById('csvErrorsList').innerHTML = 
+                    errors.map(error => `<li>${error}</li>`).join('');
+            } else {
+                document.getElementById('csvErrors').style.display = 'none';
+            }
+
+            // Preview des données
+            document.getElementById('csvPreviewSection').style.display = 'block';
+            
+            const headerHtml = headers.map(header => `<th>${escapeHtml(header)}</th>`).join('');
+            document.getElementById('csvPreviewHeader').innerHTML = `<tr>${headerHtml}</tr>`;
+            
+            const bodyHtml = dataRows.slice(0, 5).map(row => // Show first 5 rows only
+                `<tr>${row.map(cell => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`
+            ).join('');
+            document.getElementById('csvPreviewBody').innerHTML = bodyHtml;
+
+            // Statistiques
+            const stats = `
+                <div class="csv-stat">
+                    <div class="csv-stat-value">${dataRows.length}</div>
+                    <div class="csv-stat-label">Lignes totales</div>
+                </div>
+                <div class="csv-stat">
+                    <div class="csv-stat-value">${validCsvData.length}</div>
+                    <div class="csv-stat-label">Patients valides</div>
+                </div>
+                <div class="csv-stat">
+                    <div class="csv-stat-value">${errors.length}</div>
+                    <div class="csv-stat-label">Erreurs</div>
+                </div>
+            `;
+            document.getElementById('csvStats').innerHTML = stats;
+
+            // Activer le bouton d'import si il y a des données valides
+            document.getElementById('importCsvSubmitBtn').disabled = validCsvData.length === 0;
+        }
+
+        async function importCsvData() {
+            if (validCsvData.length === 0) {
+                showError('Aucune donnée valide à importer');
+                return;
+            }
+
+            document.getElementById('csvProgress').style.display = 'block';
+            document.getElementById('importCsvSubmitBtn').disabled = true;
+
+            try {
+                let imported = 0;
+                let failed = 0;
+
+                for (let i = 0; i < validCsvData.length; i++) {
+                    const patient = validCsvData[i];
+                    
+                    // Update progress
+                    const progress = ((i + 1) / validCsvData.length) * 100;
+                    document.getElementById('csvProgressBar').style.width = `${progress}%`;
+                    document.getElementById('csvProgressText').textContent = 
+                        `Import en cours... ${i + 1}/${validCsvData.length}`;
+
+                    try {
+                        const response = await fetch('/api/admin/patients', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                nom: patient.nom.toUpperCase(),
+                                prenom: patient.prenom,
+                                date_naissance: patient.date_naissance,
+                                telephone: patient.telephone,
+                                email: patient.email,
+                                actif: true
+                            })
+                        });
+
+                        const result = await response.json();
+                        
+                        if (response.ok && result.success) {
+                            imported++;
+                        } else {
+                            failed++;
+                            console.warn(`Échec import ${patient.nom} ${patient.prenom}:`, result.error);
+                        }
+                    } catch (error) {
+                        failed++;
+                        console.error(`Erreur import ${patient.nom} ${patient.prenom}:`, error);
+                    }
+
+                    // Small delay to prevent overwhelming the server
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+
+                // Résultats finaux
+                showSuccess(`Import terminé: ${imported} patients importés, ${failed} échecs`);
+                closeImportCsvModal();
+                loadPatients(); // Reload the patient list
+
+            } catch (error) {
+                console.error('Erreur générale import:', error);
+                showError('Erreur lors de l\'import');
+            } finally {
+                document.getElementById('csvProgress').style.display = 'none';
+                document.getElementById('importCsvSubmitBtn').disabled = false;
+            }
+        }
+
+        function isValidDate(dateString) {
+            const regex = /^\d{4}-\d{2}-\d{2}$/;
+            if (!regex.test(dateString)) return false;
+            
+            const date = new Date(dateString);
+            return date instanceof Date && !isNaN(date);
+        }
+
+        function isValidEmail(email) {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        }
+
+        function downloadSampleCsv() {
+            // Créer un CSV d'exemple avec plusieurs patients fictifs
+            const sampleData = [
+                ['nom', 'prenom', 'date_naissance', 'telephone', 'email'],
+                ['MARTIN', 'Sophie', '1985-03-15', '+33612345678', 'sophie.martin@email.com'],
+                ['DUBOIS', 'Pierre', '1978-11-22', '0123456789', 'pierre.dubois@gmail.com'],
+                ['BERNARD', 'Marie', '1992-07-08', '+33687654321', 'marie.bernard@outlook.fr'],
+                ['PETIT', 'Paul', '1965-12-03', '0145678901', 'paul.petit@yahoo.fr'],
+                ['MOREAU', 'Claire', '1990-04-25', '', 'claire.moreau@hotmail.com']
+            ];
+
+            // Convertir en CSV
+            const csvContent = sampleData.map(row => 
+                row.map(field => {
+                    // Échapper les guillemets et encapsuler les champs si nécessaire
+                    if (field.includes(',') || field.includes('"') || field.includes('\n')) {
+                        return '"' + field.replace(/"/g, '""') + '"';
+                    }
+                    return field;
+                }).join(',')
+            ).join('\n');
+
+            // Créer le blob et télécharger
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            
+            if (link.download !== undefined) {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'exemple-patients.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                
+                showSuccess('Fichier exemple téléchargé : exemple-patients.csv');
+            } else {
+                showError('Téléchargement non supporté par ce navigateur');
             }
         }
 
@@ -1185,43 +1222,54 @@
 
         function showSuccess(message) {
             document.getElementById('successMessage').textContent = message;
-            document.getElementById('successAlert').classList.add('active');
-            document.getElementById('errorAlert').classList.remove('active');
+            document.getElementById('successAlert').style.display = 'flex';
+            document.getElementById('errorAlert').style.display = 'none';
             
             setTimeout(() => {
-                document.getElementById('successAlert').classList.remove('active');
+                document.getElementById('successAlert').style.display = 'none';
             }, 5000);
         }
 
         function showError(message) {
             document.getElementById('errorMessage').textContent = message;
-            document.getElementById('errorAlert').classList.add('active');
-            document.getElementById('successAlert').classList.remove('active');
+            document.getElementById('errorAlert').style.display = 'flex';
+            document.getElementById('successAlert').style.display = 'none';
             
             setTimeout(() => {
-                document.getElementById('errorAlert').classList.remove('active');
+                document.getElementById('errorAlert').style.display = 'none';
             }, 5000);
         }
 
-        // Déconnexion
-        async function logout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                try {
-                    const response = await fetch('/api/admin/logout', {
-                        method: 'POST'
-                    });
+        // ===== FONCTIONS DE DÉCONNEXION =====
+        
+        // Fonction de déconnexion
+        function logout() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
 
-                    const result = await response.json();
+        // Fermer modal de déconnexion
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
 
-                    if (result.success) {
-                        window.location.href = result.redirect || '/admin';
-                    } else {
-                        alert('Erreur lors de la déconnexion');
-                    }
-                } catch (error) {
-                    console.error('Erreur déconnexion:', error);
-                    window.location.href = '/admin';
+        // Confirmer la déconnexion
+        async function confirmLogout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirect || '/admin/login';
+                } else {
+                    showError('Erreur lors de la déconnexion');
+                    closeLogoutModal();
                 }
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                window.location.href = '/admin/login';
             }
         }
 
@@ -1229,6 +1277,8 @@
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closePatientModal();
+                closeImportCsvModal();
+                closeLogoutModal();
             }
             
             if (e.ctrlKey && e.key === 'n') {

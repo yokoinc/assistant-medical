@@ -3,413 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horaires d'Ouverture - Administration</title>
+    <title id="pageTitle">Gestion Planning - Cabinet Médical</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/styles.css?v=schedule-black-text">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <style>
-        /* Styles spécifiques page admin planning */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
-        }
-
-        /* Import des styles admin communs */
-        @import url('admin-common.css');
-
-        /* Import du header unifié */
-        @import url('admin-header-template.css');
-
-        /* Main Layout */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Navigation */
-        .nav-breadcrumb {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-breadcrumb a {
-            color: #1e40af;
-            text-decoration: none;
-        }
-
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        /* Schedule Section */
-        .schedule-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
-
-        .section-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #1e293b;
-        }
-
-        .section-body {
-            padding: 1.5rem;
-        }
-
-        /* Horaires Grid */
-        .horaires-grid {
-            display: grid;
-            gap: 1.5rem;
-        }
-
-        .horaire-row {
-            padding: 1.5rem;
-            background: #f8fafc;
-            border-radius: 0.75rem;
-            border: 1px solid #e2e8f0;
-            transition: all 0.3s ease;
-        }
-
-        .horaire-row:hover {
-            background: #f1f5f9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-
-        .horaire-jour {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
-            color: #1e293b;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .jour-icon {
-            width: 2rem;
-            height: 2rem;
-            background: #1e40af;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .horaire-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .horaire-options {
-            display: flex;
-            gap: 2rem;
-            margin-bottom: 1rem;
-        }
-
-        .horaire-checkbox {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            transition: background 0.2s;
-        }
-
-        .horaire-checkbox:hover {
-            background: rgba(30, 64, 175, 0.1);
-        }
-
-        .horaire-checkbox input[type="checkbox"] {
-            width: 1.2rem;
-            height: 1.2rem;
-            accent-color: #1e40af;
-        }
-
-        .horaire-plages {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .horaire-plage {
-            background: white;
-            padding: 1.25rem;
-            border-radius: 0.75rem;
-            border: 1px solid #d1d5db;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .horaire-plage-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.75rem;
-            color: #374151;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .horaire-time {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            flex-wrap: wrap;
-        }
-
-        .horaire-time-input {
-            width: 70px;
-            padding: 0.6rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            text-align: center;
-            font-weight: 500;
-            transition: border-color 0.2s;
-        }
-
-        .horaire-time-input:focus {
-            outline: none;
-            border-color: #1e40af;
-            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
-        }
-
-        .horaire-separator {
-            font-weight: 600;
-            color: #64748b;
-            font-size: 1.1rem;
-        }
-
-        /* Success/Error States */
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .alert.error {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .alert.active {
-            display: block;
-        }
-
-        /* Info boxes */
-        .info-box {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .info-box i {
-            margin-right: 0.5rem;
-        }
-
-        /* Preview Section */
-        .preview-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .preview-horaires {
-            padding: 1.5rem;
-        }
-
-        .preview-jour {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .preview-jour:last-child {
-            border-bottom: none;
-        }
-
-        .preview-jour-nom {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .preview-horaire {
-            color: #64748b;
-            font-size: 0.9rem;
-        }
-
-        .preview-ferme {
-            color: #dc2626;
-            font-style: italic;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .main-container {
-                padding: 1rem;
-            }
-
-            .horaire-row {
-                padding: 1rem;
-            }
-
-            .horaire-options {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-
-            .horaire-time {
-                gap: 0.5rem;
-            }
-
-            .horaire-time-input {
-                width: 60px;
-            }
-        }
-    </style>
 </head>
 <body>
-    <!-- Header -->
+    <!-- Header exactement comme dashboard -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-clock"></i>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div>
+                        <h1 id="adminTitle">Administration</h1>
+                        <p id="doctorSpecialty">Gestion du Planning</p>
+                    </div>
                 </div>
-                <div>
-                    <h1>Horaires d'Ouverture</h1>
-                    <p>Configuration du planning</p>
-                </div>
-            </div>
-            <div class="user-nav">
-                <a href="/admin/parameters" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour Paramètres
-                </a>
-                <a href="/admin/dashboard" class="btn btn-secondary">
-                    <i class="fas fa-home"></i>
-                    Dashboard
-                </a>
-                <button class="btn btn-danger" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Déconnexion
-                </button>
+                <nav class="nav">
+                    <a href="/admin/dashboard" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Dashboard
+                    </a>
+                    <a href="/admin/patients" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Patients
+                    </a>
+                    <a href="/admin/schedule" class="nav-link active">
+                        <i class="fas fa-calendar"></i>
+                        Planning
+                    </a>
+                    <a href="/admin/chat" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        Chat IA
+                    </a>
+                    <a href="/admin/cabinet" class="nav-link">
+                        <i class="fas fa-building"></i>
+                        Cabinet
+                    </a>
+                    <a href="/admin/emergency" class="nav-link">
+                        <i class="fas fa-phone-alt"></i>
+                        Urgences
+                    </a>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Déconnexion
+                    </button>
+                </nav>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <div class="main-container">
-        <!-- Navigation Breadcrumb -->
-        <div class="nav-breadcrumb">
-            <a href="/admin/dashboard">
-                <i class="fas fa-home"></i>
-                Dashboard
-            </a>
-            <i class="fas fa-chevron-right"></i>
-            <a href="/admin/parameters">Paramètres</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Horaires d'Ouverture</span>
-        </div>
-
-        <!-- Alerts -->
-        <div id="successAlert" class="alert success">
-            <i class="fas fa-check-circle"></i>
-            <span id="successMessage">Horaires sauvegardés avec succès</span>
-        </div>
-
-        <div id="errorAlert" class="alert error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorMessage">Erreur lors de la sauvegarde</span>
-        </div>
-
-        <!-- Schedule Configuration -->
-        <div class="schedule-section">
-            <div class="section-header">
-                <h2 class="section-title">
+    <main>
+        <!-- Section Header -->
+        <section class="section" style="padding-top: var(--spacing-12);">
+            <div class="container">
+                <h2 class="section-title" style="margin-bottom: var(--spacing-10);">
                     <i class="fas fa-calendar-alt"></i>
-                    Configuration des Horaires
+                    Configuration des Horaires d'Ouverture
                 </h2>
-                <div class="section-actions">
-                    <button class="btn btn-primary" id="saveHorairesBtn">
-                        <i class="fas fa-save"></i>
-                        Sauvegarder
-                    </button>
-                </div>
-            </div>
-            <div class="section-body">
-                <div class="info-box">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>Instructions :</strong> 
-                    <ul style="margin: 0.5rem 0 0 1.5rem;">
-                        <li>Cochez "Fermé" pour les jours de fermeture</li>
-                        <li>Cochez "Journée continue" pour les horaires sans pause déjeuner</li>
-                        <li>Utilisez le format 24h (ex: 14:30 pour 14h30)</li>
-                    </ul>
+                
+                <!-- Alertes -->
+                <div id="successAlert" class="alert alert-success" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successMessage">Horaires sauvegardés avec succès</span>
                 </div>
 
-                <div class="horaires-grid" id="horairesGrid">
-                    <!-- Horaires will be loaded here -->
+                <div id="errorAlert" class="alert alert-danger" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorMessage">Erreur lors de la sauvegarde</span>
                 </div>
 
-                <!-- Preview -->
-                <div class="preview-section" style="margin-top: 2rem;">
-                    <div class="section-header">
+                <!-- Instructions -->
+                <div class="card" style="margin-bottom: var(--spacing-8);">
+                    <div class="card-body">
+                        <div style="display: flex; align-items: flex-start; gap: var(--spacing-3);">
+                            <i class="fas fa-info-circle" style="color: var(--black); margin-top: 2px; font-size: var(--font-size-lg);"></i>
+                            <div>
+                                <strong>Instructions :</strong>
+                                <ul style="margin: var(--spacing-2) 0 0 var(--spacing-6);">
+                                    <li>Cochez "Fermé" pour les jours de fermeture</li>
+                                    <li>Cochez "Journée continue" pour les horaires sans pause déjeuner</li>
+                                    <li>Utilisez le format 24h (ex: 14:30 pour 14h30)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Aperçu Public -->
+                <div class="card">
+                    <div class="card-header">
                         <h2 class="section-title">
                             <i class="fas fa-eye"></i>
                             Aperçu Public
                         </h2>
                     </div>
-                    <div class="section-body">
-                        <p style="color: #64748b; margin-bottom: 1rem; font-size: 0.9rem;">
+                    <div class="card-body">
+                        <p style="color: var(--text-secondary); margin-bottom: var(--spacing-4); font-size: var(--font-size-sm);">
                             Voici comment les horaires apparaîtront sur le site public :
                         </p>
                         <div class="preview-horaires" id="previewHoraires">
@@ -417,9 +111,35 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Espacement entre modules -->
+                <div style="margin-bottom: var(--spacing-8);"></div>
+
+                <!-- Configuration des horaires -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="section-title">
+                            <i class="fas fa-clock"></i>
+                            Horaires de la semaine
+                        </h2>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="horaires-grid" id="horairesGrid">
+                            <!-- Horaires will be loaded here -->
+                        </div>
+                        
+                        <div style="display: flex; justify-content: flex-end; margin-top: var(--spacing-6); padding-top: var(--spacing-4); border-top: 1px solid var(--border-color);">
+                            <button class="btn btn-primary" id="saveHorairesBtn">
+                                <i class="fas fa-save"></i>
+                                Sauvegarder
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
 
     <script>
         // Variables globales
@@ -432,10 +152,10 @@
         });
 
         function setupEventListeners() {
-            // Boutons principaux
-            document.getElementById('logoutBtn').addEventListener('click', logout);
+            // Boutons principaux  
             document.getElementById('saveHorairesBtn').addEventListener('click', saveHoraires);
         }
+
 
         // Chargement des horaires
         async function loadHoraires() {
@@ -541,7 +261,6 @@
             horairesGrid.innerHTML = '';
 
             const jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-            const joursIcons = ['LUN', 'MAR', 'MER', 'JEU', 'VEN', 'SAM', 'DIM'];
             
             jours.forEach((jour, index) => {
                 // Vérifier si c'est déjà le nouveau format ou l'ancien
@@ -560,55 +279,61 @@
                 row.className = 'horaire-row';
                 row.innerHTML = `
                     <div class="horaire-jour">
-                        ${jour}
+                        <div class="jour-badge">
+                            ${jour}
+                        </div>
                     </div>
                     <div class="horaire-controls">
                         <div class="horaire-options">
-                            <label class="horaire-checkbox">
+                            <label class="checkbox-container">
                                 <input type="checkbox" class="horaire-ferme" data-jour="${jour}" ${horaireJour.ferme ? 'checked' : ''}>
-                                <span><i class="fas fa-times-circle"></i> Fermé</span>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">
+                                    Fermé
+                                </span>
                             </label>
-                            <label class="horaire-checkbox">
+                            <label class="checkbox-container">
                                 <input type="checkbox" class="horaire-continue" data-jour="${jour}" ${horaireJour.journee_continue ? 'checked' : ''}>
-                                <span><i class="fas fa-clock"></i> Journée continue</span>
+                                <span class="checkmark"></span>
+                                <span class="checkbox-label">
+                                    Journée continue
+                                </span>
                             </label>
                         </div>
                         <div class="horaire-plages" style="${horaireJour.ferme ? 'display: none;' : ''}">
                             <div class="horaire-plage">
                                 <div class="horaire-plage-title">
-                                    <i class="fas fa-sun"></i>
                                     Matin
                                 </div>
                                 <div class="horaire-time">
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="debut-heure" 
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="matin" data-type="debut-heure" 
                                            value="${horaireJour.matin_debut.heure}" min="0" max="23" placeholder="08">
-                                    <span>h</span>
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="debut-minute" 
+                                    <span class="time-separator">h</span>
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="matin" data-type="debut-minute" 
                                            value="${horaireJour.matin_debut.minute}" min="0" max="59" placeholder="00">
-                                    <span class="horaire-separator">→</span>
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="fin-heure" 
+                                    <span class="time-arrow">→</span>
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="matin" data-type="fin-heure" 
                                            value="${horaireJour.matin_fin.heure}" min="0" max="23" placeholder="12">
-                                    <span>h</span>
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="matin" data-type="fin-minute" 
+                                    <span class="time-separator">h</span>
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="matin" data-type="fin-minute" 
                                            value="${horaireJour.matin_fin.minute}" min="0" max="59" placeholder="00">
                                 </div>
                             </div>
                             <div class="horaire-plage" style="${horaireJour.journee_continue ? 'display: none;' : ''}">
                                 <div class="horaire-plage-title">
-                                    <i class="fas fa-moon"></i>
                                     Après-midi
                                 </div>
                                 <div class="horaire-time">
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="debut-heure" 
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="aprem" data-type="debut-heure" 
                                            value="${horaireJour.aprem_debut.heure}" min="0" max="23" placeholder="14">
-                                    <span>h</span>
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="debut-minute" 
+                                    <span class="time-separator">h</span>
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="aprem" data-type="debut-minute" 
                                            value="${horaireJour.aprem_debut.minute}" min="0" max="59" placeholder="00">
-                                    <span class="horaire-separator">→</span>
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="fin-heure" 
+                                    <span class="time-arrow">→</span>
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="aprem" data-type="fin-heure" 
                                            value="${horaireJour.aprem_fin.heure}" min="0" max="23" placeholder="19">
-                                    <span>h</span>
-                                    <input type="number" class="horaire-time-input" data-jour="${jour}" data-periode="aprem" data-type="fin-minute" 
+                                    <span class="time-separator">h</span>
+                                    <input type="number" class="form-control time-input" data-jour="${jour}" data-periode="aprem" data-type="fin-minute" 
                                            value="${horaireJour.aprem_fin.minute}" min="0" max="59" placeholder="00">
                                 </div>
                             </div>
@@ -624,17 +349,31 @@
                 const apremDiv = row.querySelector('.horaire-plage:last-child');
                 
                 fermeCheckbox.addEventListener('change', function() {
-                    plagesDiv.style.display = this.checked ? 'none' : 'block';
+                    if (this.checked) {
+                        // Si fermé est coché, décocher journée continue
+                        continueCheckbox.checked = false;
+                        apremDiv.style.display = 'block';
+                        plagesDiv.style.display = 'none';
+                    } else {
+                        plagesDiv.style.display = 'block';
+                    }
                     updatePreview();
                 });
                 
                 continueCheckbox.addEventListener('change', function() {
-                    apremDiv.style.display = this.checked ? 'none' : 'block';
+                    if (this.checked) {
+                        // Si journée continue est cochée, décocher fermé
+                        fermeCheckbox.checked = false;
+                        plagesDiv.style.display = 'block';
+                        apremDiv.style.display = 'none';
+                    } else {
+                        apremDiv.style.display = 'block';
+                    }
                     updatePreview();
                 });
 
                 // Event listeners pour les inputs
-                row.querySelectorAll('.horaire-time-input').forEach(input => {
+                row.querySelectorAll('.time-input').forEach(input => {
                     input.addEventListener('input', updatePreview);
                 });
             });
@@ -656,7 +395,7 @@
                 let horaireText = '';
                 
                 if (fermeCheckbox && fermeCheckbox.checked) {
-                    horaireText = '<span class="preview-ferme">Fermé</span>';
+                    horaireText = '<span class="badge badge-danger">Fermé</span>';
                 } else {
                     const matinDebutHeure = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="debut-heure"]`)?.value || '08';
                     const matinDebutMinute = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="debut-minute"]`)?.value || '00';
@@ -664,20 +403,23 @@
                     const matinFinMinute = document.querySelector(`[data-jour="${jour}"][data-periode="matin"][data-type="fin-minute"]`)?.value || '00';
                     
                     if (continueCheckbox && continueCheckbox.checked) {
-                        horaireText = `${matinDebutHeure}h${matinDebutMinute} - ${matinFinHeure}h${matinFinMinute}`;
+                        horaireText = `<span class="badge badge-success">${matinDebutHeure}h${matinDebutMinute} - ${matinFinHeure}h${matinFinMinute}</span>`;
                     } else {
                         const apremDebutHeure = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="debut-heure"]`)?.value || '14';
                         const apremDebutMinute = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="debut-minute"]`)?.value || '00';
                         const apremFinHeure = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="fin-heure"]`)?.value || '19';
                         const apremFinMinute = document.querySelector(`[data-jour="${jour}"][data-periode="aprem"][data-type="fin-minute"]`)?.value || '00';
                         
-                        horaireText = `${matinDebutHeure}h${matinDebutMinute} - ${matinFinHeure}h${matinFinMinute} / ${apremDebutHeure}h${apremDebutMinute} - ${apremFinHeure}h${apremFinMinute}`;
+                        horaireText = `<span class="badge badge-primary">${matinDebutHeure}h${matinDebutMinute} - ${matinFinHeure}h${matinFinMinute}</span> <span class="badge badge-primary">${apremDebutHeure}h${apremDebutMinute} - ${apremFinHeure}h${apremFinMinute}</span>`;
                     }
                 }
                 
                 previewHTML += `
                     <div class="preview-jour">
-                        <div class="preview-jour-nom">${jour}</div>
+                        <div class="preview-jour-nom">
+                            <i class="fas fa-calendar-day"></i>
+                            ${jour}
+                        </div>
                         <div class="preview-horaire">${horaireText}</div>
                     </div>
                 `;
@@ -762,45 +504,119 @@
         // Utilitaires
         function showSuccess(message) {
             document.getElementById('successMessage').textContent = message;
-            document.getElementById('successAlert').classList.add('active');
-            document.getElementById('errorAlert').classList.remove('active');
+            document.getElementById('successAlert').style.display = 'flex';
+            document.getElementById('errorAlert').style.display = 'none';
             
             setTimeout(() => {
-                document.getElementById('successAlert').classList.remove('active');
+                document.getElementById('successAlert').style.display = 'none';
             }, 5000);
         }
 
         function showError(message) {
             document.getElementById('errorMessage').textContent = message;
-            document.getElementById('errorAlert').classList.add('active');
-            document.getElementById('successAlert').classList.remove('active');
+            document.getElementById('errorAlert').style.display = 'flex';
+            document.getElementById('successAlert').style.display = 'none';
             
             setTimeout(() => {
-                document.getElementById('errorAlert').classList.remove('active');
+                document.getElementById('errorAlert').style.display = 'none';
             }, 5000);
         }
 
-        // Déconnexion
-        async function logout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                try {
-                    const response = await fetch('/api/admin/logout', {
-                        method: 'POST'
-                    });
+        
+        // ===== FONCTIONS DE DÉCONNEXION =====
+        
+        // Fonction de déconnexion
+        function logout() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
 
-                    const result = await response.json();
+        // Fermer modal de déconnexion
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
 
-                    if (result.success) {
-                        window.location.href = result.redirect || '/admin';
-                    } else {
-                        alert('Erreur lors de la déconnexion');
-                    }
-                } catch (error) {
-                    console.error('Erreur déconnexion:', error);
-                    window.location.href = '/admin';
+        // Confirmer la déconnexion
+        async function confirmLogout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirect || '/admin/login';
+                } else {
+                    showError('Erreur lors de la déconnexion');
+                    closeLogoutModal();
                 }
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                window.location.href = '/admin/login';
             }
         }
+
+        // ===== EVENT LISTENERS DÉCONNEXION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal de déconnexion
+            document.getElementById('logoutModalClose').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutCancel').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutConfirm').addEventListener('click', confirmLogout);
+            
+            // Fermer modal logout en cliquant à l'extérieur
+            document.getElementById('logoutModal').addEventListener('click', function(e) {
+                if (e.target.id === 'logoutModal') {
+                    closeLogoutModal();
+                }
+            });
+            
+            // Escape pour fermer les modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeLogoutModal();
+                }
+            });
+        });
     </script>
+
+    <!-- Modal de déconnexion -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="border-bottom: 1px solid #fee2e2; background: #fef2f2;">
+                <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </h3>
+                <button class="modal-close" id="logoutModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; padding: var(--spacing-4) 0;">
+                    <div style="font-size: 3rem; color: #dc2626; margin-bottom: var(--spacing-4);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <p style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--spacing-3); color: var(--text-primary);">
+                        Êtes-vous sûr de vouloir vous déconnecter ?
+                    </p>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">
+                        Vous devrez vous reconnecter pour accéder au tableau de bord.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="gap: var(--spacing-3);">
+                <button class="btn btn-secondary" id="logoutCancel" style="flex: 1;">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </button>
+                <button class="btn btn-danger" id="logoutConfirm" style="flex: 1;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,0 +1,118 @@
+/* ===== HEADER UNIFIÉ - NAVIGATION STABLE ===== */
+.header {
+    background: var(--bg-blur);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    transition: none; /* Supprime les transitions sur le header */
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-4) 0;
+    min-height: 64px;
+    position: relative; /* Assure la stabilité du layout */
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+    font-weight: 600;
+    font-size: var(--font-size-lg);
+    color: var(--text-primary);
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--border-radius-sm);
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: var(--font-size-lg);
+}
+
+/* Navigation stable sans effet de "bougeotte" */
+.nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-4);
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    /* Stabilisation forcée pour éviter le nystagmus */
+    will-change: auto;
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    color: var(--text-secondary);
+    font-weight: 500;
+    padding: var(--spacing-2) var(--spacing-3);
+    border-radius: var(--border-radius-sm);
+    transition: color 0.15s ease, background-color 0.15s ease;
+    white-space: nowrap;
+    text-decoration: none;
+    min-width: max-content;
+    position: relative;
+}
+
+.nav-link:hover {
+    color: var(--text-primary);
+    background: var(--bg-tertiary);
+    transform: none; /* Évite les micro-mouvements */
+}
+
+.nav-link.active {
+    color: var(--primary-color);
+    background: rgba(0, 122, 255, 0.1);
+    font-weight: 600;
+}
+
+/* Boutons dans le header - dimensions stables */
+.header .nav .btn {
+    min-width: 100px;
+    text-align: center;
+    white-space: nowrap;
+    padding: var(--spacing-2) var(--spacing-3);
+    font-size: var(--font-size-sm);
+    line-height: 1.4;
+    border: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.header .nav .btn:hover {
+    transform: none; /* Évite les micro-mouvements */
+}
+
+/* Navigation utilisateur */
+.user-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+}
+

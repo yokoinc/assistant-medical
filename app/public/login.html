@@ -3,36 +3,67 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion Espace Patient - Dr Grégory Cuffel</title>
-    <link rel="stylesheet" href="styles.css">
+    <title id="pageTitle">Connexion Espace Patient - Cabinet Médical</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <style>
-        /* Styles spécifiques à la page de connexion */
-        .login-page {
+        /* Styles spécifiques login - suppression shadows */
+        .btn {
+            box-shadow: none !important;
+        }
+        
+        .btn:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        
+        .login-container {
+            box-shadow: none !important;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-secondary);
             min-height: 100vh;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: var(--spacing-md);
+            padding: 1rem;
+            color: var(--text-primary);
+            line-height: 1.6;
         }
 
         .login-container {
             background: var(--bg-card);
-            border-radius: var(--border-radius);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-radius: var(--border-radius-lg);
             overflow: hidden;
             width: 100%;
             max-width: 900px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            min-height: 500px;
+            min-height: 600px;
+            opacity: 0;
+            animation: slideIn 0.6s ease-out forwards;
+            box-shadow: none;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+            }
         }
 
         .login-info {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
             color: white;
-            padding: var(--spacing-xl);
+            padding: var(--spacing-16) var(--spacing-8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -47,40 +78,49 @@
             right: -50%;
             width: 200%;
             height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
-            animation: float 20s ease-in-out infinite;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="8" height="8" patternUnits="userSpaceOnUse"><path d="M 8 0 L 0 0 0 8" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            animation: float 15s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(1deg); }
+            50% { transform: translateY(-10px) rotate(0.5deg); }
         }
 
-        .login-header {
+        .brand-section {
             position: relative;
             z-index: 2;
-            margin-bottom: var(--spacing-lg);
+            text-align: center;
+            margin-bottom: var(--spacing-8);
         }
 
-        .login-header i {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-md);
-            color: var(--secondary-light);
+        .brand-icon {
+            width: 96px;
+            height: 96px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: var(--font-size-3xl);
+            margin: 0 auto var(--spacing-6);
+            backdrop-filter: blur(10px);
         }
 
-        .login-header h1 {
-            font-size: 2rem;
+        .brand-section h1 {
+            font-size: var(--font-size-3xl);
             font-weight: 700;
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-2);
+            color: white;
         }
 
-        .login-header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            line-height: 1.6;
+        .brand-section p {
+            font-size: var(--font-size-lg);
+            color: white;
+            margin-bottom: var(--spacing-1);
         }
 
-        .login-features {
+        .features-list {
             position: relative;
             z-index: 2;
         }
@@ -88,187 +128,208 @@
         .feature-item {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
-            margin-bottom: var(--spacing-md);
-            font-size: 0.95rem;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-4);
+            font-size: var(--font-size-base);
+            color: white;
         }
 
         .feature-item i {
-            color: var(--secondary-light);
-            font-size: 1.1rem;
+            color: var(--secondary-color);
+            font-size: var(--font-size-lg);
             min-width: 20px;
         }
 
-        .login-form-section {
-            padding: var(--spacing-xl);
+        .login-section {
+            padding: var(--spacing-16) var(--spacing-8);
             display: flex;
             flex-direction: column;
             justify-content: center;
         }
 
-        .form-header {
+        .login-header {
             text-align: center;
-            margin-bottom: var(--spacing-xl);
+            margin-bottom: var(--spacing-8);
         }
 
-        .form-header h2 {
-            font-size: 1.8rem;
+        .login-header h2 {
+            font-size: var(--font-size-2xl);
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-2);
         }
 
-        .form-header p {
+        .login-header p {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: var(--font-size-base);
         }
+
 
         .login-form {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-md);
+            gap: var(--spacing-5);
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-2);
         }
 
         .form-label {
-            font-weight: 600;
+            font-weight: 500;
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: var(--font-size-sm);
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-2);
         }
 
         .form-label i {
             color: var(--primary-color);
-            font-size: 0.9rem;
+            font-size: var(--font-size-sm);
         }
 
         .form-input {
-            padding: var(--spacing-md);
+            padding: var(--spacing-3) var(--spacing-4);
             border: 2px solid var(--border-color);
             border-radius: var(--border-radius);
-            font-size: 1rem;
+            font-size: var(--font-size-base);
             transition: var(--transition);
             background: var(--bg-secondary);
+            font-family: var(--font-family);
         }
 
         .form-input:focus {
             outline: none;
             border-color: var(--primary-color);
             background: var(--bg-primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
         .form-input.error {
             border-color: var(--accent-color);
-            background: #fef2f2;
+            background: rgba(255, 59, 48, 0.05);
         }
 
         .error-message {
             color: var(--accent-color);
-            font-size: 0.85rem;
-            margin-top: var(--spacing-xs);
-            display: flex;
+            font-size: var(--font-size-xs);
+            display: none;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-1);
+            margin-top: var(--spacing-1);
+        }
+
+        .error-message.show {
+            display: flex;
         }
 
         .success-message {
             color: var(--secondary-color);
-            font-size: 0.85rem;
-            margin-top: var(--spacing-xs);
-            display: flex;
+            font-size: var(--font-size-xs);
+            display: none;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-1);
+            margin-top: var(--spacing-1);
         }
 
-        .form-submit {
-            margin-top: var(--spacing-md);
+        .success-message.show {
+            display: flex;
         }
 
-        .btn-login {
-            width: 100%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        .submit-btn {
+            background: var(--primary-color);
             color: white;
             border: none;
-            padding: var(--spacing-md);
+            padding: var(--spacing-3) var(--spacing-4);
             border-radius: var(--border-radius);
-            font-size: 1.1rem;
+            font-size: var(--font-size-base);
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-2);
+            margin-top: var(--spacing-2);
+            font-family: var(--font-family);
         }
 
-        .btn-login:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
+        .submit-btn:hover:not(:disabled) {
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
         }
 
-        .btn-login:disabled {
+        .submit-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
+            transform: none;
         }
 
-        .form-footer {
-            margin-top: var(--spacing-lg);
-            text-align: center;
-            padding-top: var(--spacing-md);
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .footer-links {
+            margin-top: var(--spacing-6);
+            padding-top: var(--spacing-6);
             border-top: 1px solid var(--border-color);
+            text-align: center;
         }
 
-        .form-footer p {
+        .footer-link {
             color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: var(--spacing-sm);
-        }
-
-        .btn-home {
-            color: var(--primary-color);
-            font-weight: 500;
+            text-decoration: none;
+            font-size: var(--font-size-sm);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-1);
             transition: var(--transition);
         }
 
-        .btn-home:hover {
-            color: var(--primary-dark);
-            transform: translateX(-2px);
+        .footer-link:hover {
+            color: var(--primary-color);
         }
 
-        .security-info {
+        .info-box {
             background: var(--bg-secondary);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
-            padding: var(--spacing-md);
-            margin-top: var(--spacing-lg);
+            padding: var(--spacing-4);
+            margin-top: var(--spacing-6);
         }
 
-        .security-info h4 {
+        .info-box h4 {
             color: var(--text-primary);
-            font-size: 0.9rem;
+            font-size: var(--font-size-sm);
             font-weight: 600;
-            margin-bottom: var(--spacing-xs);
+            margin-bottom: var(--spacing-2);
             display: flex;
             align-items: center;
-            gap: var(--spacing-xs);
+            gap: var(--spacing-1);
         }
 
-        .security-info h4 i {
-            color: var(--secondary-color);
+        .info-box h4 i {
+            color: var(--accent-warning);
         }
 
-        .security-info p {
+        .info-box p {
             color: var(--text-secondary);
-            font-size: 0.8rem;
-            line-height: 1.5;
+            font-size: var(--font-size-xs);
+            line-height: 1.4;
             margin: 0;
         }
 
@@ -276,220 +337,298 @@
         @media (max-width: 768px) {
             .login-container {
                 grid-template-columns: 1fr;
-                max-width: 500px;
+                max-width: 480px;
             }
 
             .login-info {
-                padding: var(--spacing-lg);
+                padding: var(--spacing-8) var(--spacing-6);
                 text-align: center;
             }
 
-            .login-header h1 {
-                font-size: 1.6rem;
+            .login-section {
+                padding: var(--spacing-8) var(--spacing-6);
             }
 
-            .login-form-section {
-                padding: var(--spacing-lg);
+            .brand-section h1 {
+                font-size: var(--font-size-2xl);
+            }
+
+            .login-header h2 {
+                font-size: var(--font-size-xl);
             }
         }
 
         @media (max-width: 480px) {
-            .login-page {
-                padding: var(--spacing-sm);
+            body {
+                padding: var(--spacing-2);
             }
 
             .login-info,
-            .login-form-section {
-                padding: var(--spacing-md);
+            .login-section {
+                padding: var(--spacing-6) var(--spacing-4);
             }
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: var(--spacing-5);
+            right: var(--spacing-5);
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-4) var(--spacing-5);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease-out;
+            z-index: var(--z-tooltip);
+            border-left: 4px solid var(--secondary-color);
+            max-width: 350px;
+            box-shadow: none;
+        }
+
+        .toast.error {
+            border-left-color: var(--accent-color);
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast i {
+            font-size: var(--font-size-lg);
+        }
+
+        .toast.success i {
+            color: var(--secondary-color);
+        }
+
+        .toast.error i {
+            color: var(--accent-color);
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-1);
+        }
+
+        .toast-message {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
         }
     </style>
 </head>
 <body>
-    <div class="login-page">
-        <div class="login-container">
-            <!-- Section informations -->
-            <div class="login-info">
-                <div class="login-header">
+    <div class="login-container">
+        <!-- Section Info -->
+        <div class="login-info">
+            <div class="brand-section">
+                <div class="brand-icon">
                     <i class="fas fa-user-md"></i>
-                    <h1>Espace Patient</h1>
-                    <p>Accédez à votre espace personnel sécurisé pour communiquer avec le Dr Grégory Cuffel</p>
                 </div>
-                
-                <div class="login-features">
-                    <div class="feature-item">
-                        <i class="fas fa-comments"></i>
-                        <span>Messages privés au docteur</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-paperclip"></i>
-                        <span>Envoi de documents médicaux</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-robot"></i>
-                        <span>Assistant médical intelligent</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-history"></i>
-                        <span>Historique de vos échanges</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Données sécurisées et privées</span>
-                    </div>
-                </div>
+                <h1>Espace Patient</h1>
+                <p id="loginDescription">Accédez à votre espace personnel sécurisé</p>
             </div>
 
-            <!-- Formulaire de connexion -->
-            <div class="login-form-section">
-                <div class="form-header">
-                    <h2>Connexion Patient</h2>
-                    <p>Entrez vos informations pour accéder à votre espace</p>
+            <div class="features-list">
+                <div class="feature-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Messages privés au docteur</span>
                 </div>
+                <div class="feature-item">
+                    <i class="fas fa-paperclip"></i>
+                    <span>Envoi de documents médicaux</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-robot"></i>
+                    <span>Assistant médical intelligent</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-history"></i>
+                    <span>Historique de vos échanges</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Données sécurisées et privées</span>
+                </div>
+            </div>
+        </div>
 
-                <form class="login-form" id="loginForm">
-                    <div class="form-group">
-                        <label for="nom" class="form-label">
-                            <i class="fas fa-user"></i>
-                            Nom de famille
-                        </label>
-                        <input 
-                            type="text" 
-                            id="nom" 
-                            name="nom" 
-                            class="form-input" 
-                            placeholder="Votre nom de famille"
-                            required
-                            autocomplete="family-name"
-                        >
-                        <div class="error-message" id="nomError" style="display: none;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span></span>
-                        </div>
-                    </div>
+        <!-- Section Login -->
+        <div class="login-section">
+            <div class="login-header">
+                <h2>Connexion Patient</h2>
+                <p>Entrez vos informations pour accéder à votre espace</p>
+            </div>
 
-                    <div class="form-group">
-                        <label for="prenom" class="form-label">
-                            <i class="fas fa-user"></i>
-                            Prénom
-                        </label>
-                        <input 
-                            type="text" 
-                            id="prenom" 
-                            name="prenom" 
-                            class="form-input" 
-                            placeholder="Votre prénom"
-                            required
-                            autocomplete="given-name"
-                        >
-                        <div class="error-message" id="prenomError" style="display: none;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span></span>
-                        </div>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="dateNaissance" class="form-label">
-                            <i class="fas fa-calendar-alt"></i>
-                            Date de naissance
-                        </label>
-                        <input 
-                            type="date" 
-                            id="dateNaissance" 
-                            name="dateNaissance" 
-                            class="form-input" 
-                            required
-                            autocomplete="bday"
-                        >
-                        <div class="error-message" id="dateError" style="display: none;">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <span></span>
-                        </div>
-                    </div>
-
-                    <div class="form-submit">
-                        <button type="submit" class="btn-login" id="submitBtn">
-                            <i class="fas fa-sign-in-alt"></i>
-                            <span>Se connecter</span>
-                        </button>
-                    </div>
-
-                    <div class="error-message" id="globalError" style="display: none; margin-top: var(--spacing-md);">
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="nom" class="form-label">
+                        <i class="fas fa-user"></i>
+                        Nom de famille
+                    </label>
+                    <input 
+                        type="text" 
+                        id="nom" 
+                        name="nom" 
+                        class="form-input" 
+                        placeholder="Votre nom de famille"
+                        required
+                        autocomplete="family-name"
+                        style="text-transform: uppercase;"
+                    >
+                    <div class="error-message" id="nomError">
                         <i class="fas fa-exclamation-triangle"></i>
                         <span></span>
                     </div>
+                </div>
 
-                    <div class="success-message" id="globalSuccess" style="display: none; margin-top: var(--spacing-md);">
-                        <i class="fas fa-check-circle"></i>
+                <div class="form-group">
+                    <label for="prenom" class="form-label">
+                        <i class="fas fa-user"></i>
+                        Prénom
+                    </label>
+                    <input 
+                        type="text" 
+                        id="prenom" 
+                        name="prenom" 
+                        class="form-input" 
+                        placeholder="Votre prénom"
+                        required
+                        autocomplete="given-name"
+                    >
+                    <div class="error-message" id="prenomError">
+                        <i class="fas fa-exclamation-triangle"></i>
                         <span></span>
                     </div>
-                </form>
-
-                <div class="security-info">
-                    <h4>
-                        <i class="fas fa-lock"></i>
-                        Sécurité & Confidentialité
-                    </h4>
-                    <p>
-                        Vos données sont protégées et ne sont accessibles qu'au Dr Cuffel. 
-                        Cette connexion est sécurisée et vos informations restent confidentielles.
-                    </p>
                 </div>
 
-                <div class="form-footer">
-                    <p>Vous n'êtes pas patient du Dr Cuffel ?</p>
-                    <a href="/" class="btn-home">
-                        <i class="fas fa-arrow-left"></i>
-                        Retour à l'accueil
-                    </a>
+                <div class="form-group">
+                    <label for="dateNaissance" class="form-label">
+                        <i class="fas fa-calendar-alt"></i>
+                        Date de naissance
+                    </label>
+                    <input 
+                        type="date" 
+                        id="dateNaissance" 
+                        name="dateNaissance" 
+                        class="form-input" 
+                        required
+                        autocomplete="bday"
+                    >
+                    <div class="error-message" id="dateError">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span></span>
+                    </div>
                 </div>
+
+                <button type="submit" class="submit-btn" id="submitBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Se connecter</span>
+                </button>
+
+                <div class="error-message" id="globalError">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span></span>
+                </div>
+
+                <div class="success-message" id="globalSuccess">
+                    <i class="fas fa-check-circle"></i>
+                    <span></span>
+                </div>
+            </form>
+
+            <div class="info-box">
+                <h4>
+                    <i class="fas fa-lock"></i>
+                    Sécurité & Confidentialité
+                </h4>
+                <p id="securityText">
+                    Vos données sont protégées et ne sont accessibles qu'à votre médecin. 
+                    Cette connexion est sécurisée et vos informations restent confidentielles.
+                </p>
+            </div>
+
+            <div class="footer-links">
+                <a href="/" class="footer-link">
+                    <i class="fas fa-arrow-left"></i>
+                    Retour à l'accueil
+                </a>
             </div>
         </div>
     </div>
 
     <script>
-        // Gestion du formulaire de connexion
-        document.addEventListener('DOMContentLoaded', function() {
-            const form = document.getElementById('loginForm');
-            const submitBtn = document.getElementById('submitBtn');
-            const inputs = form.querySelectorAll('.form-input');
+        class PatientAuth {
+            constructor() {
+                this.form = document.getElementById('loginForm');
+                this.submitBtn = document.getElementById('submitBtn');
+                this.setupEventListeners();
+                this.loadCabinetInfo();
+            }
 
-            // Validation en temps réel
-            inputs.forEach(input => {
-                input.addEventListener('blur', validateField);
-                input.addEventListener('input', clearError);
-            });
+            setupEventListeners() {
+                this.form.addEventListener('submit', this.handleSubmit.bind(this));
+                
+                // Validation en temps réel
+                const inputs = this.form.querySelectorAll('.form-input');
+                inputs.forEach(input => {
+                    input.addEventListener('input', () => this.clearFieldError(input));
+                    input.addEventListener('blur', () => this.validateField(input));
+                });
 
-            // Soumission du formulaire
-            form.addEventListener('submit', handleSubmit);
+                // Formatage automatique du nom en majuscules
+                document.getElementById('nom').addEventListener('input', function(e) {
+                    e.target.value = e.target.value.toUpperCase();
+                });
+            }
 
-            function validateField(e) {
-                const field = e.target;
+            async loadCabinetInfo() {
+                try {
+                    const response = await fetch('/api/cabinet-info');
+                    const data = await response.json();
+                    
+                    // Mise à jour du titre de la page
+                    document.getElementById('pageTitle').textContent = `Connexion Espace Patient - ${data.docteur.nom}`;
+                    document.getElementById('loginDescription').textContent = `Accédez à votre espace personnel sécurisé pour communiquer avec ${data.docteur.nom}`;
+                    
+                    // Mise à jour des textes de sécurité
+                    document.getElementById('securityText').textContent = `Vos données sont protégées et ne sont accessibles qu'au ${data.docteur.nom}. Cette connexion est sécurisée et vos informations restent confidentielles.`;
+                    
+                } catch (error) {
+                    console.error('Erreur chargement infos cabinet:', error);
+                }
+            }
+
+            validateField(field) {
                 const value = field.value.trim();
                 let isValid = true;
-                let errorMessage = '';
-
-                // Reset
-                clearFieldError(field);
+                let message = '';
 
                 switch(field.name) {
                     case 'nom':
                         if (value.length < 2) {
-                            errorMessage = 'Le nom doit contenir au moins 2 caractères';
+                            message = 'Le nom doit contenir au moins 2 caractères';
                             isValid = false;
                         }
                         break;
-
                     case 'prenom':
                         if (value.length < 2) {
-                            errorMessage = 'Le prénom doit contenir au moins 2 caractères';
+                            message = 'Le prénom doit contenir au moins 2 caractères';
                             isValid = false;
                         }
                         break;
-
                     case 'dateNaissance':
                         if (!value) {
-                            errorMessage = 'La date de naissance est obligatoire';
+                            message = 'La date de naissance est obligatoire';
                             isValid = false;
                         } else {
                             const birthDate = new Date(value);
@@ -497,10 +636,10 @@
                             const age = today.getFullYear() - birthDate.getFullYear();
                             
                             if (birthDate > today) {
-                                errorMessage = 'La date de naissance ne peut pas être dans le futur';
+                                message = 'La date de naissance ne peut pas être dans le futur';
                                 isValid = false;
                             } else if (age > 120) {
-                                errorMessage = 'Veuillez vérifier la date de naissance';
+                                message = 'Veuillez vérifier la date de naissance';
                                 isValid = false;
                             }
                         }
@@ -508,60 +647,57 @@
                 }
 
                 if (!isValid) {
-                    showFieldError(field, errorMessage);
+                    this.showFieldError(field, message);
+                } else {
+                    this.clearFieldError(field);
                 }
 
                 return isValid;
             }
 
-            function clearError(e) {
-                clearFieldError(e.target);
-                hideGlobalError();
-            }
-
-            function showFieldError(field, message) {
+            showFieldError(field, message) {
                 field.classList.add('error');
                 const errorDiv = document.getElementById(field.name + 'Error');
                 if (errorDiv) {
                     errorDiv.querySelector('span').textContent = message;
-                    errorDiv.style.display = 'flex';
+                    errorDiv.classList.add('show');
                 }
             }
 
-            function clearFieldError(field) {
+            clearFieldError(field) {
                 field.classList.remove('error');
                 const errorDiv = document.getElementById(field.name + 'Error');
                 if (errorDiv) {
-                    errorDiv.style.display = 'none';
+                    errorDiv.classList.remove('show');
                 }
             }
 
-            function showGlobalError(message) {
+            showGlobalError(message) {
                 const errorDiv = document.getElementById('globalError');
                 errorDiv.querySelector('span').textContent = message;
-                errorDiv.style.display = 'flex';
-                hideGlobalSuccess();
+                errorDiv.classList.add('show');
+                this.hideGlobalSuccess();
             }
 
-            function hideGlobalError() {
-                document.getElementById('globalError').style.display = 'none';
+            hideGlobalError() {
+                document.getElementById('globalError').classList.remove('show');
             }
 
-            function showGlobalSuccess(message) {
+            showGlobalSuccess(message) {
                 const successDiv = document.getElementById('globalSuccess');
                 successDiv.querySelector('span').textContent = message;
-                successDiv.style.display = 'flex';
-                hideGlobalError();
+                successDiv.classList.add('show');
+                this.hideGlobalError();
             }
 
-            function hideGlobalSuccess() {
-                document.getElementById('globalSuccess').style.display = 'none';
+            hideGlobalSuccess() {
+                document.getElementById('globalSuccess').classList.remove('show');
             }
 
-            function setLoading(loading) {
-                submitBtn.disabled = loading;
-                const icon = submitBtn.querySelector('i');
-                const text = submitBtn.querySelector('span');
+            setLoading(loading) {
+                this.submitBtn.disabled = loading;
+                const icon = this.submitBtn.querySelector('i');
+                const text = this.submitBtn.querySelector('span');
                 
                 if (loading) {
                     icon.className = 'loading';
@@ -572,19 +708,26 @@
                 }
             }
 
-            async function handleSubmit(e) {
+            async handleSubmit(e) {
                 e.preventDefault();
                 
+                console.log('🔐 Tentative de connexion patient');
+                
+                // Reset des erreurs
+                this.hideGlobalError();
+                this.hideGlobalSuccess();
+
                 // Validation de tous les champs
+                const inputs = this.form.querySelectorAll('.form-input');
                 let isFormValid = true;
                 inputs.forEach(input => {
-                    if (!validateField({ target: input })) {
+                    if (!this.validateField(input)) {
                         isFormValid = false;
                     }
                 });
 
                 if (!isFormValid) {
-                    showGlobalError('Veuillez corriger les erreurs ci-dessus');
+                    this.showGlobalError('Veuillez corriger les erreurs ci-dessus');
                     return;
                 }
 
@@ -595,10 +738,11 @@
                     dateNaissance: document.getElementById('dateNaissance').value
                 };
 
-                setLoading(true);
-                hideGlobalError();
+                this.setLoading(true);
 
                 try {
+                    console.log('📡 Envoi requête authentification');
+                    
                     const response = await fetch('/api/auth', {
                         method: 'POST',
                         headers: {
@@ -607,10 +751,15 @@
                         body: JSON.stringify(formData)
                     });
 
+                    console.log('📨 Réponse reçue:', response.status, response.ok);
+
                     const result = await response.json();
+                    console.log('📦 Données:', result);
 
                     if (response.ok && result.success) {
-                        showGlobalSuccess(`Bienvenue ${result.patient.prenom} ${result.patient.nom} !`);
+                        console.log('✅ Connexion réussie');
+                        this.showGlobalSuccess(`Bienvenue ${result.patient.prenom} ${result.patient.nom} !`);
+                        this.showToast('success', 'Connexion Réussie', `Bienvenue ${result.patient.prenom} ${result.patient.nom}`);
                         
                         // Redirection après un court délai
                         setTimeout(() => {
@@ -618,28 +767,72 @@
                         }, 1500);
                         
                     } else {
-                        showGlobalError(result.error || 'Erreur de connexion');
+                        console.error('❌ Erreur:', result);
+                        this.showGlobalError(result.error || 'Patient non trouvé dans la patientèle du cabinet');
+                        this.showToast('error', 'Erreur de Connexion', result.error || 'Patient non trouvé');
                     }
 
                 } catch (error) {
-                    console.error('Erreur de connexion:', error);
-                    showGlobalError('Erreur de connexion au serveur. Veuillez réessayer.');
+                    console.error('❌ Erreur réseau:', error);
+                    this.showGlobalError('Erreur de connexion au serveur. Veuillez réessayer.');
+                    this.showToast('error', 'Erreur Réseau', 'Impossible de contacter le serveur');
                 } finally {
-                    setLoading(false);
+                    this.setLoading(false);
                 }
             }
 
-            // Animation d'entrée
+            showToast(type, title, message) {
+                // Supprimer les anciens toasts
+                document.querySelectorAll('.toast').forEach(toast => toast.remove());
+
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                
+                const iconClass = type === 'success' ? 'fas fa-check-circle' : 
+                                type === 'error' ? 'fas fa-exclamation-circle' : 
+                                'fas fa-info-circle';
+
+                toast.innerHTML = `
+                    <i class="${iconClass}"></i>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                // Animation d'entrée
+                setTimeout(() => toast.classList.add('show'), 100);
+
+                // Auto-suppression
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+        }
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            new PatientAuth();
+            
+            // Auto-focus avec délai pour l'animation
             setTimeout(() => {
-                document.querySelector('.login-container').style.opacity = '1';
-                document.querySelector('.login-container').style.transform = 'translateY(0)';
-            }, 100);
+                document.getElementById('nom').focus();
+            }, 800);
         });
 
-        // Style initial pour l'animation
-        document.querySelector('.login-container').style.opacity = '0';
-        document.querySelector('.login-container').style.transform = 'translateY(20px)';
-        document.querySelector('.login-container').style.transition = 'all 0.6s ease-out';
+        // Raccourcis clavier
+        document.addEventListener('keydown', (e) => {
+            // Escape pour effacer les champs
+            if (e.key === 'Escape') {
+                document.getElementById('nom').value = '';
+                document.getElementById('prenom').value = '';
+                document.getElementById('dateNaissance').value = '';
+                document.getElementById('nom').focus();
+            }
+        });
     </script>
 </body>
 </html>

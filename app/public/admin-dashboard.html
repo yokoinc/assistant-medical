@@ -4,318 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title id="pageTitle">Administration - Cabinet Médical</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="/styles.css?v=dashboard-fix">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Styles spécifiques au dashboard admin - utilise les classes du CSS global */
-        
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: var(--spacing-6);
-            margin-bottom: var(--spacing-8);
-        }
-
-        .stat-card {
-            background: var(--bg-card);
-            padding: var(--spacing-6);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow);
-            border-left: 4px solid var(--primary-color);
-            transition: var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .stat-card.urgent {
-            border-left-color: var(--accent-color);
-        }
-
-        .stat-card.success {
-            border-left-color: var(--secondary-color);
-        }
-
-        .stat-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-4);
-        }
-
-        .stat-title {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .stat-icon {
-            width: 2.5rem;
-            height: 2.5rem;
-            border-radius: var(--border-radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 122, 255, 0.1);
-            color: var(--primary-color);
-        }
-
-        .stat-value {
-            font-size: var(--font-size-4xl);
-            font-weight: 700;
-            color: var(--text-primary);
-        }
-
-        /* Messages Section utilise les classes globales card */
-        .messages-section {
-            background: var(--bg-card);
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            box-shadow: var(--shadow);
-        }
-
-        .section-header {
-            padding: var(--spacing-6);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--bg-tertiary);
-        }
-
-        .section-title {
-            font-size: var(--font-size-xl);
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-2);
-            color: var(--text-primary);
-        }
-
-        /* Filtres */
-        .filters {
-            padding: var(--spacing-4) var(--spacing-6);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            gap: var(--spacing-2);
-            flex-wrap: wrap;
-            background: var(--bg-tertiary);
-        }
-
-        .filter-btn {
-            padding: var(--spacing-2) var(--spacing-4);
-            border: 1px solid var(--border-color);
-            background: var(--bg-card);
-            border-radius: var(--border-radius-lg);
-            font-size: var(--font-size-sm);
-            cursor: pointer;
-            transition: var(--transition);
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .filter-btn.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--primary-color);
-        }
-
-        .filter-btn:hover:not(.active) {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-        }
-
-        /* Messages */
-        .messages-list {
-            max-height: 600px;
-            overflow-y: auto;
-        }
-
-        .message-item {
-            padding: var(--spacing-6);
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .message-item:hover {
-            background: var(--bg-tertiary);
-        }
-
-        .message-item.unread {
-            background: rgba(255, 149, 0, 0.05);
-            border-left: 4px solid var(--accent-warning);
-        }
-
-        .message-item.urgent {
-            background: rgba(255, 59, 48, 0.05);
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .message-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: var(--spacing-3);
-            gap: var(--spacing-4);
-        }
-
-        .patient-info {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-3);
-        }
-
-        .patient-avatar {
-            width: 2.5rem;
-            height: 2.5rem;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: var(--font-size-sm);
-        }
-
-        .patient-details h4 {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: var(--spacing-1);
-        }
-
-        .patient-details p {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
-            margin-bottom: 0;
-        }
-
-        .message-meta {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-1);
-        }
-
-        .urgence-badge {
-            padding: var(--spacing-1) var(--spacing-3);
-            border-radius: var(--border-radius-lg);
-            font-size: var(--font-size-xs);
-            font-weight: 600;
-        }
-
-        .urgence-faible {
-            background: rgba(52, 199, 89, 0.1);
-            color: var(--secondary-color);
-        }
-
-        .urgence-normale {
-            background: rgba(0, 122, 255, 0.1);
-            color: var(--primary-color);
-        }
-
-        .urgence-elevee {
-            background: rgba(255, 59, 48, 0.1);
-            color: var(--accent-color);
-        }
-
-        .message-time {
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
-        }
-
-        .message-subject {
-            font-weight: 600;
-            margin-bottom: var(--spacing-2);
-            color: var(--text-primary);
-        }
-
-        .message-preview {
-            color: var(--text-secondary);
-            font-size: var(--font-size-sm);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .message-actions {
-            margin-top: var(--spacing-4);
-            display: flex;
-            gap: var(--spacing-2);
-            flex-wrap: wrap;
-        }
-
-        /* Spécificités pour les modals - surcharge minimale */
-        .original-message {
-            background: var(--bg-tertiary);
-            padding: var(--spacing-4);
-            border-radius: var(--border-radius);
-            margin-bottom: var(--spacing-6);
-            border-left: 3px solid var(--primary-color);
-        }
-
-        .form-textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: var(--spacing-20) var(--spacing-6);
-            color: var(--text-secondary);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: var(--spacing-4);
-            opacity: 0.5;
-        }
-
-        .empty-state h3 {
-            margin-bottom: var(--spacing-2);
-            color: var(--text-primary);
-        }
-
-        /* Responsive pour le dashboard */
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .message-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: var(--spacing-3);
-            }
-
-            .message-meta {
-                text-align: left;
-                flex-direction: row;
-                align-items: center;
-                gap: var(--spacing-3);
-            }
-
-            .message-actions {
-                flex-direction: column;
-            }
-
-            .filter-btn {
-                font-size: var(--font-size-xs);
-            }
-        }
-    </style>
 </head>
-<body>
-    <!-- Header avec structure identique à index.html -->
+<body class="admin-flat">
+    <!-- Header admin unifié -->
     <header class="header">
         <div class="container">
             <div class="header-content">
@@ -329,31 +23,31 @@
                     </div>
                 </div>
                 <nav class="nav">
+                    <a href="/admin/dashboard" class="nav-link active">
+                        <i class="fas fa-chart-bar"></i>
+                        Dashboard
+                    </a>
                     <a href="/admin/patients" class="nav-link">
                         <i class="fas fa-users"></i>
                         Patients
                     </a>
                     <a href="/admin/schedule" class="nav-link">
-                        <i class="fas fa-clock"></i>
-                        Horaires
-                    </a>
-                    <a href="/admin/emergency" class="nav-link">
-                        <i class="fas fa-phone-alt"></i>
-                        Urgences
+                        <i class="fas fa-calendar"></i>
+                        Planning
                     </a>
                     <a href="/admin/chat" class="nav-link">
                         <i class="fas fa-robot"></i>
                         Chat IA
                     </a>
-                    <a href="/admin/parameters" class="nav-link">
-                        <i class="fas fa-cogs"></i>
-                        Paramètres
+                    <a href="/admin/cabinet" class="nav-link">
+                        <i class="fas fa-building"></i>
+                        Cabinet
                     </a>
-                    <button class="btn btn-secondary" id="headerRefreshBtn">
-                        <i class="fas fa-sync-alt"></i>
-                        Actualiser
-                    </button>
-                    <button class="btn btn-danger" id="logoutBtn">
+                    <a href="/admin/emergency" class="nav-link">
+                        <i class="fas fa-phone-alt"></i>
+                        Urgences
+                    </a>
+                    <button class="btn btn-secondary" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                         Déconnexion
                     </button>
@@ -364,49 +58,50 @@
 
     <!-- Main Content -->
     <main>
-        <div class="container section">
-        <!-- Stats Cards -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-header">
-                    <div class="stat-title">Messages Total</div>
-                    <div class="stat-icon">
-                        <i class="fas fa-envelope"></i>
+        <section class="section" style="padding-top: var(--spacing-12);">
+            <div class="container">
+                <!-- Stats Cards -->
+                <div class="dashboard-stats-grid">
+                    <div class="dashboard-stat-card">
+                        <div class="dashboard-stat-header">
+                            <div class="dashboard-stat-title">Messages Total</div>
+                            <div class="dashboard-stat-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-stat-value" id="totalMessages">--</div>
                     </div>
-                </div>
-                <div class="stat-value" id="totalMessages">--</div>
-            </div>
 
-            <div class="stat-card urgent">
-                <div class="stat-header">
-                    <div class="stat-title">Non Lus</div>
-                    <div class="stat-icon" style="background: rgba(255, 59, 48, 0.1); color: var(--accent-color);">
-                        <i class="fas fa-envelope-open"></i>
+                    <div class="dashboard-stat-card urgent">
+                        <div class="dashboard-stat-header">
+                            <div class="dashboard-stat-title">Non Lus</div>
+                            <div class="dashboard-stat-icon">
+                                <i class="fas fa-envelope-open"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-stat-value" id="unreadMessages">--</div>
                     </div>
-                </div>
-                <div class="stat-value" id="unreadMessages">--</div>
-            </div>
 
-            <div class="stat-card urgent">
-                <div class="stat-header">
-                    <div class="stat-title">Urgents</div>
-                    <div class="stat-icon" style="background: rgba(255, 59, 48, 0.1); color: var(--accent-color);">
-                        <i class="fas fa-exclamation-triangle"></i>
+                    <div class="dashboard-stat-card urgent">
+                        <div class="dashboard-stat-header">
+                            <div class="dashboard-stat-title">Urgents</div>
+                            <div class="dashboard-stat-icon">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-stat-value" id="urgentMessages">--</div>
                     </div>
-                </div>
-                <div class="stat-value" id="urgentMessages">--</div>
-            </div>
 
-            <div class="stat-card success">
-                <div class="stat-header">
-                    <div class="stat-title">Messages Archivés</div>
-                    <div class="stat-icon" style="background: rgba(52, 199, 89, 0.1); color: var(--secondary-color);">
-                        <i class="fas fa-archive"></i>
+                    <div class="dashboard-stat-card success">
+                        <div class="dashboard-stat-header">
+                            <div class="dashboard-stat-title">Messages Archivés</div>
+                            <div class="dashboard-stat-icon">
+                                <i class="fas fa-archive"></i>
+                            </div>
+                        </div>
+                        <div class="dashboard-stat-value" id="archivedMessages">--</div>
                     </div>
                 </div>
-                <div class="stat-value" id="archivedMessages">--</div>
-            </div>
-        </div>
 
         <!-- Messages Section -->
         <div class="messages-section">
@@ -421,21 +116,34 @@
                 </button>
             </div>
 
-            <div class="filters">
-                <button class="filter-btn active" data-filter="all">Tous</button>
-                <button class="filter-btn" data-filter="unread">Non lus</button>
-                <button class="filter-btn" data-filter="urgent">Urgents</button>
-                <button class="filter-btn" data-filter="archived">Archivés</button>
-                <button class="filter-btn" data-filter="today">Aujourd'hui</button>
-                <button class="filter-btn" data-filter="week">Cette semaine</button>
-                <button class="filter-btn" data-filter="month">Ce mois</button>
+            <div class="messages-header">
+                <div class="messages-search">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="messageSearch" placeholder="Rechercher par patient, sujet ou message..." maxlength="100">
+                        <button class="btn btn-sm btn-secondary" id="clearSearch" style="display: none;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="messages-filters">
+                    <button class="filter-btn active" data-filter="all">Tous</button>
+                    <button class="filter-btn" data-filter="unread">Non lus</button>
+                    <button class="filter-btn" data-filter="urgent">Urgents</button>
+                    <button class="filter-btn" data-filter="archived">Archivés</button>
+                    <button class="filter-btn" data-filter="today">Aujourd'hui</button>
+                    <button class="filter-btn" data-filter="week">Cette semaine</button>
+                    <button class="filter-btn" data-filter="month">Ce mois</button>
+                </div>
             </div>
 
             <div class="messages-list" id="messagesList">
                 <!-- Messages will be loaded here -->
             </div>
         </div>
-    </div>
+            </div>
+        </section>
+    </main>
 
     <!-- Reply Modal -->
     <div class="modal" id="replyModal">
@@ -461,7 +169,7 @@
                         placeholder="Tapez votre réponse au patient..."
                         maxlength="5000"
                     ></textarea>
-                    <small style="color: #64748b; font-size: 0.8125rem;">
+                    <small style="color: var(--text-secondary); font-size: var(--font-size-xs);">
                         Caractères restants: <span id="replyCharCount">5000</span>
                     </small>
                 </div>
@@ -493,10 +201,10 @@
             </div>
 
             <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
-                <p style="margin-bottom: 1.5rem; color: #374151; font-size: 1rem;">
+                <p style="margin-bottom: 1.5rem; color: var(--text-primary); font-size: 1rem;">
                     Êtes-vous sûr de vouloir supprimer définitivement ce message ?
                 </p>
-                <p style="color: #6b7280; font-size: 0.875rem;">
+                <p style="color: var(--text-secondary); font-size: var(--font-size-sm);">
                     Cette action ne peut pas être annulée.
                 </p>
             </div>
@@ -506,7 +214,7 @@
                     <i class="fas fa-times"></i>
                     Annuler
                 </button>
-                <button class="btn btn-danger" id="confirmDelete" style="background: #dc2626;">
+                <button class="btn btn-danger" id="confirmDelete">
                     <i class="fas fa-trash"></i>
                     Supprimer définitivement
                 </button>
@@ -528,7 +236,7 @@
             </div>
 
             <div class="modal-body" style="text-align: center; padding: 2rem 1.5rem;">
-                <p id="successMessage" style="color: #374151; font-size: 1rem;">
+                <p id="successMessage" style="color: var(--text-primary); font-size: 1rem;">
                     Opération réussie
                 </p>
             </div>
@@ -542,32 +250,59 @@
         </div>
     </div>
 
+    <!-- Modal de déconnexion -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="border-bottom: 1px solid #fee2e2; background: #fef2f2;">
+                <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </h3>
+                <button class="modal-close" id="logoutModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; padding: var(--spacing-4) 0;">
+                    <div style="font-size: 3rem; color: #dc2626; margin-bottom: var(--spacing-4);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <p style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--spacing-3); color: var(--text-primary);">
+                        Êtes-vous sûr de vouloir vous déconnecter ?
+                    </p>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">
+                        Vous devrez vous reconnecter pour accéder au tableau de bord.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="gap: var(--spacing-3);">
+                <button class="btn btn-secondary" id="logoutCancel" style="flex: 1;">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </button>
+                <button class="btn btn-danger" id="logoutConfirm" style="flex: 1;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Variables globales
         let currentMessages = [];
+        let allMessages = []; // Pour stocker tous les messages non filtrés
         let currentFilter = 'all';
+        let currentSearch = '';
         let currentMessageId = null;
         let messageToDelete = null;
 
-        // Chargement des informations du cabinet
-        async function loadCabinetInfo() {
-            try {
-                const response = await fetch('/api/cabinet-info');
-                const data = await response.json();
-                
-                // Mise à jour du titre de la page et du header
-                document.getElementById('pageTitle').textContent = `Administration - ${data.docteur.nom}`;
-                document.getElementById('adminTitle').textContent = `Administration - ${data.docteur.nom}`;
-                document.getElementById('doctorSpecialty').textContent = 'Tableau de Bord';
-                
-            } catch (error) {
-                console.error('Erreur chargement infos cabinet:', error);
-            }
-        }
+        // Fonction de mise à jour de l'heure
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            loadCabinetInfo();
             loadStats();
             loadMessages();
             setupEventListeners();
@@ -578,9 +313,7 @@
             document.getElementById('replyText').addEventListener('input', updateCharCount);
             
             // Boutons d'actualisation
-            document.getElementById('headerRefreshBtn').addEventListener('click', refreshData);
             document.getElementById('messagesRefreshBtn').addEventListener('click', loadMessages);
-            document.getElementById('logoutBtn').addEventListener('click', logout);
             
             // Filtres
             document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -589,6 +322,10 @@
                     setFilter(filter, this);
                 });
             });
+            
+            // Recherche
+            document.getElementById('messageSearch').addEventListener('input', handleSearch);
+            document.getElementById('clearSearch').addEventListener('click', clearSearch);
             
             // Modal de réponse
             document.getElementById('replyModalClose').addEventListener('click', closeModal);
@@ -604,6 +341,11 @@
             document.getElementById('successModalClose').addEventListener('click', closeSuccessModal);
             document.getElementById('successOk').addEventListener('click', closeSuccessModal);
             
+            // Modal de déconnexion
+            document.getElementById('logoutModalClose').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutCancel').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutConfirm').addEventListener('click', confirmLogout);
+            
             // Fermer modal en cliquant à l'extérieur
             document.getElementById('replyModal').addEventListener('click', function(e) {
                 if (e.target.id === 'replyModal') {
@@ -611,17 +353,21 @@
                 }
             });
 
-            // Fermer modal de confirmation en cliquant à l'extérieur
             document.getElementById('confirmModal').addEventListener('click', function(e) {
                 if (e.target.id === 'confirmModal') {
                     closeConfirmModal();
                 }
             });
 
-            // Fermer modal de succès en cliquant à l'extérieur
             document.getElementById('successModal').addEventListener('click', function(e) {
                 if (e.target.id === 'successModal') {
                     closeSuccessModal();
+                }
+            });
+
+            document.getElementById('logoutModal').addEventListener('click', function(e) {
+                if (e.target.id === 'logoutModal') {
+                    closeLogoutModal();
                 }
             });
         }
@@ -688,12 +434,13 @@
         // Chargement des messages
         async function loadMessages() {
             try {
-                let status = 'all';
+                let status = 'active'; // Par défaut, exclure les archivés
                 let urgence = 'all';
                 let period = 'all';
                 
                 if (currentFilter === 'unread') status = 'unread';
                 else if (currentFilter === 'archived') status = 'archived';
+                else if (currentFilter === 'urgent') status = 'active'; // Messages urgents non archivés
                 
                 if (currentFilter === 'urgent') urgence = 'elevee';
                 
@@ -708,12 +455,14 @@
                     limit: 20
                 });
 
+                console.log('Loading messages with filter:', currentFilter, 'params:', params.toString());
                 const response = await fetch(`/api/admin/messages?${params}`);
                 const data = await response.json();
 
                 if (response.ok) {
-                    currentMessages = data.messages || [];
-                    displayMessages(currentMessages);
+                    allMessages = data.messages || [];
+                    console.log('Received messages:', allMessages.length, 'messages for filter:', currentFilter);
+                    applySearch();
                 } else {
                     console.error('Erreur chargement messages:', data.error);
                     showError('Erreur lors du chargement des messages');
@@ -740,7 +489,7 @@
             }
 
             container.innerHTML = messages.map(message => `
-                <div class="message-item ${!message.lu ? 'unread' : ''} ${message.urgence === 'elevee' ? 'urgent' : ''}" 
+                <div class="message-item ${!message.lu ? 'unread' : ''} ${message.urgence === 'elevee' ? 'urgent' : ''} ${message.archived ? 'archived' : ''}" 
                      onclick="selectMessage(${message.id})">
                     <div class="message-header">
                         <div class="patient-info">
@@ -753,9 +502,14 @@
                             </div>
                         </div>
                         <div class="message-meta">
-                            <span class="urgence-badge urgence-${message.urgence}">
-                                ${getUrgenceLabel(message.urgence)}
-                            </span>
+                            <div class="badges-container">
+                                <span class="urgence-badge urgence-${message.urgence}">
+                                    ${getUrgenceLabel(message.urgence)}
+                                </span>
+                                <span class="status-badge status-${getStatusClass(message)}">
+                                    ${getStatusLabel(message)}
+                                </span>
+                            </div>
                             <span class="message-time">${message.dateMessage}</span>
                         </div>
                     </div>
@@ -764,35 +518,45 @@
                     <div class="message-preview">${escapeHtml(message.message)}</div>
                     
                     ${message.fichiers && message.fichiers.length > 0 ? `
-                        <div class="message-files" style="margin: 0.75rem 0; padding: 0.5rem; background: #f8fafc; border-radius: 0.25rem;">
-                            <strong style="font-size: 0.8125rem; color: #64748b;">Pièces jointes:</strong><br>
+                        <div class="message-files">
+                            <strong>Pièces jointes:</strong><br>
                             ${message.fichiers.map(file => `
-                                <a href="/api/admin/files/${file.id}" target="_blank" style="display: inline-block; margin: 0.25rem 0.5rem 0.25rem 0; color: #1e40af; text-decoration: none; font-size: 0.8125rem;">
-                                    <i class="fas fa-paperclip"></i> ${escapeHtml(file.nom_original)}
-                                </a>
+                                ${file.id ? `
+                                    <a href="/api/admin/files/${file.id}" target="_blank">
+                                        <i class="fas fa-paperclip"></i> ${escapeHtml(file.nom_original)}
+                                    </a>
+                                ` : file.nom_stockage ? `
+                                    <a href="/api/admin/files/by-name/${encodeURIComponent(file.nom_stockage)}" target="_blank">
+                                        <i class="fas fa-paperclip"></i> ${escapeHtml(file.nom_original)}
+                                    </a>
+                                ` : `
+                                    <span class="file-unavailable">
+                                        <i class="fas fa-paperclip"></i> ${escapeHtml(file.nom_original)} (fichier non disponible)
+                                    </span>
+                                `}
                             `).join('')}
                         </div>
                     ` : ''}
                     
                     <div class="message-actions" data-message-id="${message.id}">
                         ${!message.lu ? `
-                            <button class="btn btn-secondary btn-sm mark-read-btn" data-id="${message.id}">
+                            <button class="btn btn-sm btn-secondary mark-read-btn" data-id="${message.id}">
                                 <i class="fas fa-eye"></i> Marquer lu
                             </button>
                         ` : ''}
                         ${!message.repondu ? `
-                            <button class="btn btn-primary btn-sm reply-btn" data-id="${message.id}">
+                            <button class="btn btn-sm btn-primary reply-btn" data-id="${message.id}">
                                 <i class="fas fa-reply"></i> Répondre
                             </button>
                         ` : `
-                            <span style="color: #059669; font-size: 0.8125rem;">
+                            <span style="color: var(--secondary-color); font-size: var(--font-size-xs);">
                                 <i class="fas fa-check-circle"></i> Répondu le ${message.dateReponse}
                             </span>
                         `}
-                        <button class="btn btn-danger btn-sm delete-btn" data-id="${message.id}" style="background: #dc2626;">
+                        <button class="btn btn-sm btn-danger delete-btn" data-id="${message.id}">
                             <i class="fas fa-trash"></i> Supprimer
                         </button>
-                        <button class="btn btn-secondary btn-sm archive-btn" data-id="${message.id}">
+                        <button class="btn btn-sm btn-secondary archive-btn" data-id="${message.id}">
                             <i class="fas fa-archive"></i> Archiver
                         </button>
                     </div>
@@ -813,14 +577,69 @@
             return labels[urgence] || 'Normale';
         }
 
+        function getStatusLabel(message) {
+            if (message.archived) return 'Archivé';
+            if (!message.lu) return 'Non lu';
+            if (message.repondu) return 'Répondu';
+            return 'Lu';
+        }
+
+        function getStatusClass(message) {
+            if (message.archived) return 'archived';
+            if (!message.lu) return 'unread';
+            if (message.repondu) return 'replied';
+            return 'read';
+        }
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
 
+        // Recherche
+        function handleSearch() {
+            const searchValue = document.getElementById('messageSearch').value.trim();
+            currentSearch = searchValue;
+            
+            const clearBtn = document.getElementById('clearSearch');
+            if (searchValue) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+            
+            applySearch();
+        }
+        
+        function clearSearch() {
+            document.getElementById('messageSearch').value = '';
+            currentSearch = '';
+            document.getElementById('clearSearch').style.display = 'none';
+            applySearch();
+        }
+        
+        function applySearch() {
+            if (!currentSearch) {
+                currentMessages = allMessages;
+            } else {
+                const searchLower = currentSearch.toLowerCase();
+                currentMessages = allMessages.filter(message => {
+                    const patientName = `${message.patient.prenom} ${message.patient.nom}`.toLowerCase();
+                    const sujet = message.sujet.toLowerCase();
+                    const messageText = message.message.toLowerCase();
+                    
+                    return patientName.includes(searchLower) || 
+                           sujet.includes(searchLower) || 
+                           messageText.includes(searchLower);
+                });
+            }
+            displayMessages(currentMessages);
+        }
+
         // Filtres
         function setFilter(filter, button) {
+            console.log('Setting filter to:', filter);
             currentFilter = filter;
             
             // Update active filter button
@@ -829,6 +648,7 @@
             });
             button.classList.add('active');
             
+            console.log('Current filter is now:', currentFilter);
             loadMessages();
         }
 
@@ -852,7 +672,6 @@
         }
 
         function selectMessage(messageId) {
-            // Optionnel: sélectionner/surligner le message
             console.log('Message sélectionné:', messageId);
         }
 
@@ -866,7 +685,7 @@
             document.getElementById('originalMessage').innerHTML = `
                 <div style="margin-bottom: 0.75rem;">
                     <strong>${message.patient.prenom} ${message.patient.nom}</strong>
-                    <span style="color: #64748b; margin-left: 0.75rem;">${message.dateMessage}</span>
+                    <span style="color: var(--text-secondary); margin-left: 0.75rem;">${message.dateMessage}</span>
                 </div>
                 <div style="font-weight: 600; margin-bottom: 0.75rem;">${escapeHtml(message.sujet)}</div>
                 <div>${escapeHtml(message.message).replace(/\n/g, '<br>')}</div>
@@ -889,7 +708,7 @@
             const charCount = document.getElementById('replyCharCount');
             const remaining = 5000 - textarea.value.length;
             charCount.textContent = remaining;
-            charCount.style.color = remaining < 100 ? '#dc2626' : '#64748b';
+            charCount.style.color = remaining < 100 ? '#dc2626' : 'var(--text-secondary)';
         }
 
         async function sendReply() {
@@ -947,10 +766,17 @@
                 if (response.ok && result.success) {
                     closeConfirmModal();
                     
-                    // Afficher message de succès avec nombre de fichiers supprimés
-                    const filesMsg = result.deletedFiles > 0 ? 
-                        ` et ${result.deletedFiles} fichier(s) associé(s)` : '';
-                    showSuccessModal('Message supprimé', `Le message${filesMsg} ont été supprimés définitivement.`);
+                    // Créer un message détaillé avec les pièces jointes supprimées
+                    let successMessage = 'Le message a été supprimé définitivement.';
+                    
+                    if (result.deletedFiles > 0) {
+                        successMessage += `\n\n📎 ${result.deletedFiles} pièce(s) jointe(s) supprimée(s) :`;
+                        if (result.fileNames && result.fileNames.length > 0) {
+                            successMessage += '\n• ' + result.fileNames.join('\n• ');
+                        }
+                    }
+                    
+                    showSuccessModal('Message supprimé', successMessage);
                     
                     loadMessages();
                     loadStats();
@@ -972,7 +798,10 @@
         // Afficher modal de succès
         function showSuccessModal(title, message, isError = false) {
             document.getElementById('successTitle').textContent = title;
-            document.getElementById('successMessage').textContent = message;
+            
+            // Gérer les sauts de ligne dans le message
+            const messageElement = document.getElementById('successMessage');
+            messageElement.innerHTML = message.replace(/\n/g, '<br>');
             
             const modal = document.getElementById('successModal');
             const header = modal.querySelector('.modal-header');
@@ -1001,48 +830,64 @@
         // Archiver un message
         async function archiveMessage(messageId) {
             try {
+                console.log('Archiving message:', messageId);
                 const response = await fetch(`/api/admin/messages/${messageId}/archive`, {
                     method: 'POST'
                 });
 
-                const result = await response.json();
+                console.log('Archive response status:', response.status, response.statusText);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Archive error response:', errorText);
+                    alert(`Erreur ${response.status}: ${errorText}`);
+                    return;
+                }
 
-                if (response.ok && result.success) {
+                const result = await response.json();
+                console.log('Archive result:', result);
+
+                if (result.success) {
+                    showSuccessModal('Message archivé', 'Le message a été archivé avec succès.');
                     loadMessages();
                     loadStats();
                 } else {
                     alert(result.error || 'Erreur lors de l\'archivage');
                 }
             } catch (error) {
-                console.error('Erreur archivage:', error);
-                alert('Erreur de connexion');
+                console.error('Erreur archivage complète:', error);
+                alert('Erreur de connexion: ' + error.message);
             }
         }
 
-        // Actions globales
-        function refreshData() {
-            loadStats();
-            loadMessages();
+        // Fonction de déconnexion
+        function logout() {
+            document.getElementById('logoutModal').classList.add('active');
         }
 
-        async function logout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                try {
-                    const response = await fetch('/api/admin/logout', {
-                        method: 'POST'
-                    });
+        // Fermer modal de déconnexion
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
 
-                    const result = await response.json();
+        // Confirmer la déconnexion
+        async function confirmLogout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST'
+                });
 
-                    if (result.success) {
-                        window.location.href = result.redirect || '/admin';
-                    } else {
-                        alert('Erreur lors de la déconnexion');
-                    }
-                } catch (error) {
-                    console.error('Erreur déconnexion:', error);
-                    window.location.href = '/admin';
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirect || '/admin/login';
+                } else {
+                    showSuccessModal('Erreur', 'Erreur lors de la déconnexion', true);
+                    closeLogoutModal();
                 }
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                window.location.href = '/admin/login';
             }
         }
 
@@ -1069,11 +914,13 @@
                 closeModal();
                 closeConfirmModal();
                 closeSuccessModal();
+                closeLogoutModal();
             }
             
             if (e.ctrlKey && e.key === 'r') {
                 e.preventDefault();
-                refreshData();
+                loadMessages();
+                loadStats();
             }
         });
     </script>

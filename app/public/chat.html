@@ -4,50 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assistant Médical - Dr Grégory Cuffel</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* Styles spécifiques au chat */
+        /* Styles chat harmonisés avec le design system unifié */
         .chat-page {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+            min-height: 100vh;
             background: var(--bg-secondary);
         }
 
         .chat-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(90deg, var(--accent-purple), var(--primary-light));
             color: white;
-            padding: var(--spacing-md);
-            box-shadow: var(--shadow);
+            padding: var(--spacing-6);
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
             flex-shrink: 0;
         }
 
-        .chat-header-content {
+        /* Container chat harmonisé */
+        .chat-container {
+            background: var(--bg-card);
+            border-radius: var(--border-radius-lg);
+            margin: var(--spacing-8) 0;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 200px);
+            border: 1px solid var(--border-color);
+        }
+        
+        .chat-header-inner {
+            background: linear-gradient(90deg, var(--accent-purple), var(--primary-light));
+            color: white;
+            padding: var(--spacing-4);
+            border-radius: var(--border-radius-lg) var(--border-radius-lg) 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
         }
-
-        .chat-title {
+        
+        .chat-status {
             display: flex;
             align-items: center;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-2);
         }
-
-        .chat-title h1 {
-            font-size: 1.5rem;
-            margin: 0;
-            font-weight: 600;
-        }
-
-        .chat-title .status {
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
             background: var(--secondary-color);
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.75rem;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
             font-weight: 600;
         }
 
@@ -74,23 +81,16 @@
             background: rgba(255, 255, 255, 0.2);
         }
 
-        .chat-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            height: calc(100vh - 80px);
-        }
+        /* Chat messages harmonisé */
 
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: var(--spacing-md);
+            padding: var(--spacing-8) var(--spacing-6);
             display: flex;
             flex-direction: column;
-            gap: var(--spacing-md);
+            gap: var(--spacing-6);
+            scroll-behavior: smooth;
         }
 
         .message {
@@ -127,14 +127,20 @@
         }
 
         .message.assistant .message-avatar {
-            background: linear-gradient(135deg, var(--secondary-color), var(--secondary-light));
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-light));
+        }
+        
+        /* Animation pulse pour le statut */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
 
         .message-content {
             background: var(--bg-card);
             padding: var(--spacing-md);
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
             position: relative;
             word-wrap: break-word;
         }
@@ -145,9 +151,10 @@
         }
 
         .message.assistant .message-content {
-            background: var(--bg-card);
+            background: transparent;
             color: var(--text-primary);
-            border: 1px solid var(--border-color);
+            border: none;
+            padding: 0;
         }
 
         .message-text {
@@ -172,7 +179,7 @@
             padding: var(--spacing-md);
             background: var(--bg-card);
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
             margin-bottom: var(--spacing-md);
             animation: fadeInUp 0.3s ease-out;
         }
@@ -195,17 +202,15 @@
 
         @keyframes typing {
             0%, 80%, 100% {
-                transform: scale(0);
                 opacity: 0.5;
             }
             40% {
-                transform: scale(1);
                 opacity: 1;
             }
         }
 
         .chat-input-container {
-            padding: var(--spacing-md);
+            padding: var(--spacing-8) var(--spacing-6);
             background: var(--bg-card);
             border-top: 1px solid var(--border-color);
             flex-shrink: 0;
@@ -213,38 +218,48 @@
 
         .chat-input-form {
             display: flex;
-            gap: var(--spacing-sm);
+            gap: var(--spacing-4);
             align-items: flex-end;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .chat-input {
             flex: 1;
-            min-height: 44px;
-            max-height: 120px;
-            padding: var(--spacing-sm) var(--spacing-md);
+            min-height: 56px;
+            max-height: 140px;
+            padding: var(--spacing-4) var(--spacing-6);
             border: 2px solid var(--border-color);
-            border-radius: 22px;
-            font-size: 1rem;
-            font-family: inherit;
+            border-radius: var(--border-radius-xl);
+            font-size: var(--font-size-base);
+            font-family: var(--font-family-base);
+            line-height: var(--line-height-normal);
             resize: none;
             transition: var(--transition);
-            background: var(--bg-secondary);
+            background: var(--bg-primary);
+            box-shadow: var(--shadow-sm);
         }
 
         .chat-input:focus {
             outline: none;
-            border-color: var(--primary-color);
+            border-color: var(--accent-purple);
             background: var(--bg-primary);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            box-shadow: 0 0 0 3px rgba(175, 82, 222, 0.1);
+        }
+
+        .chat-input::placeholder {
+            color: var(--text-muted);
+            font-size: var(--font-size-base);
         }
 
         .chat-send-btn {
-            width: 44px;
-            height: 44px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, var(--accent-purple), var(--primary-color));
             color: white;
             border: none;
+            box-shadow: var(--shadow-md);
             cursor: pointer;
             transition: var(--transition);
             display: flex;
@@ -254,8 +269,7 @@
         }
 
         .chat-send-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: var(--shadow-lg);
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
         }
 
         .chat-send-btn:disabled {
@@ -265,43 +279,51 @@
 
         .chat-suggestions {
             display: flex;
-            gap: var(--spacing-xs);
-            margin-bottom: var(--spacing-sm);
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-6);
             flex-wrap: wrap;
+            padding: 0 var(--spacing-4);
+            justify-content: center;
         }
 
         .suggestion-btn {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            padding: var(--spacing-xs) var(--spacing-sm);
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--border-radius-full);
+            font-size: var(--font-size-sm);
             cursor: pointer;
             transition: var(--transition);
             color: var(--text-secondary);
         }
 
         .suggestion-btn:hover {
-            background: var(--primary-color);
+            background: var(--accent-purple);
             color: white;
-            border-color: var(--primary-color);
+            border-color: var(--accent-purple);
+            transform: translateY(-1px);
         }
 
         .welcome-message {
             text-align: center;
-            padding: var(--spacing-xl);
+            padding: var(--spacing-16) var(--spacing-8);
             color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .welcome-message i {
-            font-size: 3rem;
-            color: var(--primary-color);
-            margin-bottom: var(--spacing-md);
+            font-size: 4rem;
+            color: var(--accent-purple);
+            margin-bottom: var(--spacing-6);
+            display: block;
         }
 
         .welcome-message h2 {
             color: var(--text-primary);
-            margin-bottom: var(--spacing-sm);
+            margin-bottom: var(--spacing-4);
+            font-size: var(--font-size-2xl);
+            font-weight: var(--font-weight-semibold);
         }
 
         .urgence-alert {
@@ -423,37 +445,52 @@
         }
     </style>
 </head>
-<body>
-    <div class="chat-page">
-        <!-- Header du chat -->
-        <header class="chat-header">
-            <div class="chat-header-content">
-                <div class="chat-title">
-                    <i class="fas fa-robot"></i>
+<body class="patient-page">
+    <!-- Header unifié style patient -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
                     <div>
                         <h1>Assistant Médical</h1>
-                        <div class="status">En ligne</div>
+                        <p>Intelligence Artificielle Médicale</p>
                     </div>
                 </div>
-                <div class="chat-controls">
-                    <button class="chat-btn" id="clearChatBtn">
-                        <i class="fas fa-trash"></i>
-                        Effacer
-                    </button>
-                    <button class="chat-btn" id="urgenceBtn">
-                        <i class="fas fa-phone"></i>
-                        Urgences
-                    </button>
-                    <a href="/espace-patient" class="chat-btn">
+                <nav class="nav">
+                    <a href="/espace-patient" class="nav-link">
                         <i class="fas fa-arrow-left"></i>
                         Retour
                     </a>
-                </div>
+                    <button class="btn btn-secondary" id="urgenceBtn">
+                        <i class="fas fa-phone"></i>
+                        Urgences
+                    </button>
+                </nav>
             </div>
-        </header>
+        </div>
+    </header>
 
-        <!-- Container principal du chat -->
-        <div class="chat-container">
+    <!-- Main content style patient -->
+    <main class="patient-content">
+        <div class="container">
+            <div class="chat-container">
+                <!-- Header interne du chat -->
+                <div class="chat-header-inner">
+                    <div class="chat-status">
+                        <span>Assistant IA</span>
+                        <div class="status-indicator"></div>
+                        <span style="font-size: var(--font-size-xs);">En ligne</span>
+                    </div>
+                    <div class="chat-controls">
+                        <button class="btn btn-sm btn-secondary" id="clearChatBtn" style="background: rgba(255,255,255,0.2); border: none;">
+                            <i class="fas fa-trash"></i>
+                            Effacer
+                        </button>
+                    </div>
+                </div>
             <!-- Zone des messages -->
             <div class="chat-messages" id="chatMessages">
                 <!-- Message de bienvenue -->
@@ -498,8 +535,9 @@
                     </button>
                 </form>
             </div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
         // Variables globales

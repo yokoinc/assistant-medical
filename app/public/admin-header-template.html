@@ -1,0 +1,61 @@
+<!-- Header admin unifié - Template réutilisable -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div>
+                    <h1 id="adminTitle">Administration</h1>
+                    <p id="doctorSpecialty">Tableau de Bord</p>
+                </div>
+            </div>
+            <nav class="nav">
+                <a href="/admin/dashboard" class="nav-link" data-page="dashboard">
+                    <i class="fas fa-chart-bar"></i>
+                    Dashboard
+                </a>
+                <a href="/admin/patients" class="nav-link" data-page="patients">
+                    <i class="fas fa-users"></i>
+                    Patients
+                </a>
+                <a href="/admin/schedule" class="nav-link" data-page="schedule">
+                    <i class="fas fa-calendar"></i>
+                    Planning
+                </a>
+                <a href="/admin/chat" class="nav-link" data-page="chat">
+                    <i class="fas fa-robot"></i>
+                    Chat IA
+                </a>
+                <a href="/admin/cabinet" class="nav-link" data-page="cabinet">
+                    <i class="fas fa-building"></i>
+                    Cabinet
+                </a>
+                <a href="/admin/emergency" class="nav-link" data-page="emergency">
+                    <i class="fas fa-phone-alt"></i>
+                    Urgences
+                </a>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </button>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<script>
+// Auto-activer le lien de navigation en fonction de la page courante
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPage = window.location.pathname.split('/').pop();
+    const navLinks = document.querySelectorAll('.nav-link[data-page]');
+    
+    navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('data-page') === currentPage) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>

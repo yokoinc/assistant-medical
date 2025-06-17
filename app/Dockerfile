@@ -2,7 +2,7 @@
 FROM node:18-alpine
 
 # Métadonnées
-LABEL maintainer="Dr Grégory Cuffel <contact@cabinet-cuffel.fr>"
+LABEL maintainer="Assistant Médical Web"
 LABEL description="Assistant médical - Application Node.js sécurisée"
 LABEL version="2.0.0"
 
@@ -24,20 +24,20 @@ WORKDIR /app
 COPY package*.json ./
 
 # Installation des dépendances Node.js
-RUN npm ci --only=production \
+RUN npm ci --omit=dev \
     && npm cache clean --force
 
-# Copie du code source
+# Copie du code source complet
 COPY . .
+
+# Copie du fichier .env depuis la racine du projet (un niveau au-dessus)
+COPY ../.env .env
 
 # Création du dossier uploads avec permissions correctes
 RUN mkdir -p uploads \
+    && chmod +x docker-entrypoint.sh wait-for-db.js \
     && chown -R medical:nodejs /app \
     && chmod -R 755 /app
-
-# Suppression du script de hachage problématique
-RUN rm -f hash-password.js
-
 # Basculer vers l'utilisateur non-root
 USER medical
 
@@ -48,5 +48,5 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
     CMD curl -f http://localhost:3000/api/health || exit 1
 
-# Commande de démarrage
-CMD ["node", "server.js"]
+# Point d'entrée avec attente DB
+ENTRYPOINT ["./docker-entrypoint.sh"]

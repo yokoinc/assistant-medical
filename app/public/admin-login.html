@@ -3,70 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administration - Dr Grégory Cuffel</title>
+    <title>Administration - Cabinet Médical</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --secondary: #059669;
-            --accent: #dc2626;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            
-            --gray-50: #f9fafb;
-            --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
-            --gray-300: #d1d5db;
-            --gray-400: #9ca3af;
-            --gray-500: #6b7280;
-            --gray-600: #4b5563;
-            --gray-700: #374151;
-            --gray-800: #1f2937;
-            --gray-900: #111827;
-            --white: #ffffff;
-            
-            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
-            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-            
-            --radius: 0.5rem;
-            --radius-lg: 0.75rem;
-            --transition: all 0.2s ease-in-out;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Styles spécifiques login admin */
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, var(--gray-900) 0%, var(--gray-800) 100%);
+            background: var(--bg-secondary);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 1rem;
-            color: var(--gray-900);
-            line-height: 1.6;
+            padding: var(--spacing-4);
         }
 
-        .admin-container {
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-xl);
+        .login-container {
+            background: var(--bg-card);
+            border-radius: var(--border-radius-lg);
             overflow: hidden;
             width: 100%;
-            max-width: 800px;
+            max-width: 900px;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            min-height: 500px;
+            min-height: 600px;
+            box-shadow: var(--shadow-xl);
             opacity: 0;
-            transform: translateY(20px);
             animation: slideIn 0.6s ease-out forwards;
         }
 
@@ -75,12 +37,15 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+            from {
+                transform: translateY(20px);
+            }
         }
 
         .admin-info {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: var(--white);
-            padding: 3rem 2rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: var(--spacing-16) var(--spacing-8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -108,34 +73,33 @@
             position: relative;
             z-index: 2;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: var(--spacing-8);
         }
 
         .brand-icon {
-            width: 80px;
-            height: 80px;
+            width: 96px;
+            height: 96px;
             background: rgba(255, 255, 255, 0.15);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
-            margin: 0 auto 1.5rem;
+            font-size: var(--font-size-3xl);
+            margin: 0 auto var(--spacing-6);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .brand-section h1 {
-            font-size: 1.8rem;
+            font-size: var(--font-size-3xl);
             font-weight: 700;
-            margin-bottom: 0.5rem;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: var(--spacing-2);
+            color: white;
         }
 
         .brand-section p {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 0.25rem;
+            font-size: var(--font-size-lg);
+            color: white;
+            margin-bottom: var(--spacing-1);
         }
 
         .features-list {
@@ -146,20 +110,20 @@
         .feature-item {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            font-size: 0.9rem;
-            opacity: 0.95;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-4);
+            font-size: var(--font-size-base);
+            color: white;
         }
 
         .feature-item i {
-            color: var(--secondary);
-            font-size: 1rem;
-            min-width: 18px;
+            color: var(--secondary-color);
+            font-size: var(--font-size-lg);
+            min-width: 20px;
         }
 
         .login-section {
-            padding: 3rem 2rem;
+            padding: var(--spacing-16) var(--spacing-8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -167,89 +131,77 @@
 
         .login-header {
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: var(--spacing-8);
         }
 
         .login-header h2 {
-            font-size: 1.6rem;
+            font-size: var(--font-size-2xl);
             font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-2);
         }
 
         .login-header p {
-            color: var(--gray-600);
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: var(--font-size-base);
         }
 
-        .security-badge {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: var(--radius);
-            padding: 0.75rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.85rem;
-            color: var(--success);
-        }
 
         .login-form {
             display: flex;
             flex-direction: column;
-            gap: 1.25rem;
+            gap: var(--spacing-5);
         }
 
         .form-group {
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: var(--spacing-2);
         }
 
         .form-label {
             font-weight: 500;
-            color: var(--gray-700);
-            font-size: 0.875rem;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: var(--spacing-2);
         }
 
         .form-label i {
-            color: var(--primary);
-            font-size: 0.875rem;
+            color: var(--primary-color);
+            font-size: var(--font-size-sm);
         }
 
         .form-input {
-            padding: 0.875rem 1rem;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius);
-            font-size: 0.9rem;
+            padding: var(--spacing-3) var(--spacing-4);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-base);
             transition: var(--transition);
-            background: var(--gray-50);
-            font-family: inherit;
+            background: var(--bg-secondary);
+            font-family: var(--font-family);
         }
 
         .form-input:focus {
             outline: none;
-            border-color: var(--primary);
-            background: var(--white);
-            box-shadow: 0 0 0 3px rgb(37 99 235 / 0.1);
+            border-color: var(--primary-color);
+            background: var(--bg-primary);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
         }
 
         .form-input.error {
-            border-color: var(--danger);
-            background: rgba(239, 68, 68, 0.05);
+            border-color: var(--accent-color);
+            background: rgba(255, 59, 48, 0.05);
         }
 
         .error-message {
-            color: var(--danger);
-            font-size: 0.8rem;
+            color: var(--accent-color);
+            font-size: var(--font-size-xs);
             display: none;
             align-items: center;
-            gap: 0.375rem;
-            margin-top: 0.25rem;
+            gap: var(--spacing-1);
+            margin-top: var(--spacing-1);
         }
 
         .error-message.show {
@@ -257,12 +209,12 @@
         }
 
         .success-message {
-            color: var(--success);
-            font-size: 0.8rem;
+            color: var(--secondary-color);
+            font-size: var(--font-size-xs);
             display: none;
             align-items: center;
-            gap: 0.375rem;
-            margin-top: 0.25rem;
+            gap: var(--spacing-1);
+            margin-top: var(--spacing-1);
         }
 
         .success-message.show {
@@ -270,41 +222,41 @@
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--white);
+            background: var(--primary-color);
+            color: white;
             border: none;
-            padding: 0.875rem 1rem;
-            border-radius: var(--radius);
-            font-size: 0.95rem;
+            padding: var(--spacing-3) var(--spacing-4);
+            border-radius: var(--border-radius);
+            font-size: var(--font-size-base);
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            font-family: inherit;
+            gap: var(--spacing-2);
+            margin-top: var(--spacing-2);
+            font-family: var(--font-family);
         }
 
         .submit-btn:hover:not(:disabled) {
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+            background: var(--primary-color);
+            transform: none;
+            box-shadow: none;
         }
 
         .submit-btn:disabled {
             opacity: 0.7;
             cursor: not-allowed;
-            transform: none;
         }
 
         .loading {
             display: inline-block;
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
-            border-top-color: var(--white);
+            border-top-color: white;
             animation: spin 1s linear infinite;
         }
 
@@ -313,113 +265,77 @@
         }
 
         .footer-links {
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--gray-200);
+            margin-top: var(--spacing-6);
+            padding-top: var(--spacing-6);
+            border-top: 1px solid var(--border-color);
             text-align: center;
         }
 
         .footer-link {
-            color: var(--gray-600);
+            color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.85rem;
+            font-size: var(--font-size-sm);
             display: inline-flex;
             align-items: center;
-            gap: 0.375rem;
+            gap: var(--spacing-1);
             transition: var(--transition);
         }
 
         .footer-link:hover {
-            color: var(--primary);
-            transform: translateX(-2px);
+            color: var(--primary-color);
         }
 
         .info-box {
-            background: var(--gray-50);
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius);
-            padding: 1rem;
-            margin-top: 1.5rem;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-4);
+            margin-top: var(--spacing-6);
         }
 
         .info-box h4 {
-            color: var(--gray-800);
-            font-size: 0.85rem;
+            color: var(--text-primary);
+            font-size: var(--font-size-sm);
             font-weight: 600;
-            margin-bottom: 0.5rem;
+            margin-bottom: var(--spacing-2);
             display: flex;
             align-items: center;
-            gap: 0.375rem;
+            gap: var(--spacing-1);
         }
 
         .info-box h4 i {
-            color: var(--warning);
+            color: var(--accent-warning);
         }
 
         .info-box p {
-            color: var(--gray-600);
-            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-size: var(--font-size-xs);
             line-height: 1.4;
             margin: 0;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .admin-container {
-                grid-template-columns: 1fr;
-                max-width: 450px;
-            }
-
-            .admin-info {
-                padding: 2rem 1.5rem;
-                text-align: center;
-            }
-
-            .login-section {
-                padding: 2rem 1.5rem;
-            }
-
-            .brand-section h1 {
-                font-size: 1.5rem;
-            }
-
-            .login-header h2 {
-                font-size: 1.4rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 0.5rem;
-            }
-
-            .admin-info,
-            .login-section {
-                padding: 1.5rem 1rem;
-            }
         }
 
         /* Toast notifications */
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--white);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-lg);
-            padding: 1rem 1.25rem;
+            top: var(--spacing-5);
+            right: var(--spacing-5);
+            background: var(--bg-card);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-4) var(--spacing-5);
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: var(--spacing-3);
             transform: translateX(400px);
             transition: transform 0.3s ease-out;
-            z-index: 1000;
-            border-left: 4px solid var(--success);
+            z-index: var(--z-tooltip);
+            border-left: 4px solid var(--secondary-color);
             max-width: 350px;
+            box-shadow: none;
         }
 
         .toast.error {
-            border-left-color: var(--danger);
+            border-left-color: var(--accent-color);
         }
 
         .toast.show {
@@ -427,15 +343,15 @@
         }
 
         .toast i {
-            font-size: 1.125rem;
+            font-size: var(--font-size-lg);
         }
 
         .toast.success i {
-            color: var(--success);
+            color: var(--secondary-color);
         }
 
         .toast.error i {
-            color: var(--danger);
+            color: var(--accent-color);
         }
 
         .toast-content {
@@ -444,18 +360,54 @@
 
         .toast-title {
             font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 0.25rem;
+            font-size: var(--font-size-sm);
+            margin-bottom: var(--spacing-1);
         }
 
         .toast-message {
-            font-size: 0.8rem;
-            color: var(--gray-600);
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-container {
+                grid-template-columns: 1fr;
+                max-width: 480px;
+            }
+
+            .admin-info {
+                padding: var(--spacing-8) var(--spacing-6);
+                text-align: center;
+            }
+
+            .login-section {
+                padding: var(--spacing-8) var(--spacing-6);
+            }
+
+            .brand-section h1 {
+                font-size: var(--font-size-2xl);
+            }
+
+            .login-header h2 {
+                font-size: var(--font-size-xl);
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: var(--spacing-2);
+            }
+
+            .admin-info,
+            .login-section {
+                padding: var(--spacing-6) var(--spacing-4);
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
+    <div class="login-container">
         <!-- Section Info -->
         <div class="admin-info">
             <div class="brand-section">
@@ -463,8 +415,8 @@
                     <i class="fas fa-user-md"></i>
                 </div>
                 <h1>Administration Médicale</h1>
-                <p>Dr Grégory Cuffel</p>
-                <p>Le Havre, Seine-Maritime</p>
+                <p>Cabinet Médical</p>
+                <p>Gestion de votre patientèle</p>
             </div>
 
             <div class="features-list">
@@ -498,10 +450,6 @@
                 <p>Accès réservé au personnel médical autorisé</p>
             </div>
 
-            <div class="security-badge">
-                <i class="fas fa-lock"></i>
-                <span>Connexion SSL - Données cryptées</span>
-            </div>
 
             <form class="login-form" id="adminLoginForm">
                 <div class="form-group">
@@ -517,7 +465,6 @@
                         placeholder="Identifiant médical"
                         required
                         autocomplete="username"
-                        value="dr.cuffel"
                     >
                     <div class="error-message" id="usernameError">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -538,7 +485,7 @@
                         placeholder="Mot de passe sécurisé"
                         required
                         autocomplete="current-password"
-                        value="cuffel2024"
+                        value=""
                     >
                     <div class="error-message" id="passwordError">
                         <i class="fas fa-exclamation-triangle"></i>

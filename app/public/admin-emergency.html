@@ -4,447 +4,329 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Numéros d'Urgence - Administration</title>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="/styles.css?v=emergency-config" rel="stylesheet">
     <style>
-        /* Styles spécifiques page admin urgences */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f8fafc;
-            color: #334155;
-            line-height: 1.6;
+        /* Styles pour les tuiles d'urgence */
+        .urgences-tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--spacing-4);
+            min-height: 200px;
         }
 
-        /* Import des styles admin communs */
-        @import url('admin-common.css');
-
-        /* Import du header unifié */
-        @import url('admin-header-template.css');
-
-        /* Main Layout */
-        .main-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Navigation */
-        .nav-breadcrumb {
-            background: white;
-            padding: 1rem 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .nav-breadcrumb a {
-            color: #1e40af;
-            text-decoration: none;
-        }
-
-        .nav-breadcrumb a:hover {
-            text-decoration: underline;
-        }
-
-        /* Emergency Section */
-        .emergency-section {
-            background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .section-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .section-title {
-            font-size: 1.125rem;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            color: #1e293b;
-        }
-
-        .section-body {
-            padding: 1.5rem;
-        }
-
-        /* Urgences Section */
-        .urgence-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: #f8fafc;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            border: 1px solid #e2e8f0;
+        .urgence-tile {
+            background: var(--bg-primary);
+            border: 2px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-4);
             cursor: move;
             transition: all 0.3s ease;
             position: relative;
         }
 
-        .urgence-item:hover {
-            background: #f1f5f9;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .urgence-tile:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
         }
 
-        .urgence-item.dragging {
+        .urgence-tile.dragging {
             opacity: 0.5;
             transform: rotate(5deg);
-            z-index: 1000;
         }
 
-        .urgence-item.drag-over {
-            border-color: #1e40af;
-            background: #dbeafe;
+        .urgence-tile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--spacing-3);
+        }
+
+        .urgence-tile-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .urgence-tile-actions {
+            display: flex;
+            gap: var(--spacing-1);
+        }
+
+        .urgence-tile-number {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--primary-color);
+            text-align: center;
+            margin: var(--spacing-2) 0;
+        }
+
+        .urgence-tile-description {
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+            text-align: center;
+            margin: 0 0 var(--spacing-2) 0;
+        }
+
+        .urgence-tile-horaires {
+            font-size: var(--font-size-xs);
+            color: var(--text-secondary);
+            text-align: center;
+            background: var(--bg-secondary);
+            padding: var(--spacing-1) var(--spacing-2);
+            border-radius: var(--border-radius-sm);
+            font-weight: 600;
+            margin: 0;
         }
 
         .drag-handle {
-            color: #64748b;
-            font-size: 1.2rem;
-            margin-right: 0.5rem;
-            cursor: grab;
+            position: absolute;
+            top: var(--spacing-2);
+            left: var(--spacing-2);
+            color: var(--text-secondary);
+            cursor: move;
         }
 
-        .drag-handle:active {
-            cursor: grabbing;
+        .urgence-tiles-grid.drag-over {
+            background: rgba(var(--primary-color-rgb, 0, 122, 255), 0.1);
+            border: 2px dashed var(--primary-color);
+            border-radius: var(--border-radius-lg);
         }
 
-        .urgence-content {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 1fr 1fr 100px;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        .urgence-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-shrink: 0;
-        }
-
-        .btn-sm {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            min-width: auto;
-            min-height: auto;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: #374151;
-        }
-
-        .form-input, .form-textarea, .form-select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            font-size: 0.875rem;
-            transition: border-color 0.2s;
-        }
-
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-            font-family: inherit;
-        }
-
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
-            outline: none;
-            border-color: #1e40af;
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        /* Modal */
-        .modal {
+        /* Styles pour le modal d'ajout */
+        .urgence-modal {
             position: fixed;
             top: 0;
             left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.5);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            padding: 1rem;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 0.75rem;
-            max-width: 500px;
             width: 100%;
-            max-height: 90vh;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
         }
 
-        .modal-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
+        .urgence-modal-content {
+            background: var(--bg-primary);
+            border-radius: var(--border-radius-lg);
+            padding: var(--spacing-6);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .urgence-modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: var(--spacing-4);
         }
 
-        .modal-title {
-            font-size: 1.125rem;
+        .urgence-modal-title {
+            font-size: var(--font-size-xl);
             font-weight: 600;
+            margin: 0;
         }
 
-        .modal-close {
+        .urgence-modal-close {
             background: none;
             border: none;
-            color: #64748b;
+            font-size: var(--font-size-xl);
+            color: var(--text-secondary);
             cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.25rem;
-        }
-
-        .modal-close:hover {
-            background: #f1f5f9;
-        }
-
-        .modal-body {
-            padding: 1.5rem;
-            overflow-y: auto;
-            flex: 1;
-        }
-
-        .modal-footer {
-            padding: 1.5rem;
-            border-top: 1px solid #e2e8f0;
-            display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-        }
-
-        /* Success/Error States */
-        .alert {
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .alert.success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-
-        .alert.error {
-            background: #fee2e2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-
-        .alert.active {
-            display: block;
-        }
-
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 3rem 1.5rem;
-            color: #64748b;
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            opacity: 0.5;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
-
-            .main-container {
-                padding: 1rem;
-            }
-
-            .urgence-content {
-                grid-template-columns: 1fr;
-                gap: 0.5rem;
-            }
         }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
-        <div class="header-content">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i class="fas fa-phone-alt"></i>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                    <div>
+                        <h1 id="adminTitle">Administration</h1>
+                        <p id="doctorSpecialty">Numéros d'Urgence</p>
+                    </div>
                 </div>
-                <div>
-                    <h1>Numéros d'Urgence</h1>
-                    <p>Contacts d'urgence</p>
-                </div>
-            </div>
-            <div class="user-nav">
-                <a href="/admin/parameters" class="btn btn-secondary">
-                    <i class="fas fa-arrow-left"></i>
-                    Retour Paramètres
-                </a>
-                <a href="/admin/dashboard" class="btn btn-secondary">
-                    <i class="fas fa-home"></i>
-                    Dashboard
-                </a>
-                <button class="btn btn-danger" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Déconnexion
-                </button>
+                <nav class="nav">
+                    <a href="/admin/dashboard" class="nav-link">
+                        <i class="fas fa-chart-bar"></i>
+                        Dashboard
+                    </a>
+                    <a href="/admin/patients" class="nav-link">
+                        <i class="fas fa-users"></i>
+                        Patients
+                    </a>
+                    <a href="/admin/schedule" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        Planning
+                    </a>
+                    <a href="/admin/chat" class="nav-link">
+                        <i class="fas fa-robot"></i>
+                        Chat IA
+                    </a>
+                    <a href="/admin/cabinet" class="nav-link">
+                        <i class="fas fa-building"></i>
+                        Cabinet
+                    </a>
+                    <a href="/admin/emergency" class="nav-link active">
+                        <i class="fas fa-phone-alt"></i>
+                        Urgences
+                    </a>
+                    <button class="btn btn-secondary" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Déconnexion
+                    </button>
+                </nav>
             </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <div class="main-container">
-        <!-- Navigation Breadcrumb -->
-        <div class="nav-breadcrumb">
-            <a href="/admin/dashboard">
-                <i class="fas fa-home"></i>
-                Dashboard
-            </a>
-            <i class="fas fa-chevron-right"></i>
-            <a href="/admin/parameters">Paramètres</a>
-            <i class="fas fa-chevron-right"></i>
-            <span>Numéros d'Urgence</span>
-        </div>
+    <main>
+        <section class="section" style="padding-top: var(--spacing-12);">
+            <div class="container">
+                <!-- Alerts -->
+                <div id="successAlert" class="alert success" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successMessage">Numéros d'urgence sauvegardés avec succès</span>
+                </div>
 
-        <!-- Alerts -->
-        <div id="successAlert" class="alert success">
-            <i class="fas fa-check-circle"></i>
-            <span id="successMessage">Opération réussie</span>
-        </div>
+                <div id="errorAlert" class="alert error" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorMessage">Erreur lors de la sauvegarde</span>
+                </div>
+            <!-- Gestion des numéros d'urgence -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-phone-alt"></i>
+                        Numéros d'Urgence
+                    </h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary" id="addUrgenceBtn">
+                            <i class="fas fa-plus"></i>
+                            Ajouter un numéro
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="form-description" style="margin-bottom: var(--spacing-4);">
+                        Glissez-déposez les tuiles pour définir l'ordre d'affichage sur la page d'accueil.
+                    </p>
+                    
+                    <div id="urgencesList" class="urgences-tiles-grid">
+                        <!-- Chargé dynamiquement -->
+                    </div>
 
-        <div id="errorAlert" class="alert error">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorMessage">Une erreur est survenue</span>
-        </div>
+                    <div style="margin-top: var(--spacing-6); display: flex; gap: var(--spacing-3); justify-content: flex-start;">
+                        <button class="btn btn-secondary" id="resetUrgencesBtn">
+                            <i class="fas fa-undo"></i>
+                            Réinitialiser par défaut
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </section>
+    </main>
 
-        <!-- Emergency Numbers Section -->
-        <div class="emergency-section">
-            <div class="section-header">
-                <h2 class="section-title">
-                    <i class="fas fa-phone-alt"></i>
-                    Gestion des Numéros d'Urgence
-                </h2>
-                <div class="section-actions">
-                    <button class="btn btn-primary" onclick="openUrgenceModal()">
-                        <i class="fas fa-plus"></i>
-                        Ajouter un numéro
+    <!-- Modal d'ajout/modification -->
+    <div id="urgenceModal" class="urgence-modal">
+        <div class="urgence-modal-content">
+            <div class="urgence-modal-header">
+                <h3 class="urgence-modal-title" id="modalTitle">Ajouter un numéro d'urgence</h3>
+                <button class="urgence-modal-close" id="modalClose">&times;</button>
+            </div>
+            
+            <form id="urgenceForm">
+                <div class="form-group">
+                    <label class="form-label" for="urgenceType">Type de service *</label>
+                    <select id="urgenceType" class="form-control" required>
+                        <option value="">-- Sélectionner un type --</option>
+                        <option value="SAMU">SAMU</option>
+                        <option value="Pompiers">Pompiers</option>
+                        <option value="Police/Gendarmerie">Police/Gendarmerie</option>
+                        <option value="Urgence Européenne">Urgence Européenne</option>
+                        <option value="Cabinet Médical">Cabinet Médical</option>
+                        <option value="Médecin de Garde">Médecin de Garde</option>
+                        <option value="Pharmacie de Garde">Pharmacie de Garde</option>
+                        <option value="SOS Médecins">SOS Médecins</option>
+                        <option value="Hôpital">Hôpital</option>
+                        <option value="Clinique">Clinique</option>
+                        <option value="Centre Antipoison">Centre Antipoison</option>
+                        <option value="Croix-Rouge">Croix-Rouge</option>
+                        <option value="Protection Civile">Protection Civile</option>
+                        <option value="Autre">Autre (saisie libre)</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="customNameGroup" style="display: none;">
+                    <label class="form-label" for="urgenceNom">Nom personnalisé *</label>
+                    <input type="text" id="urgenceNom" class="form-control" placeholder="Ex: Vétérinaire d'urgence...">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="urgenceTelephone">Numéro de téléphone *</label>
+                    <input type="tel" id="urgenceTelephone" class="form-control" required placeholder="Ex: 15, +33 1 23 45 67 89">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="urgenceDescription">Description (optionnel)</label>
+                    <input type="text" id="urgenceDescription" class="form-control" placeholder="Ex: Urgences médicales, 24h/24">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="urgenceSiteWeb">Site web (optionnel)</label>
+                    <input type="url" id="urgenceSiteWeb" class="form-control" placeholder="Ex: https://www.doctolib.fr/...">
+                    <div class="form-description">URL du site web ou page de prise de rendez-vous</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="urgenceHoraires">Disponibilité *</label>
+                    <select id="urgenceHoraires" class="form-control" required>
+                        <option value="">-- Sélectionner la disponibilité --</option>
+                        <option value="24h/24 - 7j/7">24h/24 - 7j/7</option>
+                        <option value="Lundi au Vendredi">Lundi au Vendredi</option>
+                        <option value="Lundi au Samedi">Lundi au Samedi</option>
+                        <option value="Weekend uniquement">Weekend uniquement</option>
+                        <option value="Dimanche uniquement">Dimanche uniquement</option>
+                        <option value="Nuit uniquement">Nuit uniquement (20h-8h)</option>
+                        <option value="Jour uniquement">Jour uniquement (8h-20h)</option>
+                        <option value="Sur rdv uniquement">Sur rendez-vous uniquement</option>
+                        <option value="Personnalisé">Personnalisé</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="customHorairesGroup" style="display: none;">
+                    <label class="form-label" for="urgenceHorairesCustom">Horaires personnalisés *</label>
+                    <input type="text" id="urgenceHorairesCustom" class="form-control" placeholder="Ex: Lundi 14h-18h, Mercredi 9h-12h">
+                    <div class="form-description">Précisez les jours et horaires de disponibilité</div>
+                </div>
+
+                <div style="display: flex; gap: var(--spacing-3); justify-content: flex-end; margin-top: var(--spacing-6);">
+                    <button type="button" class="btn btn-secondary" id="modalCancel">Annuler</button>
+                    <button type="submit" class="btn btn-primary" id="modalSave">
+                        <i class="fas fa-save"></i>
+                        Enregistrer
                     </button>
                 </div>
-            </div>
-            <div class="section-body">
-                <div class="alert" style="background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd; display: block; margin-bottom: 1.5rem;">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>Information :</strong> Vous pouvez réorganiser l'ordre des numéros en glissant-déposant les éléments. L'ordre sera automatiquement sauvegardé.
-                </div>
-                
-                <div id="urgencesList">
-                    <!-- Urgences will be loaded here -->
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Urgence -->
-    <div class="modal" id="urgenceModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title" id="urgenceModalTitle">Ajouter un numéro d'urgence</h3>
-                <button class="modal-close" id="urgenceModalClose">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <div class="modal-body">
-                <form id="urgenceForm">
-                    <input type="hidden" id="urgenceId">
-                    
-                    <div class="form-group">
-                        <label class="form-label" for="urgenceType">Type</label>
-                        <select id="urgenceType" class="form-select" required>
-                            <option value="urgence">Urgence</option>
-                            <option value="garde">Garde</option>
-                            <option value="pharmacie">Pharmacie</option>
-                            <option value="autre">Autre</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="urgenceNom">Nom</label>
-                        <input type="text" id="urgenceNom" class="form-input" required maxlength="255" placeholder="Ex: SAMU, SOS Médecins...">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="urgenceTelephone">Téléphone</label>
-                        <input type="tel" id="urgenceTelephone" class="form-input" maxlength="20" placeholder="Ex: 15, +33 2 35 46 12 34">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="urgenceAdresse">Adresse</label>
-                        <textarea id="urgenceAdresse" class="form-textarea" placeholder="Adresse complète (optionnel)"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="urgenceHoraires">Horaires</label>
-                        <input type="text" id="urgenceHoraires" class="form-input" placeholder="Ex: 24h/24, Week-end et jours fériés">
-                    </div>
-                </form>
-            </div>
-
-            <div class="modal-footer">
-                <button class="btn btn-secondary" id="urgenceCancelBtn">
-                    Annuler
-                </button>
-                <button class="btn btn-primary" id="urgenceSaveBtn">
-                    <i class="fas fa-save"></i>
-                    Enregistrer
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 
     <script>
         // Variables globales
-        let currentUrgences = [];
-        let editingUrgenceId = null;
+        let urgencesList = [];
+        let editingIndex = -1;
+        let draggedElement = null;
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
@@ -452,322 +334,399 @@
             setupEventListeners();
         });
 
+
         function setupEventListeners() {
             // Boutons principaux
-            document.getElementById('logoutBtn').addEventListener('click', logout);
+            document.getElementById('addUrgenceBtn').addEventListener('click', openModal);
+            document.getElementById('resetUrgencesBtn').addEventListener('click', resetToDefault);
             
-            // Modal urgence
-            document.getElementById('urgenceModalClose').addEventListener('click', closeUrgenceModal);
-            document.getElementById('urgenceCancelBtn').addEventListener('click', closeUrgenceModal);
-            document.getElementById('urgenceSaveBtn').addEventListener('click', saveUrgence);
-            
-            // Formatage automatique du téléphone
-            document.getElementById('urgenceTelephone').addEventListener('input', formatTelephone);
+            // Modal
+            document.getElementById('modalClose').addEventListener('click', closeModal);
+            document.getElementById('modalCancel').addEventListener('click', closeModal);
+            document.getElementById('urgenceForm').addEventListener('submit', saveUrgence);
+            document.getElementById('urgenceType').addEventListener('change', handleTypeChange);
+            document.getElementById('urgenceHoraires').addEventListener('change', handleHorairesChange);
             
             // Fermer modal en cliquant à l'extérieur
             document.getElementById('urgenceModal').addEventListener('click', function(e) {
-                if (e.target.id === 'urgenceModal') closeUrgenceModal();
+                if (e.target.id === 'urgenceModal') closeModal();
             });
         }
 
-        // Fonction de formatage du téléphone
-        function formatTelephone(e) {
-            let value = e.target.value.replace(/\D/g, ''); // Supprimer tout sauf les chiffres
-            
-            // Si c'est un numéro court (15, 18, 17, 112)
-            if (value.length <= 3) {
-                e.target.value = value;
-                return;
-            }
-            
-            // Si on commence par 33, on garde, sinon on force +33
-            if (value.startsWith('33')) {
-                value = value.substring(2); // Retirer le 33 initial
-            } else if (value.startsWith('0')) {
-                value = value.substring(1); // Retirer le 0 initial français
-            }
-            
-            // Limiter à 9 chiffres après +33
-            value = value.substring(0, 9);
-            
-            // Formatter avec espaces
-            let formatted = '+33';
-            if (value.length > 0) {
-                formatted += ' ' + value.charAt(0);
-                if (value.length > 1) {
-                    formatted += ' ' + value.substring(1, 3);
-                    if (value.length > 3) {
-                        formatted += ' ' + value.substring(3, 5);
-                        if (value.length > 5) {
-                            formatted += ' ' + value.substring(5, 7);
-                            if (value.length > 7) {
-                                formatted += ' ' + value.substring(7, 9);
-                            }
-                        }
-                    }
-                }
-            }
-            
-            e.target.value = formatted;
-        }
-
-        // Gestion des urgences
+        // Chargement des urgences
         async function loadUrgences() {
             try {
                 const response = await fetch('/api/urgences');
-                const urgences = await response.json();
-
                 if (response.ok) {
-                    currentUrgences = urgences;
-                    displayUrgences(urgences);
+                    urgencesList = await response.json();
+                    renderUrgences();
+                } else {
+                    // Valeurs par défaut si pas de données
+                    resetToDefault();
                 }
             } catch (error) {
                 console.error('Erreur chargement urgences:', error);
+                resetToDefault();
             }
         }
 
-        function displayUrgences(urgences) {
-            console.log('displayUrgences called with:', urgences);
+        // Affichage des tuiles
+        function renderUrgences() {
             const container = document.getElementById('urgencesList');
             
-            if (urgences.length === 0) {
+            if (urgencesList.length === 0) {
                 container.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-phone-alt"></i>
-                        <h3>Aucun numéro d'urgence configuré</h3>
-                        <p>Cliquez sur "Ajouter un numéro" pour commencer</p>
+                    <div style="grid-column: 1/-1; text-align: center; padding: var(--spacing-8); color: var(--text-secondary);">
+                        <i class="fas fa-phone-alt" style="font-size: 2rem; margin-bottom: var(--spacing-3);"></i>
+                        <p>Aucun numéro d'urgence configuré. Cliquez sur "Ajouter un numéro" pour commencer.</p>
                     </div>
                 `;
                 return;
             }
 
-            container.innerHTML = urgences.map(urgence => `
-                <div class="urgence-item" draggable="true" data-urgence-id="${urgence.id}" data-ordre="${urgence.ordre || 0}">
+            container.innerHTML = urgencesList.map((urgence, index) => `
+                <div class="urgence-tile" draggable="true" data-index="${index}">
                     <div class="drag-handle">
                         <i class="fas fa-grip-vertical"></i>
                     </div>
-                    <div class="urgence-content">
-                        <div>
-                            <strong>${escapeHtml(urgence.nom)}</strong>
-                            <br>
-                            <small style="color: #64748b;">Type: ${urgence.type}</small>
-                        </div>
-                        <div>
-                            <strong>${escapeHtml(urgence.telephone || '')}</strong>
-                            <br>
-                            <small style="color: #64748b;">${escapeHtml(urgence.horaires || '')}</small>
-                        </div>
-                        <div>
-                            <span class="status-badge ${urgence.actif ? 'status-active' : 'status-inactive'}">
-                                ${urgence.actif ? 'Actif' : 'Inactif'}
-                            </span>
+                    <div class="urgence-tile-header">
+                        <h4 class="urgence-tile-title">${escapeHtml(urgence.nom)}</h4>
+                        <div class="urgence-tile-actions">
+                            <button class="btn btn-sm btn-secondary" onclick="editUrgence(${index})" title="Modifier">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteUrgence(${index})" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
                         </div>
                     </div>
-                    <div class="urgence-actions">
-                        <button class="btn btn-secondary btn-sm" onclick="editUrgence(${urgence.id})" title="Modifier" style="background: #059669; color: white;">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteUrgence(${urgence.id})" title="Supprimer">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </div>
+                    <div class="urgence-tile-number">${escapeHtml(urgence.telephone)}</div>
+                    <p class="urgence-tile-description">${escapeHtml(urgence.description || 'Numéro d\'urgence')}</p>
+                    <div class="urgence-tile-horaires">${escapeHtml(urgence.horaires || '24h/24 - 7j/7')}</div>
                 </div>
             `).join('');
 
-            // Ajouter les event listeners pour le drag & drop
             setupDragAndDrop();
         }
 
-        // Configuration du drag & drop pour les urgences
+        // Configuration du drag & drop
         function setupDragAndDrop() {
-            const urgenceItems = document.querySelectorAll('.urgence-item');
-            let draggedElement = null;
+            const tiles = document.querySelectorAll('.urgence-tile');
+            const container = document.getElementById('urgencesList');
 
-            urgenceItems.forEach(item => {
-                item.addEventListener('dragstart', function(e) {
-                    draggedElement = this;
-                    this.classList.add('dragging');
+            tiles.forEach(tile => {
+                tile.addEventListener('dragstart', (e) => {
+                    draggedElement = tile;
+                    tile.classList.add('dragging');
                     e.dataTransfer.effectAllowed = 'move';
-                    e.dataTransfer.setData('text/html', this.outerHTML);
                 });
 
-                item.addEventListener('dragend', function(e) {
-                    this.classList.remove('dragging');
-                    document.querySelectorAll('.urgence-item').forEach(el => {
-                        el.classList.remove('drag-over');
-                    });
+                tile.addEventListener('dragend', () => {
+                    tile.classList.remove('dragging');
+                    container.classList.remove('drag-over');
+                    draggedElement = null;
                 });
 
-                item.addEventListener('dragover', function(e) {
+                tile.addEventListener('dragover', (e) => {
                     e.preventDefault();
                     e.dataTransfer.dropEffect = 'move';
                     
-                    if (this !== draggedElement) {
-                        this.classList.add('drag-over');
-                    }
-                });
-
-                item.addEventListener('dragleave', function(e) {
-                    this.classList.remove('drag-over');
-                });
-
-                item.addEventListener('drop', function(e) {
-                    e.preventDefault();
-                    this.classList.remove('drag-over');
-                    
-                    if (this !== draggedElement) {
-                        const container = document.getElementById('urgencesList');
-                        const allItems = Array.from(container.querySelectorAll('.urgence-item'));
-                        const draggedIndex = allItems.indexOf(draggedElement);
-                        const targetIndex = allItems.indexOf(this);
+                    if (draggedElement && draggedElement !== tile) {
+                        const rect = tile.getBoundingClientRect();
+                        const midpoint = rect.top + rect.height / 2;
                         
-                        if (draggedIndex < targetIndex) {
-                            this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                        if (e.clientY < midpoint) {
+                            tile.parentNode.insertBefore(draggedElement, tile);
                         } else {
-                            this.parentNode.insertBefore(draggedElement, this);
+                            tile.parentNode.insertBefore(draggedElement, tile.nextSibling);
                         }
-                        
-                        // Sauvegarder le nouvel ordre
-                        saveUrgencesOrder();
                     }
                 });
             });
-        }
 
-        // Sauvegarder l'ordre des urgences
-        async function saveUrgencesOrder() {
-            try {
-                const container = document.getElementById('urgencesList');
-                const items = Array.from(container.querySelectorAll('.urgence-item'));
-                
-                const newOrder = items.map((item, index) => ({
-                    id: parseInt(item.dataset.urgenceId),
-                    ordre: index + 1
-                }));
+            container.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                container.classList.add('drag-over');
+            });
 
-                console.log('Saving new order:', newOrder);
-
-                const response = await fetch('/api/admin/urgences/order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ urgences: newOrder })
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    console.log('Order saved successfully');
-                    showSuccess('Ordre mis à jour avec succès');
-                } else {
-                    console.error('Error saving order:', result.error);
-                    loadUrgences();
+            container.addEventListener('dragleave', (e) => {
+                if (!container.contains(e.relatedTarget)) {
+                    container.classList.remove('drag-over');
                 }
-            } catch (error) {
-                console.error('Error saving urgences order:', error);
-                loadUrgences();
-            }
+            });
+
+            container.addEventListener('drop', (e) => {
+                e.preventDefault();
+                container.classList.remove('drag-over');
+                updateOrder();
+            });
         }
 
-        function openUrgenceModal(urgence = null) {
-            editingUrgenceId = urgence ? urgence.id : null;
+        // Mise à jour de l'ordre après drag & drop
+        function updateOrder() {
+            const tiles = document.querySelectorAll('.urgence-tile');
+            const newOrder = [];
             
-            document.getElementById('urgenceModalTitle').textContent = 
-                urgence ? 'Modifier le numéro d\'urgence' : 'Ajouter un numéro d\'urgence';
+            tiles.forEach(tile => {
+                const index = parseInt(tile.dataset.index);
+                newOrder.push(urgencesList[index]);
+            });
             
-            if (urgence) {
-                document.getElementById('urgenceId').value = urgence.id;
-                document.getElementById('urgenceType').value = urgence.type;
-                document.getElementById('urgenceNom').value = urgence.nom;
-                document.getElementById('urgenceTelephone').value = urgence.telephone || '';
-                document.getElementById('urgenceAdresse').value = urgence.adresse || '';
-                document.getElementById('urgenceHoraires').value = urgence.horaires || '';
+            urgencesList = newOrder;
+            renderUrgences();
+            // Sauvegarde automatique après réorganisation
+            saveUrgences();
+        }
+
+        // Gestion du changement de type
+        function handleTypeChange() {
+            const typeSelect = document.getElementById('urgenceType');
+            const customNameGroup = document.getElementById('customNameGroup');
+            const nomInput = document.getElementById('urgenceNom');
+            const descriptionInput = document.getElementById('urgenceDescription');
+            const phoneInput = document.getElementById('urgenceTelephone');
+            const horairesSelect = document.getElementById('urgenceHoraires');
+            
+            const selectedType = typeSelect.value;
+            
+            if (selectedType === 'Autre') {
+                customNameGroup.style.display = 'block';
+                nomInput.required = true;
+                descriptionInput.value = '';
+                phoneInput.value = '';
+                horairesSelect.value = '';
             } else {
+                customNameGroup.style.display = 'none';
+                nomInput.required = false;
+                
+                // Remplissage automatique selon le type
+                const typeData = getTypeData(selectedType);
+                descriptionInput.value = typeData.description;
+                phoneInput.value = typeData.phone;
+                horairesSelect.value = typeData.horaires;
+            }
+        }
+
+        // Gestion du changement d'horaires
+        function handleHorairesChange() {
+            const horairesSelect = document.getElementById('urgenceHoraires');
+            const customHorairesGroup = document.getElementById('customHorairesGroup');
+            const customHorairesInput = document.getElementById('urgenceHorairesCustom');
+            
+            if (horairesSelect.value === 'Personnalisé') {
+                customHorairesGroup.style.display = 'block';
+                customHorairesInput.required = true;
+            } else {
+                customHorairesGroup.style.display = 'none';
+                customHorairesInput.required = false;
+                customHorairesInput.value = '';
+            }
+        }
+
+        // Données prédéfinies par type
+        function getTypeData(type) {
+            const types = {
+                'SAMU': { description: 'Urgences médicales', phone: '15', horaires: '24h/24 - 7j/7' },
+                'Pompiers': { description: 'Secours d\'urgence', phone: '18', horaires: '24h/24 - 7j/7' },
+                'Police/Gendarmerie': { description: 'Urgences sécuritaires', phone: '17', horaires: '24h/24 - 7j/7' },
+                'Urgence Européenne': { description: 'Toutes urgences depuis un mobile', phone: '112', horaires: '24h/24 - 7j/7' },
+                'Cabinet Médical': { description: 'Urgences du cabinet', phone: '', horaires: 'Lundi au Vendredi' },
+                'Médecin de Garde': { description: 'Médecin de permanence', phone: '', horaires: 'Weekend uniquement' },
+                'Pharmacie de Garde': { description: 'Pharmacie de permanence', phone: '', horaires: 'Dimanche uniquement' },
+                'SOS Médecins': { description: 'Médecins à domicile', phone: '', horaires: '24h/24 - 7j/7' },
+                'Hôpital': { description: 'Service d\'urgences hospitalier', phone: '', horaires: '24h/24 - 7j/7' },
+                'Clinique': { description: 'Urgences clinique privée', phone: '', horaires: 'Jour uniquement' },
+                'Centre Antipoison': { description: 'Intoxications et empoisonnements', phone: '', horaires: '24h/24 - 7j/7' },
+                'Croix-Rouge': { description: 'Secours et assistance', phone: '', horaires: 'Sur rdv uniquement' },
+                'Protection Civile': { description: 'Secours et prévention', phone: '', horaires: 'Jour uniquement' }
+            };
+            
+            return types[type] || { description: '', phone: '', horaires: '' };
+        }
+
+        // Gestion du modal
+        function openModal(urgence = null, index = -1) {
+            editingIndex = index;
+            
+            if (urgence) {
+                document.getElementById('modalTitle').textContent = 'Modifier le numéro d\'urgence';
+                
+                // Trouver le type correspondant ou "Autre"
+                const typeSelect = document.getElementById('urgenceType');
+                let foundType = false;
+                for (let option of typeSelect.options) {
+                    if (option.value === urgence.nom) {
+                        typeSelect.value = option.value;
+                        foundType = true;
+                        break;
+                    }
+                }
+                
+                if (!foundType) {
+                    typeSelect.value = 'Autre';
+                    document.getElementById('customNameGroup').style.display = 'block';
+                    document.getElementById('urgenceNom').value = urgence.nom;
+                    document.getElementById('urgenceNom').required = true;
+                } else {
+                    document.getElementById('customNameGroup').style.display = 'none';
+                    document.getElementById('urgenceNom').required = false;
+                }
+                
+                document.getElementById('urgenceTelephone').value = urgence.telephone;
+                document.getElementById('urgenceDescription').value = urgence.description || '';
+                document.getElementById('urgenceSiteWeb').value = urgence.site_web || '';
+                
+                // Gestion des horaires
+                const horairesSelect = document.getElementById('urgenceHoraires');
+                const customHorairesGroup = document.getElementById('customHorairesGroup');
+                const customHorairesInput = document.getElementById('urgenceHorairesCustom');
+                
+                if (urgence.horaires) {
+                    // Vérifier si c'est un horaire prédéfini
+                    let foundHoraire = false;
+                    for (let option of horairesSelect.options) {
+                        if (option.value === urgence.horaires) {
+                            horairesSelect.value = option.value;
+                            foundHoraire = true;
+                            break;
+                        }
+                    }
+                    
+                    if (!foundHoraire) {
+                        horairesSelect.value = 'Personnalisé';
+                        customHorairesGroup.style.display = 'block';
+                        customHorairesInput.value = urgence.horaires;
+                        customHorairesInput.required = true;
+                    } else {
+                        customHorairesGroup.style.display = 'none';
+                        customHorairesInput.required = false;
+                    }
+                } else {
+                    horairesSelect.value = '24h/24 - 7j/7';
+                }
+            } else {
+                document.getElementById('modalTitle').textContent = 'Ajouter un numéro d\'urgence';
                 document.getElementById('urgenceForm').reset();
-                document.getElementById('urgenceId').value = '';
+                document.getElementById('customNameGroup').style.display = 'none';
+                document.getElementById('customHorairesGroup').style.display = 'none';
+                document.getElementById('urgenceNom').required = false;
+                document.getElementById('urgenceHorairesCustom').required = false;
             }
             
-            document.getElementById('urgenceModal').classList.add('active');
+            document.getElementById('urgenceModal').style.display = 'flex';
         }
 
-        function closeUrgenceModal() {
-            document.getElementById('urgenceModal').classList.remove('active');
-            editingUrgenceId = null;
+        function closeModal() {
+            document.getElementById('urgenceModal').style.display = 'none';
+            editingIndex = -1;
         }
 
-        function editUrgence(urgenceId) {
-            const urgence = currentUrgences.find(u => u.id === urgenceId);
-            if (urgence) {
-                openUrgenceModal(urgence);
-            }
-        }
-
-        async function saveUrgence() {
-            try {
-                const formData = {
-                    type: document.getElementById('urgenceType').value,
-                    nom: document.getElementById('urgenceNom').value,
-                    telephone: document.getElementById('urgenceTelephone').value,
-                    adresse: document.getElementById('urgenceAdresse').value,
-                    horaires: document.getElementById('urgenceHoraires').value,
-                    actif: true
-                };
-
-                if (!formData.nom) {
-                    showError('Le nom est obligatoire');
+        function saveUrgence(e) {
+            e.preventDefault();
+            
+            const typeSelect = document.getElementById('urgenceType');
+            const selectedType = typeSelect.value;
+            
+            let nom;
+            if (selectedType === 'Autre') {
+                nom = document.getElementById('urgenceNom').value.trim();
+                if (!nom) {
+                    alert('Veuillez saisir un nom pour le service personnalisé');
                     return;
                 }
+            } else {
+                nom = selectedType;
+            }
+            
+            // Gestion des horaires
+            const horairesSelect = document.getElementById('urgenceHoraires');
+            let horaires;
+            if (horairesSelect.value === 'Personnalisé') {
+                horaires = document.getElementById('urgenceHorairesCustom').value.trim();
+                if (!horaires) {
+                    alert('Veuillez saisir les horaires personnalisés');
+                    return;
+                }
+            } else {
+                horaires = horairesSelect.value;
+            }
+            
+            const urgence = {
+                nom: nom,
+                telephone: document.getElementById('urgenceTelephone').value.trim(),
+                description: document.getElementById('urgenceDescription').value.trim(),
+                site_web: document.getElementById('urgenceSiteWeb').value.trim(),
+                horaires: horaires
+            };
 
-                const url = editingUrgenceId ? 
-                    `/api/admin/urgences/${editingUrgenceId}` : 
-                    '/api/admin/urgences';
-                const method = editingUrgenceId ? 'PUT' : 'POST';
+            if (!urgence.telephone) {
+                alert('Veuillez saisir un numéro de téléphone');
+                return;
+            }
 
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formData)
+            if (!urgence.horaires) {
+                alert('Veuillez sélectionner une disponibilité');
+                return;
+            }
+
+            if (editingIndex >= 0) {
+                urgencesList[editingIndex] = urgence;
+            } else {
+                urgencesList.push(urgence);
+            }
+
+            renderUrgences();
+            closeModal();
+            // Sauvegarde automatique après chaque modification
+            saveUrgences();
+        }
+
+        function editUrgence(index) {
+            openModal(urgencesList[index], index);
+        }
+
+        function deleteUrgence(index) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce numéro d\'urgence ?')) {
+                urgencesList.splice(index, 1);
+                renderUrgences();
+                // Sauvegarde automatique après suppression
+                saveUrgences();
+            }
+        }
+
+        // Sauvegarde en base
+        async function saveUrgences() {
+            try {
+                const response = await fetch('/api/admin/urgences', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ urgences: urgencesList })
                 });
 
                 const result = await response.json();
-
                 if (response.ok && result.success) {
-                    closeUrgenceModal();
-                    showSuccess(result.message || 'Numéro d\'urgence sauvegardé');
-                    loadUrgences();
+                    showSuccess('Numéros d\'urgence sauvegardés avec succès');
                 } else {
                     showError(result.error || 'Erreur lors de la sauvegarde');
                 }
             } catch (error) {
-                console.error('Erreur sauvegarde urgence:', error);
+                console.error('Erreur sauvegarde:', error);
                 showError('Erreur de connexion');
             }
         }
 
-        async function deleteUrgence(urgenceId) {
-            if (!confirm('Êtes-vous sûr de vouloir supprimer ce numéro d\'urgence ?')) {
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/admin/urgences/${urgenceId}`, {
-                    method: 'DELETE'
-                });
-
-                const result = await response.json();
-
-                if (response.ok && result.success) {
-                    showSuccess('Numéro d\'urgence supprimé');
-                    loadUrgences();
-                } else {
-                    showError(result.error || 'Erreur lors de la suppression');
-                }
-            } catch (error) {
-                console.error('Erreur suppression urgence:', error);
-                showError('Erreur de connexion');
+        // Réinitialiser aux valeurs par défaut
+        function resetToDefault() {
+            if (confirm('Êtes-vous sûr de vouloir réinitialiser aux numéros d\'urgence par défaut ? Cela supprimera tous vos numéros personnalisés.')) {
+                urgencesList = [
+                    { nom: 'SAMU', telephone: '15', description: 'Urgences médicales', horaires: '24h/24 - 7j/7' },
+                    { nom: 'Pompiers', telephone: '18', description: 'Secours d\'urgence', horaires: '24h/24 - 7j/7' },
+                    { nom: 'Police/Gendarmerie', telephone: '17', description: 'Urgences sécuritaires', horaires: '24h/24 - 7j/7' },
+                    { nom: 'Urgence Européenne', telephone: '112', description: 'Toutes urgences depuis un mobile', horaires: '24h/24 - 7j/7' }
+                ];
+                renderUrgences();
+                // Sauvegarde automatique après réinitialisation
+                saveUrgences();
             }
         }
 
@@ -781,52 +740,119 @@
 
         function showSuccess(message) {
             document.getElementById('successMessage').textContent = message;
-            document.getElementById('successAlert').classList.add('active');
-            document.getElementById('errorAlert').classList.remove('active');
+            document.getElementById('successAlert').style.display = 'flex';
+            document.getElementById('errorAlert').style.display = 'none';
             
             setTimeout(() => {
-                document.getElementById('successAlert').classList.remove('active');
+                document.getElementById('successAlert').style.display = 'none';
             }, 5000);
         }
 
         function showError(message) {
             document.getElementById('errorMessage').textContent = message;
-            document.getElementById('errorAlert').classList.add('active');
-            document.getElementById('successAlert').classList.remove('active');
+            document.getElementById('errorAlert').style.display = 'flex';
+            document.getElementById('successAlert').style.display = 'none';
             
             setTimeout(() => {
-                document.getElementById('errorAlert').classList.remove('active');
+                document.getElementById('errorAlert').style.display = 'none';
             }, 5000);
         }
 
-        // Déconnexion
-        async function logout() {
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter ?')) {
-                try {
-                    const response = await fetch('/api/admin/logout', {
-                        method: 'POST'
-                    });
+        
+        // ===== FONCTIONS DE DÉCONNEXION =====
+        
+        // Fonction de déconnexion
+        function logout() {
+            document.getElementById('logoutModal').classList.add('active');
+        }
 
-                    const result = await response.json();
+        // Fermer modal de déconnexion
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').classList.remove('active');
+        }
 
-                    if (result.success) {
-                        window.location.href = result.redirect || '/admin';
-                    } else {
-                        alert('Erreur lors de la déconnexion');
-                    }
-                } catch (error) {
-                    console.error('Erreur déconnexion:', error);
-                    window.location.href = '/admin';
+        // Confirmer la déconnexion
+        async function confirmLogout() {
+            try {
+                const response = await fetch('/api/admin/logout', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    window.location.href = result.redirect || '/admin/login';
+                } else {
+                    showError('Erreur lors de la déconnexion');
+                    closeLogoutModal();
                 }
+            } catch (error) {
+                console.error('Erreur déconnexion:', error);
+                window.location.href = '/admin/login';
             }
         }
 
-        // Raccourcis clavier
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                closeUrgenceModal();
-            }
+        // ===== EVENT LISTENERS DÉCONNEXION =====
+        document.addEventListener('DOMContentLoaded', function() {
+            // Modal de déconnexion
+            document.getElementById('logoutModalClose').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutCancel').addEventListener('click', closeLogoutModal);
+            document.getElementById('logoutConfirm').addEventListener('click', confirmLogout);
+            
+            // Fermer modal logout en cliquant à l'extérieur
+            document.getElementById('logoutModal').addEventListener('click', function(e) {
+                if (e.target.id === 'logoutModal') {
+                    closeLogoutModal();
+                }
+            });
+            
+            // Escape pour fermer les modals
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeLogoutModal();
+                }
+            });
         });
     </script>
+
+    <!-- Modal de déconnexion -->
+    <div class="modal" id="logoutModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header" style="border-bottom: 1px solid #fee2e2; background: #fef2f2;">
+                <h3 class="modal-title" style="color: #dc2626; display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Déconnexion</span>
+                </h3>
+                <button class="modal-close" id="logoutModalClose">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div style="text-align: center; padding: var(--spacing-4) 0;">
+                    <div style="font-size: 3rem; color: #dc2626; margin-bottom: var(--spacing-4);">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <p style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--spacing-3); color: var(--text-primary);">
+                        Êtes-vous sûr de vouloir vous déconnecter ?
+                    </p>
+                    <p style="color: var(--text-secondary); margin: 0; font-size: var(--font-size-sm);">
+                        Vous devrez vous reconnecter pour accéder au tableau de bord.
+                    </p>
+                </div>
+            </div>
+
+            <div class="modal-footer" style="gap: var(--spacing-3);">
+                <button class="btn btn-secondary" id="logoutCancel" style="flex: 1;">
+                    <i class="fas fa-times"></i>
+                    Annuler
+                </button>
+                <button class="btn btn-danger" id="logoutConfirm" style="flex: 1;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Se déconnecter
+                </button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
