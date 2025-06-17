@@ -235,12 +235,12 @@ docker-compose up --scale webapp=2
 - ✅ **Validation stricte** : XSS + Injection SQL + CSRF
 - ✅ **Audit complet** : Logs horodatés + Traçabilité
 
-### **Conformité RGPD**
-- **Consentement patient** explicite pour les données
-- **Droit à l'oubli** via suppression de compte
-- **Pseudonymisation** des données de test
-- **Chiffrement** des données sensibles en base
-- **Backup sécurisé** avec retention configurable
+### **⚠️ Avertissement Conformité**
+- **RGPD non conforme** : Mise en conformité nécessaire avant production
+- **Données de santé** : Encadrement juridique requis
+- **Transferts IA** : Clauses contractuelles à définir
+- **Politique de confidentialité** : À implémenter obligatoirement
+- **Droits utilisateurs** : Accès/suppression/rectification à développer
 
 ## 📊 **Tests et Qualité**
 
@@ -371,9 +371,13 @@ docker-compose exec nginx nginx -T
 
 **Licence MIT** - Utilisation libre en cabinet privé et public.
 
-**Avertissement médical** : Cet assistant IA ne remplace pas un diagnostic médical professionnel. En cas d'urgence, contactez le 15 (SAMU).
+**⚠️ Avertissements importants** :
+- Cet assistant IA ne remplace pas un diagnostic médical professionnel
+- En cas d'urgence, contactez le 15 (SAMU)
+- **Conformité RGPD requise** avant déploiement avec de vraies données patients
+- Les données de test doivent rester fictives uniquement
 
-**Conformité** : Compatible RGPD, HDS-ready, certification médicale en cours.
+**⚠️ Conformité** : Mise en conformité RGPD et certification médicale nécessaires avant utilisation en production avec de vraies données patients.
 
 ## 🤝 **Communauté et Contribution**
 
