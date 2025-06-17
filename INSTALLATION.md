@@ -76,7 +76,7 @@ webmed/
 
 ### Support
 
-- Les identifiants admin sont définis dans `app/.env`
+- Les identifiants admin sont définis dans `.env`
 - La base utilise PostgreSQL 15
 - L'interface est accessible via Nginx
 - Les uploads sont persistants dans `./uploads/`
