@@ -1,4 +1,4 @@
-# 🏥 Assistant Médical Web - Cabinet Dr Cuffel
+# 🏥 Assistant Médical Web
 
 Application web complète pour cabinet médical avec système de messagerie patient-médecin, assistant IA intégré et interface d'administration moderne.
 
@@ -83,11 +83,11 @@ LOAD_TEST_DATA=true
 
 1. **Cloner et configurer**
 ```bash
-git clone https://github.com/yokoinc/webmed-assistant.git
-cd webmed-assistant
+git clone https://github.com/yokoinc/assistant-medical.git
+cd assistant-medical
 
-# Configuration automatique
-cp app/.env .env
+# Configuration à partir du modèle
+cp .env.example .env
 ```
 
 2. **Personnaliser la configuration**
@@ -106,7 +106,7 @@ OPENAI_API_KEY=sk-proj-votre-clé-openai
 ANTHROPIC_API_KEY=sk-ant-votre-clé-claude
 
 # ADMIN PAR DÉFAUT
-ADMIN_USERNAME=dr.cuffel
+ADMIN_USERNAME=admin
 ADMIN_PASSWORD=VotreMotDePasseAdmin
 ```
 
@@ -384,21 +384,13 @@ docker-compose exec nginx nginx -T
 4. **Documenter** les changements
 5. **Pull Request** avec description détaillée
 
-### **Support Communautaire**
-- **Discord** : [Lien vers serveur Discord médical]
-- **Forum** : [Discussions GitHub Issues]
-- **Email** : support@webmed-assistant.fr
 
 ## 🔗 **Liens Utiles**
 
-- **🌐 Démo en ligne** : https://demo.webmed-assistant.fr
-- **📖 Documentation** : https://docs.webmed-assistant.fr  
-- **🐙 Dépôt GitHub** : https://github.com/yokoinc/webmed-assistant
-- **📊 Roadmap publique** : https://roadmap.webmed-assistant.fr
-- **💬 Support** : https://support.webmed-assistant.fr
+- **🐙 Dépôt GitHub** : https://github.com/yokoinc/assistant-medical
 
 ---
 
 ⚕️ **Développé avec ❤️ pour moderniser la médecine de proximité**
 
-*Assistant Médical Web v2.1 - Dr Grégory Cuffel - Décembre 2024*
+*Assistant Médical Web v2.1 - Décembre 2024*
