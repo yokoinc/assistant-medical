@@ -391,6 +391,6 @@ docker-compose exec nginx nginx -T
 
 ---
 
-⚕️ **Développé avec ❤️ pour moderniser la médecine de proximité**
+⚕️ **Développé par le Dr Grégory Cuffel avec ❤️ pour moderniser la médecine de proximité**
 
 *Assistant Médical Web v2.1 - Décembre 2024*
