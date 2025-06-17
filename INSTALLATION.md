@@ -13,7 +13,7 @@ Le fichier `init.sql` a été harmonisé avec la configuration Docker et les var
 ### Fichiers de configuration
 
 1. **`docker-compose.yml`** - Configuration des conteneurs
-2. **`app/.env`** - Variables d'environnement
+2. **`.env`** - Variables d'environnement
 3. **`init.sql`** - Initialisation de la base de données
 
 ### Installation rapide
